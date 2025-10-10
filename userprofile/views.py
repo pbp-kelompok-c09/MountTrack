@@ -11,7 +11,7 @@ def register_user(request):
             return redirect("userprofile:login")
     else:
         form = RegisterForm()
-    return render(request, "userprofile/register.html", {"form": form})
+    return render(request, "register.html", {"form": form})
 
 
 def login_user(request):
@@ -26,7 +26,7 @@ def login_user(request):
                 return redirect("userprofile:profile")  # redirect ke halaman profile
     else:
         form = AuthenticationForm()
-    return render(request, "userprofile/login.html", {"form": form})
+    return render(request, "login.html", {"form": form})
 
 
 def logout_user(request):
@@ -45,4 +45,4 @@ def profile_user(request):
             return redirect("userprofile:profile")
     else:
         form = ProfileForm(instance=request.user)
-    return render(request, "userprofile/profile.html", {"form": form})
+    return render(request, "profile.html", {"form": form})
