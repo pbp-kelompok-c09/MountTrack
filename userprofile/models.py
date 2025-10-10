@@ -1,7 +1,9 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+import uuid
 
 class UserProfile(AbstractUser):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     nama = models.CharField(max_length=100)
     umur = models.PositiveIntegerField(null=True, blank=True)
     nomor_telepon = models.CharField(max_length=20, null=True, blank=True)
