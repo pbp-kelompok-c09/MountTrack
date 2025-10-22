@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <h1>{{ news.title }}</h1>
+
+    <p>
+        Diterbitkan pada: {{ news.published_date|date:"d F Y, H:i" }}
+    </p>
+    <p>
+        Jumlah Dilihat: {{ news.news_views }} kali
+    </p>
+
+    <hr>
+
+    {% if news.pinned_thumbnail %}
+        <h3>Thumbnail</h3>
+        <img src="{{ news.pinned_thumbnail }}" alt="Thumbnail untuk {{ news.title }}" width="500">
+        <br>
+    {% endif %}
+    
+    <br>
+
+    <div>
+        {{ news.content|linebreaksbr }}
+    </div>
+
+    <hr>
+
+    {% if images %}
+        <h3>Gambar Tambahan</h3>
+        
+        {% for img in images %}
+            <div style="display: inline-block; padding: 5px;">
+                <img src="{{ img.image_url }}" alt="Gambar tambahan" width="200">
+            </div>
+        {% endfor %}
+            
+    {% else %}
+        <p>Tidak ada gambar tambahan untuk berita ini.</p>
+    {% endif %}
+
+    <br>
+    <hr>
+
+    <a href="{% url 'news:page_news' %}">
+        <button>Kembali ke Daftar Berita</button>
+    </a>
+
+{% endblock content %}

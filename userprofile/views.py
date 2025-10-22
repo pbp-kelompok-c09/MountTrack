@@ -26,7 +26,7 @@ def login_user(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect("userprofile:profile")  # redirect ke halaman profile
+                return redirect("news:page_news")  # langsung redirect ke page_news, diubah oleh ryan
     else:
         form = AuthenticationForm()
     return render(request, "login.html", {"form": form})
@@ -34,7 +34,7 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    return redirect("userprofile:login")
+    return redirect("news:page_news")  # redirect ke halaman utama berita, diubah oleh ryan.
 
 
 def profile_user(request):
@@ -45,7 +45,7 @@ def profile_user(request):
         form = ProfileForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect("userprofile:profile")
+            return redirect("news:page_news")  # redirect ke halaman utama berita (diubah oleh ryan)
     else:
         form = ProfileForm(instance=request.user)
     return render(request, "profile.html", {"form": form})
