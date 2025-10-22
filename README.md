@@ -9,7 +9,7 @@
 MountTrack adalah platform informasi pendakian yang menghadirkan daftar gunung aktif untuk didaki, lengkap dengan update cuaca real-time, status pendaftaran, serta kondisi jalur terkini. Selain itu, MountTrack juga menyajikan berita dan tren terbaru seputar dunia pecinta alam, sehingga pendaki dapat merencanakan perjalanan dengan aman dan terarah.
 
 # Daftar Modul
-- **Halaman Autentikasi + Edit Profil**: Halaman Login, Register, dan halaman untung mengubah data pribadi. (Farrel Arrayyan Adrianshah)
+- **Halaman Autentikasi + Edit Profil**: Halaman Login, Register, dan halaman untuk mengubah data pribadi. (Farrel Arrayyan Adrianshah)
 - **List Gunung**: Menyajikan daftar gunung beserta detail informasi seperti lokasi, ketinggian, jalur pendakian, kondisi jalur terkini, dan update cuaca di daerah pendakian. (Muhammad Hamiz Ghani Ayusha)
 - **Booking Pendakian**: Pengguna dapat menjadwalkan sesi pendakian mereka sesuai dengan ketersediaan gunung. (Nimaisya Gina Herapati)
 - **News**: Menyajikan berita terkini seputar gunung, kebijakan pendakian, kondisi jalur, hingga informasi menarik lainnya yang relevan bagi pendaki. (Ryan Gibran Purwcakra Sihaloho)
