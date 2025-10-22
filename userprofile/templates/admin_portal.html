@@ -8,7 +8,6 @@
 {% block content %}
 <div class="min-h-screen bg-[#E5D7C4] flex flex-col items-center py-10 px-6">
 
-  <!-- Header -->
   <div class="w-full max-w-5xl bg-[#354024] text-[#E5D7C4] rounded-t-xl p-6 flex justify-between items-center">
     <h1 class="text-2xl font-bold">MountTrack Admin Management</h1>
     <div class="flex items-center gap-4">
@@ -20,10 +19,9 @@
     </div>
   </div>
 
-  <!-- Konten utama -->
   <div class="w-full max-w-5xl bg-[#F8F4EF] border border-[#CFBB99] rounded-b-xl shadow-sm p-6">
 
-    <!-- Tabel daftar user -->
+    <!-- tabel user -->
     <div class="overflow-x-auto mb-8">
       <table class="w-full border-collapse">
         <thead class="bg-[#CFBB99]/30 text-[#354024]">
@@ -48,7 +46,7 @@
             </td>
             <td class="p-3 border-b border-[#CFBB99]">
               {% if request.user != user %}
-                <!-- Toggle admin -->
+                <!-- toggle untuk role admin -->
                 <form method="post" class="inline">
                   {% csrf_token %}
                   <input type="hidden" name="user_id" value="{{ user.id }}">
@@ -59,7 +57,7 @@
                   </button>
                 </form>
 
-                <!-- Hapus user -->
+                <!-- hapus user -->
                 <form method="post" class="inline">
                   {% csrf_token %}
                   <input type="hidden" name="user_id" value="{{ user.id }}">
@@ -83,7 +81,7 @@
       </table>
     </div>
 
-    <!-- Form tambah user -->
+    <!-- form tambah user baru -->
     <div class="bg-[#E5D7C4]/60 p-6 rounded-md border border-[#CFBB99]">
       <h3 class="text-lg font-semibold text-[#354024] mb-4">Tambah User Baru</h3>
 
