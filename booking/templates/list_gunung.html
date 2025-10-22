@@ -1,0 +1,13 @@
+<!-- list_gunung.html -->
+<h1>Available Mountains for Booking</h1>
+
+<ul>
+    {% for gunung in gunungs %}
+        <li>
+            <strong>{{ gunung.nama }}</strong> - {{ gunung.lokasi }}
+            <p>{{ gunung.deskripsi }}</p>
+            <!-- Button Register untuk menuju form booking gunung ini -->
+            <a href="{% url 'booking:booking_view' gunung_id=gunung.id %}">Register</a>
+        </li>
+    {% endfor %}
+</ul>
