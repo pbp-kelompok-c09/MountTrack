@@ -11,4 +11,6 @@ urlpatterns = [
     path("profile/", views.profile_user, name="profile"),
     path("admin-portal/", views.admin_portal_user, name="admin_portal"),
     path("no-access/", views.no_access_user, name="no_access"), 
+    path("admin-portal/add-user/", views.add_user_ajax, name="add_user_ajax"),
+    path("admin-portal/get-users/", views.get_users_json, name="get_users_json"),
 ]

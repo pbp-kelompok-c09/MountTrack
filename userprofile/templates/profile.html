@@ -20,7 +20,14 @@
          class="inline-block mt-2 bg-[#354024] text-[#E5D7C4] font-semibold py-2 px-4 rounded-md hover:bg-[#4C3D19] transition-colors">
         Logout
       </a>
+      {% if request.user.is_staff %}
+        <a href="{% url 'userprofile:admin_portal' %}"
+           class="inline-block bg-[#889063] text-[#354024] font-semibold py-2 px-4 rounded-md hover:bg-[#4C3D19] hover:text-[#E5D7C4] transition-colors">
+          Ke Admin Portal
+        </a>
+        {% endif %}
     </div>
+    
 
     <!-- form profil -->
     <form method="POST" class="space-y-5">

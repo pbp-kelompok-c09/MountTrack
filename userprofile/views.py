@@ -5,6 +5,11 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.decorators import login_required
 from .forms import RegisterForm, ProfileForm
 from .models import UserProfile
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.hashers import make_password
+import json
+
 
 def register_user(request):
     if request.method == "POST":
@@ -26,7 +31,14 @@ def login_user(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                return redirect("news:page_news")  # langsung redirect ke page_news, diubah oleh ryan
+                nama_kosong = not getattr(user, "nama", None)
+                telepon_kosong = not getattr(user, "nomor_telepon", None)
+                umur_kosong = not getattr(user, "umur", None)
+
+                if nama_kosong or telepon_kosong or umur_kosong:
+                    return redirect("userprofile:profile")  # arahkan ke halaman profil untuk lengkapi data
+                else:
+                    return redirect("news:page_news") # lanjut ke news
     else:
         form = AuthenticationForm()
     return render(request, "login.html", {"form": form})
@@ -45,7 +57,7 @@ def profile_user(request):
         form = ProfileForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect("news:page_news")  # redirect ke halaman utama berita (diubah oleh ryan)
+            return redirect("userprofile:profile")  # redirect ke profile lagi, karena ini edit profil, jangan ke news (farrel)
     else:
         form = ProfileForm(instance=request.user)
     return render(request, "profile.html", {"form": form})
@@ -92,3 +104,49 @@ def admin_portal_user(request):
 
 def no_access_user(request):
     return render(request, "no_access.html", status=403)
+
+@login_required(login_url='/login')
+def get_users_json(request):
+    if not request.user.is_staff:
+        return JsonResponse({"error": "Forbidden"}, status=403)
+
+    users = UserProfile.objects.all().values("id", "username", "email", "is_staff")
+    return JsonResponse(list(users), safe=False)
+
+
+@csrf_exempt
+@login_required(login_url='/login')
+def add_user_ajax(request):
+    if not request.user.is_staff:
+        return JsonResponse({"error": "Forbidden"}, status=403)
+
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            username = data.get("username")
+            email = data.get("email")
+            password = data.get("password")
+
+            if not username or not password:
+                return JsonResponse({"error": "Username dan password wajib diisi"}, status=400)
+
+            # cek apakah username sudah ada
+            if UserProfile.objects.filter(username=username).exists():
+                return JsonResponse({"error": "Username sudah terpakai"}, status=400)
+
+            new_user = UserProfile.objects.create(
+                username=username,
+                email=email,
+                password=make_password(password)
+            )
+
+            return JsonResponse({
+                "id": new_user.id,
+                "username": new_user.username,
+                "email": new_user.email,
+                "is_staff": new_user.is_staff
+            }, status=201)
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON"}, status=400)
+    else:
+        return JsonResponse({"error": "Invalid method"}, status=405)
