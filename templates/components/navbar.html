@@ -1,0 +1,53 @@
+{% load static %}
+
+<!-- templates/components/navbar.html -->
+<div id="navbar-container" class="fixed top-14 inset-x-0 max-w-5xl mx-auto z-30 transition-all ease-in-out duration-500 px-4">
+        <nav class="relative rounded-full bg-[#1D1D1D] bg-opacity-75 hover:bg-opacity-50 sm:hover:bg-opacity-75 transition-all duration-300 border-2 border-[#717174] backdrop-blur-sm shadow-input w-full mx-auto px-12 py-3 sm:py-4  ">
+            <div class="flex items-center justify-between w-full">
+                <!-- Logo (Left) -->
+                <a href="/" class="flex items-center gap-2 flex-shrink-0">
+                    <img src="{% static '/images/logo-v4.jpg' %}" alt="logo" class="w-8 h-8" />
+                </a>
+
+                <!-- Desktop Menu (Center) -->
+                <ul class="hidden lg:flex gap-8 items-center text-white text-xs md:text-sm font-sfPro font-extrabold flex-1 justify-center" id="desktop-menu">
+                    <!-- Menu items will be inserted here -->
+                </ul>
+
+                <!-- Mobile Active Item (Center on mobile) -->
+                <div class="flex lg:hidden items-center flex-1 justify-center">
+                    <div class="flex items-center space-x-2 font-sfPro font-extrabold text-white">
+                        <span id="active-icon"></span>
+                        <span id="active-name"></span>
+                    </div>
+                </div>
+
+                <!-- Right Side: User Profile & Mobile Menu -->
+                <div class="flex items-center gap-4 flex-shrink-0">
+                    <!-- User Profile -->
+                    <div class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" id="user-profile">
+                        <img src="{% static 'images/user-avatar.jpg' %}" alt="User" class="w-8 h-8 rounded-full object-cover border-2 border-[#717174]" onerror="this.src='https://ui-avatars.com/api/?name=User&background=717174&color=fff'" />
+                        <span class="font-sfPro font-bold text-white hidden sm:block text-sm">User</span>
+                    </div>
+
+                    <!-- Mobile Menu Button -->
+                    <button id="dropdown-button" class="lg:hidden focus:outline-none text-white">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Mobile Dropdown Menu -->
+        <div id="dropdown-menu" class="absolute left-4 right-4 top-20 scale-0 transition-all duration-300 mt-2 rounded-2xl bg-[#1D1D1D] bg-opacity-75 border-2 border-[#717174] backdrop-blur-sm shadow-input py-5 px-4 z-50">
+            <ul class="font-sfPro font-extrabold text-white space-y-3" id="mobile-menu">
+                <!-- Menu items will be inserted here -->
+            </ul>
+        </div>
+    </div>
+
+<script src="{% static 'js/navbar.js' %}"></script>

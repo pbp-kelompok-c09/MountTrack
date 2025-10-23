@@ -1,76 +1,231 @@
-{% load static %}
 <!DOCTYPE html>
+{% load static %}
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}MountTrack{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    {% block meta %} {% endblock meta %}
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@800&display=swap');
+        
+        .font-sfPro {
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        .shadow-input {
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+    </style>
 </head>
 
-<body class="bg-gray-50">
-    <nav class="bg-gray-800 shadow-lg">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16">
-                <div class="flex">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="/" class="text-white text-xl font-bold">MyApp</a>
-                    </div>
-                    <div class="hidden md:ml-6 md:flex md:space-x-8">
-                        <a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Home</a>
-                        <a href="/about" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">About</a>
-                        <a href="/services" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Services</a>
-                        <a href="/contact" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Contact</a>
-                    </div>
-                </div>
-                
-                <div class="hidden md:flex md:items-center md:space-x-4">
-                    {% if user.is_authenticated %}
-                        <a href="/profile" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Profile</a>
-                        <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition">Logout</a>
-                    {% else %}
-                        <a href="/login" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Login</a>
-                        <a href="/register" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition">Register</a>
-                    {% endif %}
-                </div>
+<body class="min-h-screen">
+    <!-- Enhanced Navbar -->
+    {% include 'components/navbar.html' %}
 
-                <!-- Mobile menu button -->
-                <div class="flex items-center md:hidden">
-                    <button type="button" id="mobile-menu-button" class="text-gray-300 hover:text-white focus:outline-none focus:text-white">
-                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
+    <!-- Page content -->
+    <main class="pt-32 px-6">
+        {% block content %}
+        {% endblock %}
+    </main>
 
-        <!-- Mobile menu -->
-        <div class="md:hidden hidden" id="mobile-menu">
-            <div class="px-2 pt-2 pb-3 space-y-1">
-                <a href="/" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Home</a>
-                <a href="/about" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">About</a>
-                <a href="/services" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Services</a>
-                <a href="/contact" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Contact</a>
-                {% if user.is_authenticated %}
-                    <a href="/profile" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Profile</a>
-                    <a href="/logout" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Logout</a>
-                {% else %}
-                    <a href="/login" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Login</a>
-                    <a href="/register" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Register</a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
-
-    {% block content %} {% endblock content %}
+    {% block scripts %}{% endblock %}
 
     <script>
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
+        // Menu configuration - Update these paths to match your Django URLs
+        const menuItems = [
+          { 
+              name: "Home", 
+              path: "/", 
+              icon: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>' 
+          },
+          { 
+              name: "Mountains", 
+              path: "/fams/", 
+              icon: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 20h18L13 4 3 20z"></path><path d="M6.5 20l7-12 7 12"></path></svg>' 
+          },
+          { 
+              name: "News", 
+              path: "/news/", 
+              icon: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"></path><path d="M18 14h-8"></path><path d="M15 18h-5"></path><path d="M10 6h8v4h-8z"></path></svg>' 
+          },
+          { 
+              name: "Community", 
+              path: "/community/", 
+              icon: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>' 
+          },
+          { 
+              name: "About", 
+              path: "/about/", 
+              icon: '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>' 
+          },
+      ];
 
-        mobileMenuButton.addEventListener('click', () => {
-            mobileMenu.classList.toggle('hidden');
+        // State
+        let dropdownOpen = false;
+        let lastScrollTop = 0;
+        let scrollTimeout = null;
+
+        // Get current path
+        const getCurrentPath = () => {
+            const path = window.location.pathname;
+            return path.endsWith('/') ? path : path + '/';
+        };
+
+        // Check if path is active
+        const isActive = (itemPath) => {
+            const currentPath = getCurrentPath();
+            const normalizedItemPath = itemPath.endsWith('/') ? itemPath : itemPath + '/';
+            
+            if (normalizedItemPath === '/') {
+                return currentPath === '/';
+            }
+            
+            return currentPath.startsWith(normalizedItemPath) || currentPath === normalizedItemPath;
+        };
+
+        // Get active item
+        const getActiveItem = () => {
+            return menuItems.find(item => isActive(item.path)) || menuItems[0];
+        };
+
+        // Check if mobile
+        const isMobile = () => window.innerWidth < 1024;
+
+        // Update mobile active item display
+        const updateMobileDisplay = () => {
+            const activeItem = getActiveItem();
+            const iconEl = document.getElementById('active-icon');
+            const nameEl = document.getElementById('active-name');
+            if (iconEl && nameEl) {
+                iconEl.innerHTML = activeItem.icon;
+                nameEl.textContent = activeItem.name;
+            }
+        };
+
+        // Render desktop menu
+        const renderDesktopMenu = () => {
+            const desktopMenu = document.getElementById('desktop-menu');
+            if (desktopMenu) {
+                desktopMenu.innerHTML = menuItems.map(item => `
+                    <li>
+                        <a href="${item.path}" 
+                           class="hover:opacity-100 opacity-45 transition-opacity flex items-center space-x-2 ${isActive(item.path) ? 'opacity-100' : ''}">
+                            ${item.icon}
+                            <span>${item.name}</span>
+                        </a>
+                    </li>
+                `).join('');
+            }
+        };
+
+        // Render mobile menu
+        const renderMobileMenu = () => {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) {
+                mobileMenu.innerHTML = menuItems.map(item => `
+                    <li>
+                        <a href="${item.path}" 
+                           class="flex items-center space-x-2 text-sm hover:opacity-100 opacity-75 transition-opacity ${isActive(item.path) ? 'opacity-100' : ''}">
+                            ${item.icon}
+                            <span>${item.name}</span>
+                        </a>
+                    </li>
+                `).join('');
+            }
+        };
+
+        // Toggle dropdown
+        const toggleDropdown = () => {
+            dropdownOpen = !dropdownOpen;
+            const dropdown = document.getElementById('dropdown-menu');
+            if (dropdown) {
+                dropdown.classList.toggle('scale-0');
+                dropdown.classList.toggle('scale-100');
+            }
+        };
+
+        // Close dropdown
+        const closeDropdown = () => {
+            if (dropdownOpen) {
+                dropdownOpen = false;
+                const dropdown = document.getElementById('dropdown-menu');
+                if (dropdown) {
+                    dropdown.classList.add('scale-0');
+                    dropdown.classList.remove('scale-100');
+                }
+            }
+        };
+
+        // Handle scroll
+        const handleScroll = () => {
+            const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            const navbar = document.getElementById('navbar-container');
+
+            if (navbar) {
+                if (currentScrollTop > lastScrollTop && currentScrollTop > 200) {
+                    navbar.classList.add('-translate-y-[500px]');
+                    navbar.classList.remove('translate-y-0');
+                    if (isMobile()) {
+                        closeDropdown();
+                    }
+                } else if (currentScrollTop + 20 < lastScrollTop) {
+                    navbar.classList.remove('-translate-y-[500px]');
+                    navbar.classList.add('translate-y-0');
+                }
+            }
+
+            lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+        };
+
+        const throttledHandleScroll = () => {
+            if (scrollTimeout === null) {
+                scrollTimeout = setTimeout(() => {
+                    handleScroll();
+                    scrollTimeout = null;
+                }, 100);
+            }
+        };
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDesktopMenu();
+            renderMobileMenu();
+            updateMobileDisplay();
+
+            const dropdownButton = document.getElementById('dropdown-button');
+            if (dropdownButton) {
+                dropdownButton.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    toggleDropdown();
+                });
+            }
+
+            // Close dropdown on outside click
+            document.addEventListener('click', (e) => {
+                const dropdown = document.getElementById('dropdown-menu');
+                const dropdownBtn = document.getElementById('dropdown-button');
+                if (dropdownOpen && dropdown && dropdownBtn && 
+                    !dropdown.contains(e.target) && !dropdownBtn.contains(e.target)) {
+                    closeDropdown();
+                }
+            });
+
+            // Close dropdown on menu item click
+            document.querySelectorAll('#mobile-menu a').forEach(link => {
+                link.addEventListener('click', closeDropdown);
+            });
+
+            // Close dropdown on resize
+            window.addEventListener('resize', () => {
+                if (!isMobile()) {
+                    closeDropdown();
+                }
+                updateMobileDisplay();
+            });
+
+            // Scroll handler
+            window.addEventListener('scroll', throttledHandleScroll);
         });
     </script>
 </body>
