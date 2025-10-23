@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+
+{% block title %}Home | MountTrack{% endblock %}
+
+{% block content %}
+<div class="min-h-screen">
+  <!-- Hero Section with Background Image -->
+  <div class="relative">
+    <!-- Background Image -->
+    <div class="absolute">
+      <img src="{% static 'images/bg.jpg' %}" 
+           alt="Background" 
+           class="w-full h-full">
+      <!-- Gradient overlay to blend with stats section -->
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      
+      <!-- Split Layout: Left and Right Text with Center Image -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center relative">
+        
+        <!-- Left Content -->
+        <div class="space-y-6 text-left lg:text-right relative z-20">
+          <!-- Logo/Brand -->
+          <div class="flex items-center space-x-3 lg:justify-end">
+            <img src="{% static 'images/logo-v4.jpg' %}" alt="MountTrack Logo" class="h-16 w-16">
+            <h2 class="text-3xl font-bold text-[#2D5016]">MOUNTTRACK</h2>
+          </div>
+          
+          <!-- Main Heading Part 1 -->
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-[#2D5016] leading-tight drop-shadow-lg">
+            Menjejak<br>Alam
+          </h1>
+          
+          <!-- Description Left -->
+          <p class="text-lg text-gray-700 max-w-md lg:ml-auto drop-shadow">
+            Temukan gunung-gunung Indonesia dan rencanakan pendakian Anda bersama MountTrack.
+          </p>
+        </div>
+        
+        <!-- Center Image - 2x Larger with transparent white removal -->
+        <div class="relative group lg:col-span-1 flex justify-center items-center">
+          <div class="relative w-full max-w-3xl aspect-[3/4] lg:scale-[2.5]">
+            <!-- Image container with hover effect -->
+            <div class="relative w-full h-full rounded-3xl overflow-hidden" style="isolation: isolate;">
+              <!-- Front Image 1 (default) - remove white background with CSS -->
+              <img src="{% static 'images/front-1.png' %}" 
+                   alt="Mountain Adventure" 
+                   class="absolute inset-0 w-full h-full object-contain transition-opacity duration-700 group-hover:opacity-0">
+              
+              <!-- Front Image 2 (on hover) - remove white background with CSS -->
+              <img src="{% static 'images/front-2.png' %}" 
+                   alt="Mountain Adventure Team"
+                   class="absolute inset-0 w-full h-full object-contain transition-opacity duration-700 opacity-0 group-hover:opacity-100 drop-shadow-2xl remove-white-bg">
+            </div>
+            
+          </div>
+        </div>
+
+              
+        <!-- Right Content -->
+        <div class="space-y-6 text-left relative z-20">
+          <!-- Main Heading Part 2 -->
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight drop-shadow-lg">
+            <span class="text-[#8B4513]">Menyatu<br>dengan<br>Ketinggian.</span>
+          </h1>
+          
+          <!-- Description Right -->
+          <p class="text-lg text-gray-700 max-w-md drop-shadow">
+            Jelajahi keindahan puncak-puncak nusantara dan bergabung dengan komunitas pendaki.
+          </p>
+          
+          <!-- CTA Button -->
+          <div class="pt-4">
+            <a href="/mountain" 
+               class="inline-block bg-[#2D5016] hover:bg-[#3d6b1f] text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+              Jelajahi Gunung
+            </a>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <!-- Stats Section (starts where bg.jpg ends) -->
+  <div class="bg-gradient-to-r from-[#2D5016] to-[#3d6b1f] py-16 relative z-30 -mt-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+        
+        <!-- Stat 1 -->
+        <div class="space-y-2">
+          <div class="text-5xl font-bold text-white">500+</div>
+          <p class="text-xl text-gray-100">Gunung Terdaftar</p>
+          <p class="text-sm text-gray-200">Database lengkap gunung di Indonesia</p>
+        </div>
+        
+        <!-- Stat 2 -->
+        <div class="space-y-2">
+          <div class="text-5xl font-bold text-white">10K+</div>
+          <p class="text-xl text-gray-100">Pendaki Aktif</p>
+          <p class="text-sm text-gray-200">Komunitas pendaki yang terus berkembang</p>
+        </div>
+        
+        <!-- Stat 3 -->
+        <div class="space-y-2">
+          <div class="text-5xl font-bold text-white">34</div>
+          <p class="text-xl text-gray-100">Provinsi</p>
+          <p class="text-sm text-gray-200">Jangkauan di seluruh Indonesia</p>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <!-- Features Section -->
+  <div class="py-20 bg-gray-50 relative z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-[#2D5016] mb-4">
+          Fitur Unggulan
+        </h2>
+        <p class="text-lg text-gray-600">
+          Semua yang Anda butuhkan untuk merencanakan pendakian
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Feature 1 -->
+        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border-t-4 border-[#2D5016]">
+          <div class="w-16 h-16 bg-[#2D5016] bg-opacity-10 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-[#2D5016]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-[#2D5016] mb-3">Database Lengkap</h3>
+          <p class="text-gray-600">
+            Informasi detail tentang gunung-gunung di Indonesia, termasuk ketinggian, lokasi, dan jalur pendakian.
+          </p>
+        </div>
+        
+        <!-- Feature 2 -->
+        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border-t-4 border-[#8B4513]">
+          <div class="w-16 h-16 bg-[#8B4513] bg-opacity-10 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-[#8B4513]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-[#8B4513] mb-3">Komunitas</h3>
+          <p class="text-gray-600">
+            Bergabung dengan komunitas pendaki, berbagi pengalaman, dan temukan teman seperjalanan.
+          </p>
+        </div>
+        
+        <!-- Feature 3 -->
+        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border-t-4 border-[#2D5016]">
+          <div class="w-16 h-16 bg-[#2D5016] bg-opacity-10 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-[#2D5016]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-[#2D5016] mb-3">Statistik</h3>
+          <p class="text-gray-600">
+            Catat dan pantau perjalanan pendakian Anda dengan statistik yang lengkap dan detail.
+          </p>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+  <!-- CTA Section -->
+  <div class="bg-gradient-to-br from-[#2D5016] to-[#1a3009] py-20 relative z-30">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">
+        Siap Memulai Petualangan?
+      </h2>
+      <p class="text-xl text-gray-100 mb-8">
+        Bergabunglah dengan ribuan pendaki lainnya dan mulai jelajahi keindahan alam Indonesia
+      </p>
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <a href="/mountain" 
+           class="inline-block bg-white text-[#2D5016] hover:bg-gray-100 font-semibold px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">
+          Lihat Daftar Gunung
+        </a>
+        <a href="#" 
+           class="inline-block bg-transparent border-2 border-white text-white hover:bg-white hover:text-[#2D5016] font-semibold px-8 py-4 rounded-lg transition-all duration-300">
+          Pelajari Lebih Lanjut
+        </a>
+      </div>
+    </div>
+  </div>
+  
+</div>
+
+<style>
+  /* Remove white background from PNG images */
+  .remove-white-bg {
+    background-blend-mode: multiply;
+    mix-blend-mode: multiply;
+  }
+  
+  /* Alternative approach - you can try this if the above doesn't work */
+  @supports (backdrop-filter: blur(1px)) {
+    .remove-white-bg {
+      filter: brightness(1.1) contrast(1.1);
+    }
+  }
+</style>
+{% endblock %}
