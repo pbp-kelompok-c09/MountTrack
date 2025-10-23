@@ -7,13 +7,14 @@
 
 <div class="admin-page bg-[#E5D7C4] min-h-screen flex flex-col items-center py-10 px-6">
   
-  <div class="admin-header w-full max-w-7xl bg-[#354024] text-[#E5D7C4] rounded-t-xl p-6 flex justify-between items-center">
-    <h1 class="text-2xl font-bold">MountTrack Admin Management</h1>
-    <div class="flex items-center gap-4">
-      <small class="text-[#CFBB99]">Login sebagai <b>{{ request.user.username }}</b></small>
-      <a href="{% url 'userprofile:logout' %}" class="bg-[#CFBB99] text-[#354024] font-semibold py-2 px-4 rounded-md hover:bg-[#889063] hover:text-[#E5D7C4] transition-colors">
-        Logout
-      </a>
+  <div class="admin-header w-full max-w-7xl bg-[#354024] text-[#E5D7C4] rounded-t-xl p-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <h1 class="text-2xl font-bold text-center md:text-left">MountTrack Admin Management</h1>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <small class="text-[#CFBB99] text-sm">Login sebagai <b>{{ request.user.username }}</b></small>
+        <a href="{% url 'userprofile:logout' %}"
+          class="bg-[#CFBB99] text-[#354024] font-semibold py-2 px-4 rounded-md hover:bg-[#889063] hover:text-[#E5D7C4] transition-colors w-full sm:w-auto text-center">
+          Logout
+        </a>
     </div>
   </div>
 
@@ -27,7 +28,8 @@
         <thead>
           <tr>
             <th class="bg-[#CFBB99]/30 text-[#354024] p-3 border-b border-[#CFBB99] text-left">Username</th>
-            <th class="bg-[#CFBB99]/30 text-[#354024] p-3 border-b border-[#CFBB99] text-left">Email</th>
+            <!-- email disembunyikan di mobile -->
+            <th class="bg-[#CFBB99]/30 text-[#354024] p-3 border-b border-[#CFBB99] text-left hidden sm:table-cell">Email</th>
             <th class="bg-[#CFBB99]/30 text-[#354024] p-3 border-b border-[#CFBB99] text-left">Role</th>
             <th class="bg-[#CFBB99]/30 text-[#354024] p-3 border-b border-[#CFBB99] text-left">Action</th>
           </tr>
@@ -114,7 +116,7 @@ async function fetchUsers() {
         usernameCell.textContent = user.username;
 
         const emailCell = document.createElement("td");
-        emailCell.className = cellClasses; 
+        emailCell.className = cellClasses + " hidden sm:table-cell";
         emailCell.textContent = user.email || "-";
 
         const roleCell = document.createElement("td");
