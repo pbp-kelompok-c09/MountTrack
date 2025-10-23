@@ -36,7 +36,7 @@ def login_user(request):
                 umur_kosong = not getattr(user, "umur", None)
 
                 if nama_kosong or telepon_kosong or umur_kosong:
-                    return redirect("userprofile:profile")  # arahkan ke halaman profil untuk lengkapi data
+                    return redirect("userprofile:my-profile")  # arahkan ke halaman profil untuk lengkapi data
                 else:
                     return redirect("news:page_news") # lanjut ke news
     else:
@@ -57,10 +57,15 @@ def profile_user(request):
         form = ProfileForm(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
-            return redirect("userprofile:profile")  # redirect ke profile lagi, karena ini edit profil, jangan ke news (farrel)
+            # dengan AJAX
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": True})
+        else:
+            if request.headers.get("x-requested-with") == "XMLHttpRequest":
+                return JsonResponse({"success": False, "errors": form.errors}, status=400)
     else:
         form = ProfileForm(instance=request.user)
-    return render(request, "profile.html", {"form": form})
+    return render(request, "my_profile.html", {"form": form})
 
 @login_required(login_url='/login')
 def admin_portal_user(request):
