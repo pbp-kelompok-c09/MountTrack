@@ -15,7 +15,14 @@ def register_user(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+
+            # jika belum ada admin, jadikan user pertama admin
+            if not UserProfile.objects.filter(is_superuser=True).exists():
+                user.is_staff = True
+                user.is_superuser = True
+
+            user.save()
             return redirect("userprofile:login")
     else:
         form = RegisterForm()
@@ -67,7 +74,7 @@ def profile_user(request):
         form = ProfileForm(instance=request.user)
     return render(request, "my_profile.html", {"form": form})
 
-@login_required(login_url='/login')
+@login_required(login_url='/accounts/login')
 def admin_portal_user(request):
     if not request.user.is_staff:
         return redirect("userprofile:no_access")
@@ -110,7 +117,7 @@ def admin_portal_user(request):
 def no_access_user(request):
     return render(request, "no_access.html", status=403)
 
-@login_required(login_url='/login')
+@login_required(login_url='/accounts/login')
 def get_users_json(request):
     if not request.user.is_staff:
         return JsonResponse({"error": "Forbidden"}, status=403)
@@ -120,7 +127,7 @@ def get_users_json(request):
 
 
 @csrf_exempt
-@login_required(login_url='/login')
+@login_required(login_url='/accounts/login')
 def add_user_ajax(request):
     if not request.user.is_staff:
         return JsonResponse({"error": "Forbidden"}, status=403)
