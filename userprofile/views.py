@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.forms import AuthenticationForm
@@ -155,3 +155,14 @@ def add_user_ajax(request):
             return JsonResponse({"error": "Invalid JSON"}, status=400)
     else:
         return JsonResponse({"error": "Invalid method"}, status=405)
+
+def public_profile_view(request, username):
+    user_target = get_object_or_404(UserProfile, username=username)
+
+    if request.user == user_target:
+        return redirect("userprofile:my-profile")
+
+    context = {
+        "target_user": user_target
+    }
+    return render(request, "public_profile.html", context)
