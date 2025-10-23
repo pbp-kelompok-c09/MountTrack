@@ -5,10 +5,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.1/dist/full.min.css" rel="stylesheet" type="text/css" />
     {% block meta %} {% endblock meta %}
 </head>
 
 <body class="bg-gray-50">
+    {% if messages %} <!--Notifikasi Toast-->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-3">
+        {% for message in messages %}
+            <div class="toast-element p-4 rounded-lg shadow-lg text-white 
+                        max-w-xs w-full 
+                        transition-all duration-500 ease-out 
+                        transform opacity-0 -translate-y-5
+                        {% if message.tags == 'success' %}
+                            bg-green-500
+                        {% elif message.tags == 'error' %}
+                            bg-red-600
+                        {% elif message.tags == 'warning' %}
+                            bg-yellow-500
+                        {% elif message.tags == 'info' %}
+                            bg-blue-500
+                        {% else %}
+                            bg-gray-700
+                        {% endif %}
+                        " 
+                 role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
     <nav class="bg-gray-800 shadow-lg">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between h-16">
@@ -71,6 +97,26 @@
 
         mobileMenuButton.addEventListener('click', () => {
             mobileMenu.classList.toggle('hidden');
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toasts = document.querySelectorAll('.toast-element');
+            
+            toasts.forEach((toast, index) => {
+                setTimeout(() => {
+                    toast.classList.remove('opacity-0', '-translate-y-5');
+                }, 300 * index); 
+                setTimeout(() => {
+                    toast.classList.add('opacity-0');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 500); 
+                }, 5000 + (300 * index)); 
+            });
         });
     </script>
 </body>

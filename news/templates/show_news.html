@@ -1,48 +1,98 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
 
-    <h1>{{ news.title }}</h1>
+<style>
+  .prose-custom-spacing p {
+    margin-top: 2em;    
+    margin-bottom: 2em; 
+  }
+</style>
 
-    <p>
-        Diterbitkan pada: {{ news.published_date|date:"d F Y, H:i" }}
-    </p>
-    <p>
-        Jumlah Dilihat: {{ news.news_views }} kali
-    </p>
+<div class="min-h-screen p-4 md:p-8" style="background-color: #8A9A5B;" data-theme="light">
 
-    <hr>
+  <div class="card max-w-4xl mx-auto shadow-xl" style="background-color: #CFBB99;">
+    <div class="card-body">
 
-    {% if news.pinned_thumbnail %}
-        <img src="{{ news.pinned_thumbnail }}" alt="Thumbnail untuk {{ news.title }}" width="500">
-        <br>
-    {% endif %}
-    
-    <br>
+      <h1 class="card-title text-4xl font-bold mb-4" style="color: #354024;">
+        {{ news.title }}
+      </h1>
 
-    <div>
-        {{ news.content|linebreaksbr }}
-    </div>
+      
+      <div class="alert mb-6 shadow-lg" style="background-color: #E5D7C4; border: none;">
+        <div> 
+          <p class="text-sm" style="color: #354024;">
+            Diterbitkan pada: <strong>{{ news.published_date|date:"d F Y, H:i" }}</strong>
+          </p>
+          <p class="text-sm" style="color: #354024;">
+            {% if news.user %}
+              Penulis: <strong>{{ news.user.username }}</strong>
+            {% else %}
+              Penulis: <strong>Anonymous</strong>
+            {% endif %}
+          </p>
+          <p class="text-sm" style="color: #354024;">
+            Jumlah Dilihat: <strong>{{ news.news_views }} kali</strong>
+          </p>
+        </div>
+      </div>
 
-    <hr>
+      {% if news.pinned_thumbnail %}
+        <figure class="mb-6">
+          <img src="{{ news.pinned_thumbnail }}" alt="Thumbnail untuk {{ news.title }}" class="w-full h-auto max-h-[500px] object-cover rounded-lg shadow-md">
+        </figure>
+      {% endif %}
 
-    {% if images %}
-        <h3>Gambar Tambahan</h3>
+      <!-- Konten Berita -->
+      <div class="prose prose-lg max-w-none-prose-custom-spacing" style="color: #354024; --tw-prose-body: #354024;">
+        {{ news.content|linebreaks }} 
+      </div>
+
+      <div class="divider text-lg" style="color: #354024;"></div>
+
+      {% if news.images.all %}
         
-        {% for img in images %}
-            <div style="display: inline-block; padding: 5px;">
-                <img src="{{ img.image_url }}" alt="Gambar tambahan" width="200">
-            </div>
-        {% endfor %}
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+          
+          {% for img in news.images.all %}
+          <div>
+            <label for="img-modal-{{ img.id }}">
+              <img src="{{ img.image_url }}" alt="Gambar tambahan" 
+                   class="w-full h-48 object-cover rounded-lg shadow-md cursor-pointer hover:opacity-80 transition-opacity">
+            </label>
             
-    {% else %}
-        <p>Tidak ada gambar tambahan untuk berita ini.</p>
-    {% endif %}
+           
+            <input type="checkbox" id="img-modal-{{ img.id }}" class="modal-toggle" />
+            <div class="modal">
+              <div class="modal-box w-11/12 max-w-5xl relative p-0">
+                <label for="img-modal-{{ img.id }}" class="btn btn-sm btn-circle absolute right-2 top-2 z-10">✕</label>
+                <img src="{{ img.image_url }}" alt="Gambar tambahan" class="w-full h-auto rounded-lg">
+              </div>
+              
+              <label classs="modal-backdrop" for="img-modal-{{ img.id }}">Tutup</label>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+          
 
-    <br>
-    <hr>
+      {% endif %}
 
-    <a href="{% url 'news:page_news' %}">
-        <button>Kembali ke Daftar Berita</button>
-    </a>
+      <div class="divider"></div>
+
+      
+      <div class="card-actions justify-start">
+        <a href="{% url 'news:page_news' %}" class="btn text-white" style="background-color: #354024; border-color: #354024;">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+          </svg>
+          Halaman Berita
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 {% endblock content %}

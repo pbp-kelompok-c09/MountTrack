@@ -1,68 +1,99 @@
- {% extends 'base.html' %}
- {% block content %}
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% load tz %}
 
-<h1>MountTrack News</h1>
+<div class="min-h-screen p-4 md:p-8" style="background-color: #8A9A5B;">
+  <div class="max-w-5xl mx-auto">
 
+    <!-- Header Halaman -->
+    <div class="mb-8 p-6 shadow-md" style="background-color: #CFBB99; border-radius: 0;"> 
+      <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+        <div>
+        <h1 class="text-4xl font-bold mb-4 md:mb-0" style="color: #354024;">MountTrack News</h1>
+        <h3 class="text-xl font-medium" style="color: #354024;">Kabar terkini mengenai aktivitas pendakian</h3>
+        </div>
+        <div class="flex items-center space-x-2">
+          {% if user.is_authenticated %}
+            <span class="mr-3 font-medium" style="color: #354024;">Halo, <b>{{ user.username }}</b>!</span>
+            <a href="{% url 'userprofile:profile' %}" class="btn btn-sm rounded-none" style="background-color: #E5D7C4; border-color: #354024; color: #354024;">Profil</a>
+            <a href="{% url 'userprofile:logout' %}" class="btn btn-sm btn-error text-white rounded-none">Logout</a>
+          {% else %}
+            <a href="{% url 'userprofile:login' %}" class="btn btn-sm rounded-none" style="background-color: #E5D7C4; border-color: #354024; color: #354024;">Login</a>
+            <a href="{% url 'userprofile:register' %}" class="btn btn-sm text-white rounded-none" style="background-color: #354024; border-color: #354024;">Buat Akun</a>
+          {% endif %}
+        </div>
+      </div>
+      {% if user.is_staff and user.is_authenticated %}
+      <div class="mt-4 md:mt-0 md:text-right">
+        <a href="{% url 'news:create_news' %}" class="btn text-white rounded-none" style="background-color: #354024; border-color: #354024;">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+          Tulis Berita Baru
+        </a>
+      </div>
+      {% endif %}
+    </div>
 
-{% if user.is_authenticated %}
-    <p>Hai, <b>{{ user.username }}</b>!</p>
-    
-    <a href="{% url 'userprofile:logout' %}"><button>Logout</button></a>
-    
-    <hr>
-    
-    
+    <!-- Daftar Berita -->
+    {% if not news_list %}
+      <div class="text-center p-10 shadow" style="background-color: #E5D7C4; color: #354024; border-radius: 0;">
+        <p class="text-xl">Belum ada data berita pada MounTrack news.</p>
+      </div>
+    {% else %}
+      <div class="space-y-6">
+        {% for news in news_list %}
+          
+         
+          <div class="card lg:card-side shadow-lg rounded-none" style="background-color: #E5D7C4;">
+            
+            {% if news.pinned_thumbnail %}
+              
+              <figure class="w-full lg:w-1/3 flex-shrink-0 rounded-none">
+                <img src="{{ news.pinned_thumbnail }}" alt="{{ news.title }}" class="w-full h-48 lg:h-full object-cover rounded-none">
+              </figure>
+            {% endif %}
 
-    <a href="{% url 'userprofile:profile' %}">
-      <button>Profil</button>
-    </a>
+            <div class="card-body flex flex-col justify-between">
+              <div>
+                
+                
+                <h2 class="card-title text-3xl font-bold mb-1 transition-colors" style="color: #354024;">
+                  <a href="{% url 'news:show_news' news.id %}" class="hover:underline">{{ news.title }}</a>
+                </h2>
 
-    {% if user.is_staff %}
-    <a href="{% url 'news:create_news' %}">
-      <button>+ Tulis Berita</button>
-    </a>
+                
+                <p class="text-m mb-2" style="color: #354024;">
+                  {% if news.user %}
+                    <strong class="text-xl">{{ news.user.username }}</strong>
+                  {% else %}
+                    <strong>Anonymous</strong>
+                  {% endif %}
+                  - <i>{{ news.published_date|localtime|date:"d M Y H:i" }}</i>
+                  | Dibaca sebanyak: {{ news.news_views }} kali
+                </p>
+
+       
+
+              </div>
+
+              <!-- Tombol Aksi  -->
+              <div class="card-actions justify-end items-center mt-4">
+                {% if user.is_staff %}
+                  <a href="{% url 'news:edit_news' news.id %}" class="btn btn-xs btn-outline rounded-none" style="border-color: #354024; color: #354024;">Edit</a>
+                  <form action="{% url 'news:delete_news' news.id %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-xs btn-error text-white rounded-none" onclick="return confirm('Anda yakin ingin menghapus berita ini?');">Hapus</button>
+                  </form>
+                {% endif %}
+                <a href="{% url 'news:show_news' news.id %}" class="btn btn-sm text-white rounded-none" style="background-color: #354024; border-color: #354024;">Read More</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
     {% endif %}
 
-
-
-{% else %}
-    <a href="{% url 'userprofile:login' %}"><button>Login</button></a>
-    <a href="{% url 'userprofile:register' %}"><button>Buat Akun</button></a>
-{% endif %}
-
-<hr>
-
-{% if not news_list %}
-<p>Belum ada data berita pada MounTrack news.</p>
-{% else %}
-
-{% for news in news_list %}
-<div>
-  <h2><a href="{% url 'news:show_news' news.id %}">{{ news.title }}</a></h2>
-
-  <p>
-    <i>{{ news.published_date|date:"d M Y H:i" }}</i> | Views: {{ news.news_views }}
-  </p>
-
-  {% if news.pinned_thumbnail %}
-  <img src="{{ news.pinned_thumbnail }}" alt="thumbnail" width="150" height="100">
-  <br />
-  {% endif %}
-
-  <p>{{ news.content|truncatewords:25 }}...</p>
-  <p><a href="{% url 'news:show_news' news.id %}"><button>Read More</button></a></p>
-  {% if user.is_staff %}
-    <form action="{% url 'news:delete_news' news.id %}" method="POST" style="display: inline;">
-        {% csrf_token %}
-        <button type="submit" onclick="return confirm('Anda yakin ingin menghapus berita ini?');">
-            Hapus Berita
-        </button>
-    </form>
-  {% endif %}
+  </div> 
 </div>
-<hr>
-{% endfor %}
-
-{% endif %}
 
 {% endblock content %}
