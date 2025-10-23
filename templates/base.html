@@ -23,12 +23,12 @@
     </style>
 </head>
 
-<!-- Menggabungkan class dari kedua body tag -->
+
 <body class="bg-gray-50 min-h-screen">
     {% if messages %} <!--Notifikasi Toast-->
     <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-3">
         {% for message in messages %}
-            <!-- MEMPERBAIKI KESALAHAN: Menghapus tanda kutip (") yang salah di akhir class -->
+            
             <div class="toast-element p-4 rounded-lg shadow-lg text-white 
                         max-w-xs w-full 
                         transition-all duration-500 ease-out 
@@ -52,23 +52,21 @@
     </div>
     {% endif %}
 
-    <!-- MENGHAPUS NAVBAR DUPLIKAT PERTAMA -->
-    
-    <!-- Mempertahankan Navbar kedua (include) karena ada JS yang menyertainya -->
+
     {% include 'components/navbar.html' %}
 
     <!-- Page content -->
     <main class="pt-32 px-6">
-        <!-- Mempertahankan hanya satu block content -->
+        
         {% block content %}
         {% endblock %}
     </main>
 
     {% block scripts %}{% endblock %}
 
-    <!-- Script untuk Navbar (dari file asli bagian kedua) -->
+    <!-- Script untuk Navbar  -->
     <script>
-        // Menu configuration - Update these paths to match your Django URLs
+        // Menu configuration 
         const menuItems = [
           { 
               name: "Home", 
@@ -265,7 +263,7 @@
         });
     </script>
 
-    <!-- Script untuk Notifikasi Toast (dari file asli bagian pertama) -->
+    <!-- Script untuk Notifikasi Toast -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const toasts = document.querySelectorAll('.toast-element');
