@@ -8,19 +8,19 @@
 {% block content %}
 <div class="min-h-screen">
   <!-- Hero Section with Background Image -->
-  <div class="relative">
+  <div class="relative min-h-screen">
     <!-- Background Image -->
-    <div class="absolute">
+    <div class="absolute inset-0 w-full h-full overflow-hidden">
       <img src="{% static 'images/bg.jpg' %}" 
            alt="Background" 
-           class="w-full h-full">
+           class="w-full h-full object-cover">
       <!-- Gradient overlay to blend with stats section -->
     </div>
     
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-30 min-h-screen flex items-center py-20">
       
       <!-- Split Layout: Left and Right Text with Center Image -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center relative">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center relative w-full">
         
         <!-- Left Content -->
         <div class="space-y-6 text-left lg:text-right relative z-20">
@@ -31,8 +31,8 @@
           </div>
           
           <!-- Main Heading Part 1 -->
-          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-[#2D5016] leading-tight drop-shadow-lg">
-            Menjejak<br>Alam
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight drop-shadow-lg">
+            <span class="text-[#4CAF50]">Menjejak<br>Alam</span>
           </h1>
           
           <!-- Description Left -->
@@ -43,7 +43,7 @@
         
         <!-- Center Image - 2x Larger with transparent white removal -->
         <div class="relative group lg:col-span-1 flex justify-center items-center">
-          <div class="relative w-full max-w-3xl aspect-[3/4] lg:scale-[2.5]">
+          <div class="relative w-full max-w-3xl aspect-[3/4] lg:scale-[4] lg:translate-y-40">
             <!-- Image container with hover effect -->
             <div class="relative w-full h-full rounded-3xl overflow-hidden" style="isolation: isolate;">
               <!-- Front Image 1 (default) - remove white background with CSS -->
@@ -54,18 +54,22 @@
               <!-- Front Image 2 (on hover) - remove white background with CSS -->
               <img src="{% static 'images/front-2.png' %}" 
                    alt="Mountain Adventure Team"
-                   class="absolute inset-0 w-full h-full object-contain transition-opacity duration-700 opacity-0 group-hover:opacity-100 drop-shadow-2xl remove-white-bg">
+                   class="absolute inset-0 w-full h-full object-contain transition-opacity duration-700 opacity-0 group-hover:opacity-100">
             </div>
             
           </div>
         </div>
+         
 
               
         <!-- Right Content -->
         <div class="space-y-6 text-left relative z-20">
           <!-- Main Heading Part 2 -->
+           <img src="{% static 'images/front-2.png' %}"
+                   alt="Mountain Adventure Team"
+                   class="absolute inset-0 w-full h-full object-contain transition-opacity duration-700 opacity-0 group-hover:opacity-100">
           <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight drop-shadow-lg">
-            <span class="text-[#8B4513]">Menyatu<br>dengan<br>Ketinggian.</span>
+            <span class="text-[#D2691E]">sda<br>dengan<br>Ketinggian.</span>
           </h1>
           
           <!-- Description Right -->
@@ -88,7 +92,7 @@
   
   <!-- Stats Section (starts where bg.jpg ends) -->
   <div class="bg-gradient-to-r from-[#2D5016] to-[#3d6b1f] py-16 relative z-30 -mt-20">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
         
         <!-- Stat 1 -->
@@ -199,16 +203,6 @@
 
 <style>
   /* Remove white background from PNG images */
-  .remove-white-bg {
-    background-blend-mode: multiply;
-    mix-blend-mode: multiply;
-  }
-  
-  /* Alternative approach - you can try this if the above doesn't work */
-  @supports (backdrop-filter: blur(1px)) {
-    .remove-white-bg {
-      filter: brightness(1.1) contrast(1.1);
-    }
-  }
+ 
 </style>
 {% endblock %}
