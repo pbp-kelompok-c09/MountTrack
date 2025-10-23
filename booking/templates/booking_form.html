@@ -1,0 +1,45 @@
+<h1>Booking untuk {{ gunung.nama }}</h1>
+<p><strong>Lokasi:</strong> {{ gunung.lokasi }}</p>
+<p><strong>Deskripsi:</strong> {{ gunung.deskripsi }}</p>
+
+<form method="POST">
+    {% csrf_token %}
+    <div>
+        <h3>Data Diri</h3>
+        <p><strong>Nama Lengkap:</strong> {{ user_profile.nama }}</p>
+        <p><strong>Umur:</strong> {{ user_profile.umur }}</p>
+        <p><strong>Nomor Telpon:</strong> {{ user_profile.nomor_telepon }}</p>
+        <p><strong>Jenis Kelamin:</strong> {{ user_profile.get_jenis_kelamin_display }}</p>
+        <p><strong>Experience Level:</strong> {{ user_profile.get_category_experience_display }}</p>  <!-- Experience locked -->
+    </div>
+  
+    <label for="pax">Jumlah Anggota Kelompok</label>
+    <input type="number" name="pax" required><br>
+    <label for="levels">Levels:</label><br>
+    <input type="checkbox" name="levels" value="beginner"> Beginner<br>
+    <input type="checkbox" name="levels" value="intermediate"> Intermediate<br>
+    <input type="checkbox" name="levels" value="advanced"> Advanced<br>
+
+    <button type="submit"></button>
+</form>
+
+
+{% if porter_needed %}
+    <div id="toast" style="visibility: hidden; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background-color: #333; color: white; padding: 10px; border-radius: 5px;">
+        <p>Berdasarkan riwayat keterampilan anggota group Anda, apakah Anda ingin menyewa porter?</p>
+        <button onclick="confirmPorter()">Ya, saya ingin menyewa porter</button>
+        <button onclick="dismissToast()">Tidak, saya tidak ingin menyewa porter</button>
+    </div>
+
+    <script>
+        document.getElementById("toast").style.visibility = "visible";
+
+        function confirmPorter() {
+            alert("Kamu telah berhasil menyewa porter.");
+        }
+
+        function dismissToast() {
+            document.getElementById("toast").style.visibility = "hidden";
+        }
+    </script>
+{% endif %}

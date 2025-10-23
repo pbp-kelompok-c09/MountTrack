@@ -8,18 +8,47 @@ from django.core.paginator import Paginator
 from .forms import CommentForm, EventForm
 from .models import CommunityEvent, EventJoin
 
+
 def event_list(request):
     qs = CommunityEvent.objects.exclude(status=CommunityEvent.Status.CANCELLED).order_by("start_at")
-    mountain = request.GET.get("mountain")
+
+    # Ambil parameter dari form
+    search_q = request.GET.get("search")
     status_q = request.GET.get("status")
-    if mountain:
-        qs = qs.filter(mountain_name__icontains=mountain)
+    difficulty_q = request.GET.get("difficulty")
+
+    # 🔍 Filter berdasarkan gunung / nama event
+    if search_q:
+        qs = qs.filter(
+            mountain_name__icontains=search_q
+        ) | qs.filter(title__icontains=search_q)
+
+    # Filter status (opsional)
     if status_q:
         qs = qs.filter(status=status_q)
+
+    
+    if difficulty_q:
+        qs = qs.filter(difficulty__iexact=difficulty_q)
+
+    # Pagination
     paginator = Paginator(qs, 12)
     page = request.GET.get("page")
     events = paginator.get_page(page)
-    return render(request, "community/event_list.html", {"events": events, "mountain": mountain or "", "status_q": status_q or ""})
+
+    # Render
+    return render(
+        request,
+        "community/event_list.html",
+        {
+            "events": events,
+            "search_q": search_q or "",
+            "status_q": status_q or "",
+            "difficulty_q": difficulty_q or "",
+        },
+    )
+
+
 
 def event_detail(request, pk):
     event = get_object_or_404(CommunityEvent, pk=pk)
@@ -33,9 +62,11 @@ def event_detail(request, pk):
             c.save()
             messages.success(request, "Komentar terkirim.")
             return redirect("community:event_detail", pk=pk)
+
     user_join = None
     if request.user.is_authenticated:
         user_join = EventJoin.objects.filter(event=event, user=request.user).first()
+
     context = {
         "event": event,
         "comment_form": comment_form,
@@ -45,6 +76,7 @@ def event_detail(request, pk):
         "now": timezone.now(),
     }
     return render(request, "community/event_detail.html", context)
+
 
 @login_required
 def event_create(request):
@@ -60,6 +92,7 @@ def event_create(request):
         form = EventForm(initial={"status": CommunityEvent.Status.OPEN})
     return render(request, "community/event_form.html", {"form": form, "mode": "create"})
 
+
 @login_required
 def event_edit(request, pk):
     event = get_object_or_404(CommunityEvent, pk=pk, organizer=request.user)
@@ -73,6 +106,7 @@ def event_edit(request, pk):
         form = EventForm(instance=event)
     return render(request, "community/event_form.html", {"form": form, "mode": "edit", "event": event})
 
+
 @login_required
 def event_cancel(request, pk):
     event = get_object_or_404(CommunityEvent, pk=pk, organizer=request.user)
@@ -80,6 +114,7 @@ def event_cancel(request, pk):
     event.save(update_fields=["status"])
     messages.warning(request, "Event dibatalkan.")
     return redirect("community:event_detail", pk=pk)
+
 
 @login_required
 @transaction.atomic
@@ -91,10 +126,12 @@ def event_join(request, pk):
     if event.organizer_id == request.user.id:
         messages.info(request, "Kamu adalah organizer event ini.")
         return redirect("community:event_detail", pk=pk)
+
     join, created = EventJoin.objects.get_or_create(event=event, user=request.user)
     if not created and join.status == EventJoin.Status.CONFIRMED:
         messages.info(request, "Kamu sudah terdaftar sebagai peserta.")
         return redirect("community:event_detail", pk=pk)
+
     if event.is_full():
         join.status = EventJoin.Status.WAITLIST
         join.save()
@@ -108,6 +145,7 @@ def event_join(request, pk):
         messages.success(request, "Berhasil bergabung.")
     return redirect("community:event_detail", pk=pk)
 
+
 @login_required
 @transaction.atomic
 def event_leave(request, pk):
@@ -116,15 +154,20 @@ def event_leave(request, pk):
     if not join:
         messages.info(request, "Kamu belum bergabung.")
         return redirect("community:event_detail", pk=pk)
+
     join.status = EventJoin.Status.CANCELLED
     join.save(update_fields=["status"])
+
     if event.status == CommunityEvent.Status.FULL:
-        next_wait = EventJoin.objects.filter(event=event, status=EventJoin.Status.WAITLIST).order_by("joined_at").first()
+        next_wait = EventJoin.objects.filter(
+            event=event, status=EventJoin.Status.WAITLIST
+        ).order_by("joined_at").first()
         if next_wait:
             next_wait.status = EventJoin.Status.CONFIRMED
             next_wait.save(update_fields=["status"])
         if event.confirmed_count() < event.capacity:
             event.status = CommunityEvent.Status.OPEN
             event.save(update_fields=["status"])
+
     messages.success(request, "Kamu sudah keluar dari event.")
     return redirect("community:event_detail", pk=pk)
