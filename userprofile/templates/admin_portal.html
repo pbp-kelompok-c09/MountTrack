@@ -1,88 +1,262 @@
 {% extends 'base.html' %}
-
 {% block meta %}
 <title>MountTrack Admin</title>
 {% endblock meta %}
 
 {% block content %}
-<h1>MountTrack Admin Management</h1>
+<style>
+  .admin-page { background:#E5D7C4; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:2.5rem 1.5rem; }
 
-<p>Login sebagai: <b>{{ request.user.username }}</b></p>
-<p><a href="{% url 'userprofile:logout' %}">Logout</a></p>
-<hr>
+  /* header */
+  .admin-header { width:100%; max-width:80rem; background:#354024; color:#E5D7C4; border-top-left-radius:0.75rem; border-top-right-radius:0.75rem; padding:1.5rem; display:flex; justify-content:space-between; align-items:center; }
+  .admin-header h1 { font-size:1.5rem; font-weight:700; }
+  .admin-header small { color:#CFBB99; }
 
-<table border="1" cellpadding="8">
-  <tr>
-    <th>Username</th>
-    <th>Email</th>
-    <th>Role</th>
-    <th>Action</th>
-  </tr>
+  /* konten di admin card */
+  .admin-card { width:100%; max-width:80rem; background:#F8F4EF; border:1px solid #CFBB99; border-bottom-left-radius:0.75rem; border-bottom-right-radius:0.75rem; padding:1.5rem; }
 
-  {% for user in users %}
-  <tr>
-    <td>{{ user.username }}</td>
-    <td>{{ user.email }}</td>
-    <td>
-      {% if user.is_staff %}
-        <b style="color:green;">Admin</b>
-      {% else %}
-        User
-      {% endif %}
-    </td>
-    <td>
-      {% if request.user != user %}
-      <form method="post" style="display:inline;">
-        {% csrf_token %}
-        <input type="hidden" name="user_id" value="{{ user.id }}">
-        <input type="hidden" name="action" value="toggle">
-        <button type="submit">
-          {% if user.is_staff %} Hapus Admin {% else %} Jadikan Admin {% endif %}
-        </button>
-      </form>
+  /* tabel */
+  #userTable { width:100%; border-collapse:collapse; }
+  #userTable thead th { background:rgba(207,187,153,0.3); color:#354024; padding:0.75rem; border-bottom:1px solid #CFBB99; text-align:left; }
+  #userTable tbody td { padding:0.75rem; border-bottom:1px solid #CFBB99; color:#354024; }
+  #userTable tbody tr:hover { background:rgba(229,215,196,0.6); }
 
-      <!-- tombol hapus -->
-      <form method="post" style="display:inline;">
-        {% csrf_token %}
-        <input type="hidden" name="user_id" value="{{ user.id }}">
-        <input type="hidden" name="action" value="delete">
-        <button type="submit" onclick="return confirm('Yakin ingin menghapus user ini?');">
-          Hapus User
-        </button>
-      </form>
+  /* tombol aksi tabel */
+  #userTable button { background:#354024; color:#E5D7C4; border:none; padding:0.4rem 0.6rem; border-radius:0.375rem; cursor:pointer; font-size:0.875rem; }
+  #userTable button + button { margin-left:0.5rem; }
+  #userTable button[style*="red"] { background:#DC2626 !important; color:#fff !important; }
 
-      {% else %}
-        <i>(Tidak bisa ubah atau hapus diri sendiri!)</i>
-      {% endif %}
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+  /* status teks */
+  #loading { color:#354024; font-style:italic; margin:0.5rem 0; }
+  #error { color:#DC2626; margin:0.5rem 0; }
 
-<hr>
-<h3>Tambah User Baru</h3>
-<form method="post" style="margin-bottom: 20px;">
-  {% csrf_token %}
-  <input type="hidden" name="action" value="add">
-  <table>
-    <tr>
-      <td>Username:</td>
-      <td><input type="text" name="username" required></td>
-    </tr>
-    <tr>
-      <td>Email:</td>
-      <td><input type="email" name="email"></td>
-    </tr>
-    <tr>
-      <td>Password:</td>
-      <td><input type="password" name="password" required></td>
-    </tr>
-    <tr>
-      <td></td>
-      <td><button type="submit">Tambah User</button></td>
-    </tr>
-  </table>
-</form>
+  /* tombol tambah user */
+  #openAddUserPopup { background:#354024; color:#E5D7C4; padding:0.5rem 0.75rem; border-radius:0.375rem; font-weight:600; }
+  #openAddUserPopup:hover { background:#4C3D19; }
 
+  /* popup tambah user */
+  #addUserPopup { background:#F8F4EF; border:1px solid #CFBB99; border-radius:0.75rem; padding:1rem; margin-top:1rem; max-width:32rem; width:100%; }
+  #addUserPopup h3 { color:#354024; font-weight:600; font-size:1.125rem; margin-bottom:0.75rem; }
+  #addUserPopup label { display:block; color:#354024; font-size:0.9rem; margin-top:0.5rem; }
+  #addUserPopup input { width:100%; padding:0.5rem 0.75rem; border:1px solid #889063; border-radius:0.375rem; margin-top:0.25rem; background:#fff; color:#354024; }
+  #saveUser { background:#354024; color:#E5D7C4; padding:0.5rem 0.75rem; border-radius:0.375rem; font-weight:600; }
+  #saveUser:hover { background:#4C3D19; }
+  #closePopup { background:transparent; border:1px solid #889063; color:#354024; padding:0.5rem 0.75rem; border-radius:0.375rem; margin-left:0.5rem; }
+  #closePopup:hover { background:rgba(207,187,153,0.4); }
+</style>
 
+<div class="admin-page">
+  <div class="admin-header">
+    <h1>MountTrack Admin Management</h1>
+    <div class="flex items-center gap-4">
+      <small>Login sebagai <b>{{ request.user.username }}</b></small>
+      <a href="{% url 'userprofile:logout' %}" class="bg-[#CFBB99] text-[#354024] font-semibold py-2 px-4 rounded-md hover:bg-[#889063] hover:text-[#E5D7C4] transition-colors">
+        Logout
+      </a>
+    </div>
+  </div>
+
+  <div class="admin-card">
+    <!-- loading dan error state -->
+    <div id="loading" style="display:none;">Loading...</div>
+    <div id="error" style="color:red; display:none;"></div>
+
+    <!-- tabel untuk daftar user -->
+    <div class="overflow-x-auto mt-3">
+      <table border="1" cellpadding="8" id="userTable">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Role</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="userTableBody"></tbody>
+      </table>
+    </div>
+
+    <br>
+    <!-- tombol tambah user -->
+    <button id="openAddUserPopup">Tambah User</button>
+
+    <!-- popup form -->
+    <div id="addUserPopup" style="display:none">
+      <h3>Tambah User Baru</h3>
+      <label>Username: <input type="text" id="newUsername"></label><br>
+      <label>Email: <input type="email" id="newEmail"></label><br>
+      <label>Password: <input type="password" id="newPassword"></label><br><br>
+      <button id="saveUser">Simpan</button>
+      <button id="closePopup">Tutup</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const API_GET_USERS = "{% url 'userprofile:get_users_json' %}";
+const API_ADD_USER = "{% url 'userprofile:add_user_ajax' %}";
+
+const popup = document.getElementById("addUserPopup");
+const openPopupBtn = document.getElementById("openAddUserPopup");
+const closePopupBtn = document.getElementById("closePopup");
+const saveUserBtn = document.getElementById("saveUser");
+const loadingDiv = document.getElementById("loading");
+const errorDiv = document.getElementById("error");
+const userTableBody = document.getElementById("userTableBody");
+
+// tampilkan popup
+openPopupBtn.addEventListener("click", () => popup.style.display = "block");
+closePopupBtn.addEventListener("click", () => popup.style.display = "none");
+
+// ambil semua user
+async function fetchUsers() {
+  loadingDiv.style.display = "block";
+  errorDiv.style.display = "none";
+  userTableBody.innerHTML = "";
+
+  try {
+    const response = await fetch(API_GET_USERS);
+    if (!response.ok) throw new Error("Failed to fetch users");
+    const users = await response.json();
+
+    if (users.length === 0) {
+      userTableBody.innerHTML = "<tr><td colspan='4'>Belum ada pengguna.</td></tr>";
+    } else {
+      users.forEach(user => {
+        const row = document.createElement("tr");
+
+        // buat cell untuk setiap kolom
+        const usernameCell = document.createElement("td");
+        usernameCell.textContent = user.username;
+
+        const emailCell = document.createElement("td");
+        emailCell.textContent = user.email || "-";
+
+        const roleCell = document.createElement("td");
+        roleCell.textContent = user.is_staff ? "Admin" : "User";
+
+        const actionCell = document.createElement("td");
+
+        // kalau bukan diri sendiri, buat tombol aksi
+        if (user.username !== "{{ request.user.username }}") {
+          const toggleBtn = document.createElement("button");
+          toggleBtn.textContent = user.is_staff ? "Hapus Admin" : "Jadikan Admin";
+          toggleBtn.addEventListener("click", () => toggleAdmin(user.id, user.is_staff));
+
+          const deleteBtn = document.createElement("button");
+          deleteBtn.textContent = "Hapus User";
+          deleteBtn.style.color = "red";
+          deleteBtn.style.marginLeft = "5px";
+          deleteBtn.addEventListener("click", () => deleteUser(user.id));
+
+          actionCell.appendChild(toggleBtn);
+          actionCell.appendChild(deleteBtn);
+        } else {
+          const info = document.createElement("i");
+          info.textContent = "(Tidak bisa ubah diri sendiri!)";
+          actionCell.appendChild(info);
+        }
+
+        row.appendChild(usernameCell);
+        row.appendChild(emailCell);
+        row.appendChild(roleCell);
+        row.appendChild(actionCell);
+        userTableBody.appendChild(row);
+      });
+    }
+  } catch (err) {
+    errorDiv.innerText = err.message;
+    errorDiv.style.display = "block";
+  } finally {
+    loadingDiv.style.display = "none";
+  }
+}
+
+// fungsi untuk toggle admin
+async function toggleAdmin(userId, isCurrentlyAdmin) {
+  const confirmMsg = isCurrentlyAdmin
+    ? "Yakin ingin menghapus status admin user ini?"
+    : "Yakin ingin menjadikan user ini sebagai admin?";
+  if (!confirm(confirmMsg)) return;
+
+  const formData = new FormData();
+  formData.append("user_id", userId);
+  formData.append("action", "toggle");
+
+  try {
+    const response = await fetch("{% url 'userprofile:admin_portal' %}", {
+      method: "POST",
+      headers: { "X-CSRFToken": "{{ csrf_token }}" },
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error("Gagal mengubah status admin");
+    fetchUsers(); 
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+// fungsi untuk hapus user
+async function deleteUser(userId) {
+  if (!confirm("Yakin ingin menghapus user ini?")) return;
+
+  const formData = new FormData();
+  formData.append("user_id", userId);
+  formData.append("action", "delete");
+
+  try {
+    const response = await fetch("{% url 'userprofile:admin_portal' %}", {
+      method: "POST",
+      headers: { "X-CSRFToken": "{{ csrf_token }}" },
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error("Gagal menghapus user");
+    fetchUsers(); // refresh
+  } catch (err) {
+    alert(err.message);
+  }
+}
+
+// event listener untuk tambah user baru
+saveUserBtn.addEventListener("click", async () => {
+  const username = document.getElementById("newUsername").value.trim();
+  const email = document.getElementById("newEmail").value.trim();
+  const password = document.getElementById("newPassword").value.trim();
+
+  if (!username || !password) {
+    alert("Username dan password wajib diisi!");
+    return;
+  }
+
+  const userData = { username, email, password };
+
+  try {
+    const response = await fetch(API_ADD_USER, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const data = await response.json();
+      alert(data.error || "Gagal menambah user");
+      return;
+    }
+
+    popup.style.display = "none";
+    document.getElementById("newUsername").value = "";
+    document.getElementById("newEmail").value = "";
+    document.getElementById("newPassword").value = "";
+
+    fetchUsers(); // refresh
+  } catch (err) {
+    alert("Terjadi kesalahan!");
+  }
+});
+
+// Inisialisasi
+fetchUsers();
+</script>
 {% endblock content %}

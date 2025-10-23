@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Profil {{ target_user.username }} - MountTrack</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="min-h-screen bg-[#E5D7C4] flex items-center justify-center py-10 px-6">
+  <div class="bg-[#CFBB99] border border-[#CFBB99] rounded-2xl shadow-sm p-10 w-full max-w-2xl">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-[#354024] mb-1">
+        Profil {{ target_user.username }}
+      </h1>
+    </div>
+
+    <!-- nama lengkap -->
+    {% if target_user.nama %}
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold text-[#354024] mb-3 border-b border-[#889063] pb-1">
+        Nama Lengkap
+      </h2>
+      <p class="text-[#4C3D19]">{{ target_user.nama }}</p>
+    </div>
+    {% endif %}
+
+    <!-- kontak -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold text-[#354024] mb-3 border-b border-[#889063] pb-1">
+        Kontak
+      </h2>
+      <ul class="text-[#4C3D19] space-y-2">
+        {% if target_user.email %}
+        <li><span class="font-semibold text-[#354024]">Email:</span> {{ target_user.email }}</li>
+        {% endif %}
+        {% if target_user.nomor_telepon %}
+        <li><span class="font-semibold text-[#354024]">Nomor Telepon:</span> {{ target_user.nomor_telepon }}</li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- tingkat pengalaman -->
+    <div class="mb-8">
+      <h2 class="text-lg font-semibold text-[#354024] mb-3 border-b border-[#889063] pb-1">
+        Tingkat Pengalaman
+      </h2>
+      <p class="text-[#4C3D19] capitalize">
+        {% if target_user.category_experience == 'beginner' %}
+          <span class="font-semibold text-[#354024]">Beginner</span> (Pemula)
+        {% elif target_user.category_experience == 'intermediate' %}
+          <span class="font-semibold text-[#354024]">Intermediate</span> (Menengah)
+        {% elif target_user.category_experience == 'advanced' %}
+          <span class="font-semibold text-[#354024]">Advanced</span> (Berpengalaman)
+        {% else %}
+          <span class="font-semibold text-[#354024]">Belum Ditentukan</span>
+        {% endif %}
+      </p>
+    </div>
+
+    <!-- informasi pribadi -->
+    <div>
+      <h2 class="text-lg font-semibold text-[#354024] mb-3 border-b border-[#889063] pb-1">
+        Informasi Pribadi
+      </h2>
+      <ul class="text-[#4C3D19] space-y-2">
+        {% if target_user.umur %}
+        <li><span class="font-semibold text-[#354024]">Umur:</span> {{ target_user.umur }} tahun</li>
+        {% endif %}
+        {% if target_user.jenis_kelamin %}
+        <li>
+          <span class="font-semibold text-[#354024]">Jenis Kelamin:</span>
+          {% if target_user.jenis_kelamin == 'M' %} Laki-laki
+          {% elif target_user.jenis_kelamin == 'F' %} Perempuan
+          {% else %} Lainnya {% endif %}
+        </li>
+        {% endif %}
+        {% if target_user.history_gunung %}
+        <li class="mt-3">
+          <span class="font-semibold text-[#354024] block mb-1">Riwayat Pendakian:</span>
+          <p class="pl-4 border-l-4 border-[#889063] italic whitespace-pre-line">
+            {{ target_user.history_gunung }}
+          </p>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+  <h1>{% if mode == "edit" %}Edit Event{% else %}Buat Event{% endif %}</h1>
+  <form method="post" class="card" style="display:grid;gap:12px">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div class="row">
+      <div>{{ form.title.label_tag }} {{ form.title }}</div>
+      <div>{{ form.mountain_name.label_tag }} {{ form.mountain_name }}</div>
+    </div>
+    <div class="row">
+      <div>{{ form.start_at.label_tag }} {{ form.start_at }}</div>
+      <div>{{ form.end_at.label_tag }} {{ form.end_at }}</div>
+    </div>
+    <div class="row">
+      <div>{{ form.capacity.label_tag }} {{ form.capacity }}</div>
+      <div>{{ form.price.label_tag }} {{ form.price }}</div>
+    </div>
+    <div class="row">
+      <div>{{ form.difficulty.label_tag }} {{ form.difficulty }}</div>
+      <div>{{ form.status.label_tag }} {{ form.status }}</div>
+    </div>
+    <div class="row">
+      <div>{{ form.meeting_point.label_tag }} {{ form.meeting_point }}</div>
+      <div>{{ form.contact_person.label_tag }} {{ form.contact_person }}</div>
+    </div>
+    <div>
+      {{ form.description.label_tag }} {{ form.description }}
+    </div>
+    <div>
+      <button class="btn btn-primary" type="submit">Simpan</button>
+      <a class="btn" href="{% url 'community:event_list' %}">Batal</a>
+    </div>
+  </form>
+{% endblock %}

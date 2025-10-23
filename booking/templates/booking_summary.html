@@ -1,0 +1,28 @@
+<h1>Ringkasan Booking</h1>
+
+<div>
+    <p><strong>Nama Pengguna:</strong> {{ user_profile.nama }} | <strong>Gunung:</strong> {{ booking_summary.gunung }}</p>
+</div>
+
+<button onclick="toggleSummary()">Tampilkan/Sembunyikan Detail Pemesanan</button>
+
+<div id="booking-details" style="display:none;">
+    <h3>Informasi Pemesanan Terperinci:</h3>
+    <ul>
+        <li><strong>Gunung:</strong> {{ booking_summary.gunung }}</li>
+        <li><strong>Jumlah Anggota:</strong> {{ booking_summary.pax }}</li>
+        <li><strong>Levels:</strong> {{ booking_summary.levels }}</li>
+        <li><strong>Porter:</strong> {{ booking_summary.porter_required }}</li>
+    </ul>
+</div>
+
+<script>
+    function toggleSummary() {
+        var details = document.getElementById("booking-details");
+        if (details.style.display === "none") {
+            details.style.display = "block";  
+        } else {
+            details.style.display = "none";  
+        }
+    }
+</script>
