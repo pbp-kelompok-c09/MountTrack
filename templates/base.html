@@ -6,6 +6,91 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}MountTrack{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.1/dist/full.min.css" rel="stylesheet" type="text/css" />
+    {% block meta %} {% endblock meta %}
+</head>
+
+<body class="bg-gray-50">
+    {% if messages %} <!--Notifikasi Toast-->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 space-y-3">
+        {% for message in messages %}
+            <div class="toast-element p-4 rounded-lg shadow-lg text-white 
+                        max-w-xs w-full 
+                        transition-all duration-500 ease-out 
+                        transform opacity-0 -translate-y-5
+                        {% if message.tags == 'success' %}
+                            bg-green-500
+                        {% elif message.tags == 'error' %}
+                            bg-red-600
+                        {% elif message.tags == 'warning' %}
+                            bg-yellow-500
+                        {% elif message.tags == 'info' %}
+                            bg-blue-500
+                        {% else %}
+                            bg-gray-700
+                        {% endif %}
+                        " 
+                 role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <nav class="bg-gray-800 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <a href="/" class="text-white text-xl font-bold">MyApp</a>
+                    </div>
+                    <div class="hidden md:ml-6 md:flex md:space-x-8">
+                        <a href="/" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Home</a>
+                        <a href="/about" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">About</a>
+                        <a href="/services" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Services</a>
+                        <a href="/contact" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Contact</a>
+                    </div>
+                </div>
+                
+                <div class="hidden md:flex md:items-center md:space-x-4">
+                    {% if user.is_authenticated %}
+                        <a href="/profile" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Profile</a>
+                        <a href="/logout" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md text-sm font-medium transition">Logout</a>
+                    {% else %}
+                        <a href="/login" class="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition">Login</a>
+                        <a href="/register" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition">Register</a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="flex items-center md:hidden">
+                    <button type="button" id="mobile-menu-button" class="text-gray-300 hover:text-white focus:outline-none focus:text-white">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile menu -->
+        <div class="md:hidden hidden" id="mobile-menu">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="/" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Home</a>
+                <a href="/about" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">About</a>
+                <a href="/services" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Services</a>
+                <a href="/contact" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Contact</a>
+                {% if user.is_authenticated %}
+                    <a href="/profile" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Profile</a>
+                    <a href="/logout" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Logout</a>
+                {% else %}
+                    <a href="/login" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Login</a>
+                    <a href="/register" class="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    {% block content %} {% endblock content %}
     <style>
         @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@800&display=swap');
         
@@ -226,6 +311,26 @@
 
             // Scroll handler
             window.addEventListener('scroll', throttledHandleScroll);
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toasts = document.querySelectorAll('.toast-element');
+            
+            toasts.forEach((toast, index) => {
+                setTimeout(() => {
+                    toast.classList.remove('opacity-0', '-translate-y-5');
+                }, 300 * index); 
+                setTimeout(() => {
+                    toast.classList.add('opacity-0');
+                    setTimeout(() => {
+                        if (toast.parentNode) {
+                            toast.parentNode.removeChild(toast);
+                        }
+                    }, 500); 
+                }, 5000 + (300 * index)); 
+            });
         });
     </script>
 </body>

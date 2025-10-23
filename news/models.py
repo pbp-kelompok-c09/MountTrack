@@ -1,5 +1,6 @@
 from django.db import models
 from uuid import uuid4
+from django.conf import settings
 
 # Create your models here.
 class News(models.Model):
@@ -9,6 +10,7 @@ class News(models.Model):
     published_date = models.DateTimeField(auto_now_add=True)
     news_views = models.PositiveIntegerField(default=0)
     pinned_thumbnail = models.URLField(blank=True, null=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True) #untuk nama penulis
     
 
     def __str__(self):
