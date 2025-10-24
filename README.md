@@ -6,13 +6,13 @@
 - 2406419833 - Ryan Gibran Purwacakra Sihaloho
 
 # Deskripsi Aplikasi
-MountTrack adalah platform informasi pendakian yang menghadirkan daftar gunung aktif untuk didaki, lengkap dengan update cuaca real-time, status pendaftaran, serta kondisi jalur terkini. Selain itu, MountTrack juga menyajikan berita dan tren terbaru seputar dunia pecinta alam, sehingga pendaki dapat merencanakan perjalanan dengan aman dan terarah.
+MountTrack adalah platform informasi pendakian yang menghadirkan daftar gunung aktif untuk didaki, lengkap dengan ketinggian gunung dan kondisi jalur terkini. Selain itu, MountTrack juga menyajikan berita dan tren terbaru seputar dunia pecinta alam, sehingga pendaki dapat merencanakan perjalanan dengan aman dan terarah.
 
 Tak hanya sebagai sumber informasi, MountTrack juga menyediakan fitur booking pendakian gunung yang memudahkan pengguna dalam melakukan reservasi jalur resmi secara langsung melalui aplikasi. Melalui fitur komunitas, pengguna juga dapat berinteraksi dan mengelola rencana pendakian, menciptakan ekosistem yang kolaboratif bagi para pecinta alam di seluruh Indonesia.
 
 # Daftar Modul
-- **Halaman Autentikasi, Profil dan Admin Portal**: Halaman login, register, edit profil, dan admin portal untuk mengelola pengguna. (Farrel Arrayyan Adrianshah)
-- **List Gunung**: Menyajikan daftar gunung beserta detail informasi seperti lokasi, ketinggian, jalur pendakian, kondisi jalur terkini, dan update cuaca di daerah pendakian. (Muhammad Hamiz Ghani Ayusha)
+- **Halaman Autentikasi, Profil dan Admin Portal**: Halaman login, register, profil, dan admin portal untuk mengelola pengguna. (Farrel Arrayyan Adrianshah)
+- **List Gunung**: Menyajikan daftar gunung beserta detail informasi seperti lokasi, ketinggian, jalur pendakian, dan kondisi jalur terkini di daerah pendakian. (Muhammad Hamiz Ghani Ayusha)
 - **Homepage**: Halaman utama yang menampilkan fitur-fitur unggulan website. (Muhammad Hamiz Ghani Ayusha)
 - **About**: Menyajikan informasi mengenai website. (Muhammad Hamiz Ghani Ayusha)
 - **Booking Pendakian**: Pengguna dapat menjadwalkan sesi pendakian mereka sesuai dengan ketersediaan gunung. (Nimaisya Gina Herapati)
@@ -23,7 +23,7 @@ Tak hanya sebagai sumber informasi, MountTrack juga menyediakan fitur booking pe
 Untuk dataset awal, kami menggunakan daftar gunung di Indonesia dari datagunung.com:
 https://datagunung.com/gunung
 
-Kemudian dari list gunung di atas, akan kami ambil informasi nama gunung, ketinggian gunung, dan provinsi untuk digunakan sebagai parameter saat pemanggilan api weather (untuk mengetahui kondisi cuaca di gunung).
+Kemudian dari data gunung di atas, akan kami ambil informasi nama gunung, ketinggian gunung, dan provinsi lokasi gunung.
 
 
 # Role Pengguna

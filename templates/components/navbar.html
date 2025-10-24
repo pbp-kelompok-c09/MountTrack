@@ -25,10 +25,28 @@
                 <!-- Right Side: User Profile & Mobile Menu -->
                 <div class="flex items-center gap-4 flex-shrink-0">
                     <!-- User Profile -->
-                    <div class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" id="user-profile">
-                        <img src="{% static 'images/user-avatar.jpg' %}" alt="User" class="w-8 h-8 rounded-full object-cover border-2 border-[#717174]" onerror="this.src='https://ui-avatars.com/api/?name=User&background=717174&color=fff'" />
-                        <span class="font-sfPro font-bold text-white hidden sm:block text-sm">User</span>
+                    {% if user.is_authenticated %}
+                    <div class="flex items-center gap-2">
+                        {# Link Username ke Profil #}
+                        <a href="{% url 'userprofile:my-profile' %}" class="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity" id="user-profile-link">
+                             {# Opsional: Gunakan inisial jika tidak ada gambar profil #}
+                             <div class="avatar placeholder">
+                                <div class="bg-neutral text-neutral-content rounded-full w-8 border-2 border-[#717174]">
+                                    <span class="text-xs font-bold">{{ user.username|first|upper }}</span>
+                                </div>
+                             </div>
+                             <span class="font-sfPro font-bold text-white hidden sm:block text-sm">{{ user.username }}</span>
+                        </a>
+                        {# Tombol Logout #}
+                        <a href="{% url 'userprofile:logout' %}" class="btn btn-error btn-xs sm:btn-sm text-white ml-2" style="background-color: red;">Logout</a> {# Ukuran tombol bisa disesuaikan #}
                     </div>
+                    {% else %}
+                        <div class="flex items-center gap-2">
+                            <a href="{% url 'userprofile:login' %}" class="btn btn-sm btn-ghost text-white hover:bg-white hover:bg-opacity-20">Login</a>
+                            <a href="{% url 'userprofile:register' %}" class="btn btn-sm text-white" style="background-color: #354024; border-color: #354024;">Buat Akun</a>
+                        </div>
+                    {% endif %}     
+
 
                     <!-- Mobile Menu Button -->
                     <button id="dropdown-button" class="lg:hidden focus:outline-none text-white">
