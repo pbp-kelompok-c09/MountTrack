@@ -12,16 +12,7 @@
                 <br>
                 <h1 class="text-2xl font-bold mb-4 md:mb-0" style="color: #354024;">Berita Jalur Pendakian Terkini</h1>
                 </div>
-                <div class="flex items-center space-x-2">
-                    {% if user.is_authenticated %}
-                        <span class="mr-3 font-medium" style="color: #354024; font-size:x-large;">Hai, <b>{{ user.username }}</b>!</span>
-                        <a href="{% url 'userprofile:my-profile' %}" class="btn btn-sm" style="background-color: #E5D7C4; border-color: #354024; color: #354024;">Profil</a>
-                        <a href="{% url 'userprofile:logout' %}" class="btn btn-sm btn-error text-white" style="background-color: red;">Logout</a>
-                    {% else %}
-                        <a href="{% url 'userprofile:login' %}" class="btn btn-sm" style="background-color: #E5D7C4; border-color: #354024; color: #354024;">Login</a>
-                        <a href="{% url 'userprofile:register' %}" class="btn btn-sm text-white" style="background-color: #354024; border-color: #354024;">Buat Akun</a>
-                    {% endif %}
-                </div>
+
             </div>
             {% if user.is_staff and user.is_authenticated %}
             <div class="mt-4 md:mt-0 md:text-right">
