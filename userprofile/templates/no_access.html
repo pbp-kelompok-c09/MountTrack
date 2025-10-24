@@ -1,10 +1,25 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Akses Ditolak</title>
-</head>
-<body>
-  <h2>Akses Ditolak</h2>
-  <p>Anda tidak memiliki izin untuk mengakses halaman ini.</p>
-</body>
-</html>
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Akses Ditolak - MountTrack</title>
+{% endblock meta %}
+
+{% block navbar %}
+{% endblock navbar %}
+
+
+{% block content %}
+<div class="min-h-screen flex items-center justify-center bg-[#E5D7C4] text-[#354024] px-6">
+  <div class="bg-[#CFBB99] border border-[#889063] rounded-xl shadow-md p-10 max-w-md w-full text-center">
+    <h2 class="text-3xl font-bold mb-4 text-[#354024]">Akses Ditolak</h2>
+    <p class="text-[#4C3D19] mb-6">
+      Anda tidak memiliki izin untuk mengakses halaman ini.
+    </p>
+    <a href="/"
+       class="inline-block bg-[#354024] text-[#E5D7C4] font-semibold py-2 px-5 rounded-md hover:bg-[#4C3D19] transition-colors">
+      Kembali ke Beranda
+    </a>
+  </div>
+</div>
+{% endblock content %}

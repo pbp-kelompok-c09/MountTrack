@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+<div class="min-h-screen px-4 md:px-8 pb-4 md:pb-8 pt-40" style="background-color: #E5D7C4;">
+    <div class="max-w-5xl mx-auto">
+
+        <div class="mb-8 p-6 shadow-md rounded-xl border-4" style="background-color: #CFBB99; border-color: rgb(53, 64, 36);">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+                <div>
+                <h1 class="text-6xl font-bold mb-4 md:mb-0" style="color: #354024;">MountTrack News</h1>
+                <br>
+                <h1 class="text-2xl font-bold mb-4 md:mb-0" style="color: #354024;">Berita Jalur Pendakian Terkini</h1>
+                </div>
+                <div class="flex items-center space-x-2">
+                    {% if user.is_authenticated %}
+                        <span class="mr-3 font-medium" style="color: #354024; font-size:x-large;">Hai, <b>{{ user.username }}</b>!</span>
+                        <a href="{% url 'userprofile:my-profile' %}" class="btn btn-sm" style="background-color: #E5D7C4; border-color: #354024; color: #354024;">Profil</a>
+                        <a href="{% url 'userprofile:logout' %}" class="btn btn-sm btn-error text-white" style="background-color: red;">Logout</a>
+                    {% else %}
+                        <a href="{% url 'userprofile:login' %}" class="btn btn-sm" style="background-color: #E5D7C4; border-color: #354024; color: #354024;">Login</a>
+                        <a href="{% url 'userprofile:register' %}" class="btn btn-sm text-white" style="background-color: #354024; border-color: #354024;">Buat Akun</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% if user.is_staff and user.is_authenticated %}
+            <div class="mt-4 md:mt-0 md:text-right">
+                <a href="{% url 'news:create_news' %}" class="btn text-white" style="background-color: #354024; border-color: #354024;">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                    Tulis Berita Baru
+                </a>
+            </div>
+            {% endif %}
+            
+            <div class="mt-6">
+                <input type="text" id="search-input" placeholder="Cari judul berita..." 
+                       class="input input-bordered w-full border-2 focus:outline-none focus:border-[#HEX3D19]"
+                       style="background-color: #E5D7C4; border-color: #354024; color: #354024;">
+            </div>
+            </div>
+
+        <div id="news-list-container"> 
+            {% include 'news_list_partial.html' %}
+        </div>
+        </div> 
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('search-input');
+    const newsListContainer = document.getElementById('news-list-container');
+    const searchUrl = "{% url 'news:search_news' %}"; // URL Django untuk pencarian
+
+    searchInput.addEventListener('keyup', function() {
+        const searchTerm = searchInput.value;
+        
+        // Buat URL 
+        const url = `${searchUrl}?q=${encodeURIComponent(searchTerm)}`;
+
+        // Kirim request ke server
+        fetch(url)
+            .then(response => response.text()) // Ambil response as HTML
+            .then(html => {
+                // Ganti isi container berita dengan hasil pencarian
+                newsListContainer.innerHTML = html;
+            })
+            .catch(error => {
+                console.error('Error fetching search results:', error);
+                
+                newsListContainer.innerHTML = '<p class="text-red-600">Terjadi error saat mencari berita.</p>';
+            });
+    });
+});
+</script>
+{% endblock content %}

@@ -1,0 +1,123 @@
+
+
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Community Events · MountTrack{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{% static 'community/css/community.css' %}">
+
+<style>
+  
+  html, body {
+    background: #E5D7C4 !important; 
+  }
+  body::before {
+    background: none !important;     
+  }
+  
+  header a,
+  .site-header a,
+  nav a,
+  .navbar a,
+  .navbar .nav-link {
+    color: #ffffff !important;
+  }
+  header a:hover,
+  .site-header a:hover,
+  nav a:hover,
+  .navbar a:hover,
+  .navbar .nav-link:hover {
+    color: #ffffff !important;
+    opacity: .9;
+  }
+  
+  /* tambah jarak dari navbar biar tidak ketutup dan samakan background */
+  .community-bg { 
+    min-height: 100vh; 
+    padding-top: 120px; 
+    background-color: #e5d7c4; 
+  }
+
+  .actions-tight {
+    margin-top: 4px;
+    margin-bottom: 12px;
+  }
+  .event-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+  .event-item {
+    transition: transform 0.06s ease, box-shadow 0.06s ease;
+  }
+  .event-link:hover .event-item {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .filter-bar select {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1.6px solid #b8a890;
+    background: #fffaf2;
+  }
+</style>
+
+<div class="community-bg">
+  <div class="community-card" style="width: min(880px, 100%);">
+    <div class="d-flex justify-content-between align-items-center actions-tight">
+      <h1 class="community-title">Community Events</h1>
+      <a href="{% url 'community:event_create' %}" class="btn btn-primary">+ Buat Event</a>
+    </div>
+
+    <form method="get" class="filter-bar">
+      <div class="row">
+        <div>
+          <label for="search">Gunung / Lokasi</label>
+          <input
+            type="text"
+            id="search"
+            name="search"
+            value="{{ request.GET.search }}"
+          >
+        </div>
+
+        <div>
+          <label for="difficulty">Kesulitan</label>
+          <select id="difficulty" name="difficulty" onchange="this.form.submit()">
+            <option value="">Semua</option>
+            <option value="BEGINNER" {% if request.GET.difficulty == "BEGINNER" %}selected{% endif %}>Beginner</option>
+            <option value="INTERMEDIATE" {% if request.GET.difficulty == "INTERMEDIATE" %}selected{% endif %}>Intermediate</option>
+            <option value="ADVANCED" {% if request.GET.difficulty == "ADVANCED" %}selected{% endif %}>Advanced</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a href="{% url 'community:event_list' %}" class="btn btn-outline">Reset</a>
+      </div>
+    </form>
+
+    <hr>
+
+    {% for event in events %}
+      <a href="{% url 'community:event_detail' event.id %}" class="event-link">
+        <div class="event-item">
+          <h2>{{ event.title }}</h2>
+          <p>
+            <b>{{ event.mountain_name }}</b> • 
+            {{ event.start_at|date:"d M Y H:i" }} – {{ event.end_at|date:"d M Y H:i" }}<br>
+            Kapasitas: {{ event.capacity }} • Status: {{ event.status }} • 
+            Biaya: Rp {{ event.price }}<br>
+            <span class="organizer">Organizer: {{ event.organizer.username }}</span>
+          </p>
+        </div>
+      </a>
+    {% empty %}
+      <p style="text-align:center;color:#555;">Belum ada event yang tersedia.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

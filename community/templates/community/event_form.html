@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{% if mode == "edit" %}Edit Event{% else %}Buat Event{% endif %} · MountTrack{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'community/css/community.css' %}">
+
+<style>
+  html, body {
+    background: #E5D7C4 !important;
+  }
+  body::before {
+    background: none !important;
+  }
+
+  header a,
+  .site-header a,
+  nav a,
+  .navbar a,
+  .navbar .nav-link {
+    color: #ffffff !important;
+  }
+  header a:hover,
+  .site-header a:hover,
+  nav a:hover,
+  .navbar a:hover,
+  .navbar .nav-link:hover {
+    color: #ffffff !important;
+    opacity: .9;
+  }
+
+  /* biar sejajar dengan style community lain */
+  .community-bg {
+    min-height: 100vh;
+    padding-top: 120px;
+    background-color: #e5d7c4;
+  }
+</style>
+
+<div class="community-bg">
+  <div class="community-card">
+    <h1 class="community-title">{% if mode == "edit" %}Edit Event{% else %}Buat Event{% endif %}</h1>
+
+    <form method="post" class="community-form card">
+      {% csrf_token %}
+      {{ form.non_field_errors }}
+
+      <div class="row">
+        <div>
+          <label for="{{ form.title.id_for_label }}">Judul</label>
+          {{ form.title }}
+        </div>
+        <div>
+          <label for="{{ form.mountain_name.id_for_label }}">Gunung / Lokasi</label>
+          {{ form.mountain_name }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="{{ form.start_at.id_for_label }}">Mulai</label>
+          {{ form.start_at }}
+        </div>
+        <div>
+          <label for="{{ form.end_at.id_for_label }}">Selesai</label>
+          {{ form.end_at }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="{{ form.capacity.id_for_label }}">Kapasitas</label>
+          {{ form.capacity }}
+        </div>
+        <div>
+          <label for="{{ form.price.id_for_label }}">Biaya (Rp)</label>
+          {{ form.price }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="{{ form.difficulty.id_for_label }}">Tingkat Kesulitan</label>
+          {{ form.difficulty }}
+        </div>
+        <div>
+          <label for="{{ form.status.id_for_label }}">Status</label>
+          {{ form.status }}
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label for="{{ form.meeting_point.id_for_label }}">Titik Kumpul</label>
+          {{ form.meeting_point }}
+        </div>
+        <div>
+          <label for="{{ form.contact_person.id_for_label }}">Kontak</label>
+          {{ form.contact_person }}
+        </div>
+      </div>
+
+      <div>
+        <label for="{{ form.description.id_for_label }}">Deskripsi</label>
+        {{ form.description }}
+      </div>
+
+      <div class="community-actions">
+        <button class="btn btn-primary" type="submit">Simpan</button>
+        <a class="btn btn-outline" href="{% url 'community:event_list' %}">Batal</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

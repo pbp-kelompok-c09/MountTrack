@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block meta %}
+<title>Profil Saya - MountTrack</title>
+{% endblock meta %}
+
+{% block content %}
+<div class="min-h-screen bg-[#E5D7C4] flex items-center justify-center py-10 px-6 pt-40">
+  <div class="bg-[#CFBB99] border border-[#CFBB99] rounded-xl p-8 w-full max-w-5xl shadow-sm">
+    <div class="text-center mb-8">
+      <h1 class="text-2xl font-bold text-[#354024] mb-2">Profil Saya</h1>
+      <p class="text-[#4C3D19] text-sm">Lengkapi atau ubah data profil Anda</p>
+    </div>
+
+    <div class="mb-6 text-sm text-[#354024] text-center">
+      <p>Login sebagai: <b>{{ request.user.username }}</b></p>
+      <div class="mt-3 space-x-2">
+        <a href="{% url 'userprofile:logout' %}" 
+           class="bg-[#354024] text-[#E5D7C4] font-semibold py-2 px-4 rounded-md hover:bg-[#4C3D19] transition-colors">
+          Logout
+        </a>
+        {% if request.user.is_staff %}
+        <a href="{% url 'userprofile:admin_portal' %}"
+           class="bg-[#889063] text-[#354024] font-semibold py-2 px-4 rounded-md hover:bg-[#4C3D19] hover:text-[#E5D7C4] transition-colors">
+          Ke Admin Portal
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- grid untuk form & riwayat -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+      <!-- form -->
+      <form id="profileForm" method="POST" class="space-y-5" autocomplete="off">
+        {% csrf_token %}
+        
+        {% for field in form %}
+        <div>
+          <label for="{{ field.id_for_label }}" class="block text-sm font-bold text-[#354024] mb-2">
+            {{ field.label }}
+          </label>
+          {{ field }}
+        </div>
+        {% endfor %}
+
+        <!-- JS untuk apply style tailwind ke input -->
+        <script>
+          document.addEventListener("DOMContentLoaded", () => {
+            document.querySelectorAll("#profileForm input, #profileForm select, #profileForm textarea")
+              .forEach(el => {
+                el.classList.add(
+                  "w-full", "bg-[#F8F4EF]", "text-[#354024]", "border", "border-[#889063]",
+                  "rounded-md", "px-4", "py-3", "focus:ring-2", "focus:ring-[#354024]",
+                  "focus:border-[#354024]", "transition", "duration-200", "outline-none"
+                );
+              });
+          });
+        </script>
+
+        <div class="text-right">
+          <button id="saveBtn" type="submit"
+            class="bg-[#354024] text-[#E5D7C4] font-semibold py-2 px-4 rounded-md hover:bg-[#4C3D19] transition-colors">
+            Simpan Perubahan
+          </button>
+        </div>
+      </form>
+
+      <!-- riwayat pendakian (hanya tampilan, tidak bisa diedit) -->
+      <div class="pt-5">
+        <label class="block text-sm font-bold text-[#354024] mb-2">
+          Riwayat Pendakian
+        </label>
+        {% if request.user.history_gunung.all %}
+          {% if request.user.history_gunung.count > 0 %}
+            <ul class="list-disc list-inside bg-[#F8F4EF] border border-[#889063] rounded-md px-4 py-3 text-[#354024]">
+              {% for mountain in request.user.history_gunung.all %}
+                <li>{{ mountain.name }}</li>
+              {% endfor %}
+            </ul>
+          {% else %}
+            <p class="bg-[#F8F4EF] border border-[#889063] rounded-md px-4 py-3 text-[#4C3D19] italic">
+              Belum ada riwayat pendakian.
+            </p>
+          {% endif %}
+        {% else %}
+          <p class="bg-[#F8F4EF] border border-[#889063] rounded-md px-4 py-3 text-[#4C3D19] italic">
+            Belum ada riwayat pendakian.
+          </p>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("profileForm");
+  const saveBtn = document.getElementById("saveBtn");
+
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    // buat FormData dari form
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch("", {
+        method: "POST",
+        headers: {
+          "X-Requested-With": "XMLHttpRequest",
+          "X-CSRFToken": "{{ csrf_token }}",
+        },
+        body: formData,
+      });
+
+      if (response.ok) {
+        // ubah tombol jadi hijau
+        saveBtn.style.backgroundColor = "#889063";
+        saveBtn.textContent = "Tersimpan!";
+
+        // setelah 2 detik, kembalikan ke semula
+        setTimeout(() => {
+          saveBtn.style.backgroundColor = "#354024";
+          saveBtn.textContent = "Simpan Perubahan";
+        }, 2000);
+      } else {
+        alert("Gagal menyimpan perubahan. Pastikan data valid dan coba lagi.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan!");
+    }
+  });
+});
+</script>
+{% endblock content %}
