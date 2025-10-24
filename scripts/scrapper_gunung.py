@@ -65,51 +65,74 @@ class DataGunungScraper:
         """Extract mountain data from the HTML"""
         soup = BeautifulSoup(html_content, 'html.parser')
         
-        # Find all mountain cards
+        # Find all mountain links - the href contains /gunung/[name]/info
         mountain_links = soup.find_all('a', href=lambda x: x and '/gunung/' in x and '/info' in x)
         
-        mountains_data = []
-        processed_urls = set()
+        print(f"Found {len(mountain_links)} mountain links in HTML")
         
-        for card in mountain_links:
+        mountains_data = []
+        processed_names = set()
+        
+        for link in mountain_links:
             try:
-                url = card.get('href')
-                if not url or url in processed_urls:
+                url = link.get('href')
+                if not url:
                     continue
                 
-                processed_urls.add(url)
                 full_url = self.base_url + url if url.startswith('/') else url
                 
-                # Extract mountain name from URL: /gunung/[Name]/info
-                name = 'Unknown'
+                # Extract mountain name from URL
                 url_match = re.search(r'/gunung/([^/]+)/info', url)
-                if url_match:
-                    name = url_match.group(1).replace('%20', ' ').replace('-', ' ')
+                if not url_match:
+                    continue
+                    
+                name = url_match.group(1).replace('%20', ' ')
                 
-                # Find parent container
-                parent = card.find_parent('div')
+                # Skip duplicates
+                if name in processed_names:
+                    continue
+                processed_names.add(name)
+                
+                # Find the parent div that contains all mountain info
+                # Structure: multiple parent divs up to find the one with all data
+                parent = link
+                for _ in range(10):  # Go up max 10 levels
+                    parent = parent.find_parent('div')
+                    if not parent:
+                        break
+                    # Check if this parent has both name and height info
+                    if parent.find('span', string=lambda x: x and 'm.' in str(x)):
+                        break
+                
                 if not parent:
                     continue
                 
-                # Extract height
+                # Extract name from the bold span with text-indigo-800 class
+                name_span = parent.find('span', class_=lambda x: x and 'text-indigo-800' in str(x) and 'font-bold' in str(x))
+                if name_span:
+                    name_text = name_span.get_text(strip=True)
+                    if name_text:
+                        name = name_text
+                
+                # Extract height from span with "m." text
                 height = None
                 all_spans = parent.find_all('span')
                 for span in all_spans:
                     text = span.get_text(strip=True)
-                    if 'm.' in text or 'mdpl' in text.lower():
-                        height_match = re.search(r'(\d+)\s*m', text)
+                    if 'm.' in text:
+                        height_match = re.search(r'(\d+)\s*m\.?', text)
                         if height_match:
                             height = int(height_match.group(1))
                             break
                 
-                # Extract province
+                # Extract province from div with text-indigo-700 class
                 province = 'Unknown'
-                province_div = parent.find('div', class_='inline-flex items-center space-x-1')
+                province_div = parent.find('div', class_=lambda x: x and 'text-indigo-700' in str(x))
                 if province_div:
                     province = province_div.get_text(strip=True)
                 
-                # Extract image URL
-                img = card.find('img')
+                # Extract image URL from img tag
+                img = link.find('img')
                 image_url = None
                 if img:
                     image_url = img.get('src')
@@ -127,9 +150,10 @@ class DataGunungScraper:
                 mountains_data.append(mountain_data)
                 
             except Exception as e:
-                print(f"\nError parsing card: {e}")
+                print(f"\nError parsing link: {e}")
                 continue
         
+        print(f"Successfully extracted {len(mountains_data)} mountains")
         return mountains_data
     
     def scrape_mountain_detail(self, driver, mountain_data):
