@@ -17,10 +17,10 @@ MountTrack adalah platform informasi pendakian yang menghadirkan daftar gunung a
 - **Community**: Informasi mengenai event pendaki gunung seperti melakukan pendakian bersama (open trip). (Dibrienna Rauseuky Ramadhan)
 
 # Initial Dataset
-Untuk dataset awal, kami berencana untuk menggunakan daftar gunung di Indonesia berdasarkan ketinggiannya dari Wikipedia:
-https://id.wikipedia.org/wiki/Daftar_gunung_di_Indonesia_menurut_ketinggian
+Untuk dataset awal, kami menggunakan daftar gunung di Indonesia dari datagunung.com:
+https://datagunung.com/gunung
 
-Kemudian dari list gunung di atas, akan kami mapping lokasinya dengan tujuan sebagai parameter saat pemanggilan api weather (untuk mengetahui kondisi cuaca di gunung)
+Kemudian dari list gunung di atas, akan kami ambil informasi nama gunung, ketinggian gunung, dan provinsi untuk digunakan sebagai parameter saat pemanggilan api weather (untuk mengetahui kondisi cuaca di gunung).
 
 
 # Role Pengguna
