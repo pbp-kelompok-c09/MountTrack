@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Tentang Kami | MountTrack{% endblock %}
+
+{% block content %}
+<div style="background-color: #E5D7C4; min-height: 100vh; padding: 60px 20px;">
+    <div style="max-width: 1200px; margin: 0 auto;">
+        <!-- Header Section -->
+        <div style="text-align: center; margin-bottom: 60px;">
+            <h1 style="font-size: 48px; font-weight: bold; color: #2C3E2F; margin-bottom: 20px;">Tentang MountTrack</h1>
+            <div style="width: 80px; height: 4px; background-color: #4A6741; margin: 0 auto;"></div>
+        </div>
+
+        <!-- Deskripsi Aplikasi -->
+        <div style="background-color: white; border-radius: 12px; padding: 40px; margin-bottom: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h2 style="font-size: 32px; font-weight: bold; color: #2C3E2F; margin-bottom: 24px;">Deskripsi Aplikasi</h2>
+            <p style="font-size: 18px; line-height: 1.8; color: #4A5568; text-align: justify;">
+                MountTrack adalah platform informasi pendakian yang menghadirkan daftar gunung aktif untuk didaki, lengkap dengan update cuaca real-time, status pendaftaran, serta kondisi jalur terkini. Selain itu, MountTrack juga menyajikan berita dan tren terbaru seputar dunia pecinta alam, sehingga pendaki dapat merencanakan perjalanan dengan aman dan terarah.
+            </p>
+        </div>
+
+        <!-- Proyek Info -->
+        <div style="background-color: #4A6741; border-radius: 12px; padding: 30px; margin-bottom: 40px; text-align: center;">
+            <p style="font-size: 18px; color: white; margin: 0;">
+                Aplikasi ini dibuat untuk <strong>Proyek UTS Kelompok C09</strong><br>
+                Mata Kuliah Pemrograman Berbasis Platform
+            </p>
+        </div>
+
+        <!-- Daftar Modul -->
+        <div style="background-color: white; border-radius: 12px; padding: 40px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <h2 style="font-size: 32px; font-weight: bold; color: #2C3E2F; margin-bottom: 32px;">Daftar Modul</h2>
+            
+            <div style="display: grid; gap: 24px;">
+                <!-- Modul 1 -->
+                <div style="border-left: 4px solid #4A6741; padding-left: 20px;">
+                    <h3 style="font-size: 22px; font-weight: bold; color: #2C3E2F; margin-bottom: 12px;">Halaman Autentikasi, Profil dan Admin Portal</h3>
+                    <p style="font-size: 16px; color: #4A5568; line-height: 1.6; margin-bottom: 8px;">
+                        Halaman login, register, edit profil, dan admin portal untuk mengelola pengguna.
+                    </p>
+                    <p style="font-size: 14px; color: #718096; font-style: italic;">
+                        Developer: Farrel Arrayyan Adrianshah
+                    </p>
+                </div>
+
+                <!-- Modul 2 -->
+                <div style="border-left: 4px solid #4A6741; padding-left: 20px;">
+                    <h3 style="font-size: 22px; font-weight: bold; color: #2C3E2F; margin-bottom: 12px;">List Gunung</h3>
+                    <p style="font-size: 16px; color: #4A5568; line-height: 1.6; margin-bottom: 8px;">
+                        Menyajikan daftar gunung beserta detail informasi seperti lokasi, ketinggian, jalur pendakian, kondisi jalur terkini, dan update cuaca di daerah pendakian.
+                    </p>
+                    <p style="font-size: 14px; color: #718096; font-style: italic;">
+                        Developer: Muhammad Hamiz Ghani Ayusha
+                    </p>
+                </div>
+
+                <!-- Modul 3 -->
+                <div style="border-left: 4px solid #4A6741; padding-left: 20px;">
+                    <h3 style="font-size: 22px; font-weight: bold; color: #2C3E2F; margin-bottom: 12px;">Homepage</h3>
+                    <p style="font-size: 16px; color: #4A5568; line-height: 1.6; margin-bottom: 8px;">
+                        Menyajikan rangkuman informasi gunung dan berita.
+                    </p>
+                    <p style="font-size: 14px; color: #718096; font-style: italic;">
+                        Developer: Muhammad Hamiz Ghani Ayusha
+                    </p>
+                </div>
+
+                <!-- Modul 4 -->
+                <div style="border-left: 4px solid #4A6741; padding-left: 20px;">
+                    <h3 style="font-size: 22px; font-weight: bold; color: #2C3E2F; margin-bottom: 12px;">Booking Pendakian</h3>
+                    <p style="font-size: 16px; color: #4A5568; line-height: 1.6; margin-bottom: 8px;">
+                        Pengguna dapat menjadwalkan sesi pendakian mereka sesuai dengan ketersediaan gunung.
+                    </p>
+                    <p style="font-size: 14px; color: #718096; font-style: italic;">
+                        Developer: Nimaisya Gina Herapati
+                    </p>
+                </div>
+
+                <!-- Modul 5 -->
+                <div style="border-left: 4px solid #4A6741; padding-left: 20px;">
+                    <h3 style="font-size: 22px; font-weight: bold; color: #2C3E2F; margin-bottom: 12px;">News</h3>
+                    <p style="font-size: 16px; color: #4A5568; line-height: 1.6; margin-bottom: 8px;">
+                        Menyajikan berita terkini seputar gunung, kebijakan pendakian, kondisi jalur, hingga informasi menarik lainnya yang relevan bagi pendaki.
+                    </p>
+                    <p style="font-size: 14px; color: #718096; font-style: italic;">
+                        Developer: Ryan Gibran Purwcakra Sihaloho
+                    </p>
+                </div>
+
+                <!-- Modul 6 -->
+                <div style="border-left: 4px solid #4A6741; padding-left: 20px;">
+                    <h3 style="font-size: 22px; font-weight: bold; color: #2C3E2F; margin-bottom: 12px;">Community</h3>
+                    <p style="font-size: 16px; color: #4A5568; line-height: 1.6; margin-bottom: 8px;">
+                        Informasi mengenai event pendaki gunung seperti melakukan pendakian bersama (open trip).
+                    </p>
+                    <p style="font-size: 14px; color: #718096; font-style: italic;">
+                        Developer: Dibrienna Rauseuky Ramadhan
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer CTA -->
+        <div style="text-align: center; margin-top: 60px; padding: 40px 20px;">
+            <h3 style="font-size: 28px; font-weight: bold; color: #2C3E2F; margin-bottom: 20px;">Siap Memulai Petualangan?</h3>
+            <p style="font-size: 18px; color: #4A5568; margin-bottom: 24px;">
+                Jelajahi gunung-gunung Indonesia bersama MountTrack
+            </p>
+            <a href="/" style="display: inline-block; background-color: #4A6741; color: white; padding: 14px 32px; border-radius: 8px; text-decoration: none; font-size: 16px; font-weight: bold; transition: background-color 0.3s;">
+                Kembali ke Beranda
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

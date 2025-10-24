@@ -16,6 +16,11 @@ MountTrack adalah platform informasi pendakian yang menghadirkan daftar gunung a
 - **News**: Menyajikan berita terkini seputar gunung, kebijakan pendakian, kondisi jalur, hingga informasi menarik lainnya yang relevan bagi pendaki. (Ryan Gibran Purwcakra Sihaloho)
 - **Community**: Informasi mengenai event pendaki gunung seperti melakukan pendakian bersama (open trip). (Dibrienna Rauseuky Ramadhan)
 
+(TAMBAHAN MODUL)
+- **About**
+- **Homepage**
+
+
 # Initial Dataset
 Untuk dataset awal, kami berencana untuk menggunakan daftar gunung di Indonesia berdasarkan ketinggiannya dari Wikipedia:
 https://id.wikipedia.org/wiki/Daftar_gunung_di_Indonesia_menurut_ketinggian

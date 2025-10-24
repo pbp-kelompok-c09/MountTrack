@@ -1,6 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
-from .models import Gunung, Booking
+from .models import Booking
+# from .models import Mountain
 from .forms import BookingForm
 from userprofile.models import UserProfile
 from django.http import HttpResponse
@@ -9,7 +10,7 @@ from django.http import HttpResponse
 def booking_view(request, gunung_id):
     # gunung = get_object_or_404(Gunung, id=gunung_id)  
     user_profile = UserProfile.objects.get(user=request.user)  
-    porter_needed = False  
+    porter_needed = False   
     booking_summary = None  
 
     if request.method == 'POST':
@@ -26,12 +27,12 @@ def booking_view(request, gunung_id):
             if porter_needed or any(level != 'beginner' for level in levels):  # Booking bisa dilakukan jika ada porter atau tidak semua beginner
                 booking = Booking.objects.create(
                     user=request.user,
-                    gunung=gunung,
+                    mountain=Mountain.objects.get(name=gunung_id),
                     pax=pax,
                     levels=levels,
                     porter_required=porter_needed
                 )
-               
+                
                 booking_summary = {
                     'gunung': gunung.nama,
                     'pax': pax,

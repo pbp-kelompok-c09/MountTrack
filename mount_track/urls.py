@@ -27,7 +27,7 @@ urlpatterns = [
 =======
     path('about/', include('about.urls')), 
     path('mountains/', include('list_gunung.urls')),
-    # path('  ', include('about.urls')), 
+    path('bookings', include('booking.urls')), 
 
 >>>>>>> 35f6349 (fix: null data)
 ]
