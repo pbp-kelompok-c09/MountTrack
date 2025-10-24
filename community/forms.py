@@ -1,6 +1,15 @@
 from django import forms
 from .models import CommunityEvent, Comment
 
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["body"]
+        widgets = {
+            "body": forms.Textarea(attrs={"rows": 3, "placeholder": "Tulis komentar..."}),
+        }
+        labels = {"body": ""}
+
 class EventForm(forms.ModelForm):
     class Meta:
         model = CommunityEvent
@@ -15,12 +24,3 @@ class EventForm(forms.ModelForm):
             "end_at": forms.DateTimeInput(attrs={"type": "datetime-local"}),
             "description": forms.Textarea(attrs={"rows": 4}),
         }
-
-class CommentForm(forms.ModelForm):
-    class Meta:
-        model = Comment
-        fields = ["body"]
-        widgets = {
-            "body": forms.Textarea(attrs={"rows": 3, "placeholder": "Tulis komentar..."}),
-        }
-        labels = {"body": ""}
