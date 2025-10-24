@@ -101,7 +101,7 @@ def edit_news(request, news_id):
         else:
             messages.error(request, 'Gagal mengedit berita. Periksa kembali field yang kosong atau tidak valid.')
 
-    else:  # request.method == 'GET'
+    else:  
         news_form = NewsForm(instance=news_instance)
         image_formset = ImageNewsFormSet(instance=news_instance, prefix='images')
 
@@ -111,3 +111,24 @@ def edit_news(request, news_id):
         'page_title': 'Edit Berita',
     }
     return render(request, 'create_news.html', context)
+
+def search_news(request):
+    """
+    View ini dipanggil oleh AJAX untuk mencari berita berdasarkan judul.
+    Mengembalikan snippet HTML dari daftar berita yang cocok.
+    """
+    search_term = request.GET.get('q', '') 
+
+    if search_term:
+        
+        news_list = News.objects.filter(
+            title__icontains=search_term
+        ).order_by('-published_date')
+
+    else:
+        
+        news_list = News.objects.all().order_by('-published_date')
+
+    context = {'news_list': news_list}
+
+    return render(request, 'news_list_partial.html', context)
