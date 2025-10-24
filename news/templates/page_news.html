@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load tz %} 
+
+{% block content %}
+<!-- {% load tz %} Dihapus dari sini -->
+
+<div class="min-h-screen p-4 md:p-8" style="background-color: #8A9A5B;">
+  <div class="max-w-5xl mx-auto">
+
+    <!-- Header Halaman -->
+    <div class="mb-8 p-6 shadow-md" style="background-color: #CFBB99; border-radius: 0;"> 
+      <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+        <div>
+        <h1 class="text-4xl font-bold mb-4 md:mb-0" style="color: #354024;">MountTrack News</h1>
+        <h3 class="text-xl font-medium" style="color: #354024;">Kabar terkini mengenai aktivitas pendakian</h3>
+        </div>
+        <div class="flex items-center space-x-2">
+          {% if user.is_authenticated %}
+            <span class="mr-3 font-medium" style="color: #354024;">Halo, <b>{{ user.username }}</b>!</span>
+            <a href="{% url 'userprofile:my-profile' %}" class="btn btn-sm rounded-none" style="background-color: #E5D7C4; border-color: #354024; color: #354024;">Profil</a>
+            <a href="{% url 'userprofile:logout' %}" class="btn btn-sm btn-error text-white rounded-none">Logout</a>
+          {% else %}
+            <a href="{% url 'userprofile:login' %}" class="btn btn-sm rounded-none" style="background-color: #E5D7C4; border-color: #354024; color: #354024;">Login</a>
+            <a href="{% url 'userprofile:register' %}" class="btn btn-sm text-white rounded-none" style="background-color: #354024; border-color: #354024;">Buat Akun</a>
+          {% endif %}
+        </div>
+      </div>
+      {% if user.is_staff and user.is_authenticated %}
+      <div class="mt-4 md:mt-0 md:text-right">
+        <a href="{% url 'news:create_news' %}" class="btn text-white rounded-none" style="background-color: #354024; border-color: #354024;">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+          Tulis Berita Baru
+        </a>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Daftar Berita -->
+    {% if not news_list %}
+      <div class="text-center p-10 shadow" style="background-color: #E5D7C4; color: #354024; border-radius: 0;">
+        <p class="text-xl">Belum ada data berita pada MounTrack news.</p>
+      </div>
+    {% else %}
+      <div class="space-y-6">
+        {% for news in news_list %}
+          
+          
+          <div class="card lg:card-side shadow-lg rounded-none" style="background-color: #E5D7C4;">
+            
+            {% if news.pinned_thumbnail %}
+              
+              <figure class="w-full lg:w-1/3 flex-shrink-0 rounded-none">
+                <img src="{{ news.pinned_thumbnail }}" alt="{{ news.title }}" class="w-full h-48 lg:h-full object-cover rounded-none">
+              </figure>
+            {% endif %}
+
+            <div class="card-body flex flex-col justify-between">
+              <div>
+                
+                
+                <h2 class="card-title text-3xl font-bold mb-1 transition-colors" style="color: #354024;">
+                  <a href="{% url 'news:show_news' news.id %}" class="hover:underline">{{ news.title }}</a>
+                </h2>
+
+                
+                <p class="text-m mb-2" style="color: #354024;">
+                  {% if news.user %}
+                    <strong class="text-xl">{{ news.user.username }}</strong>
+                  {% else %}
+                    <strong>Anonymous</strong>
+                  {% endif %}
+                  - <i>{{ news.published_date|localtime|date:"d M Y H:i" }}</i>
+                  | Dibaca sebanyak: {{ news.news_views }} kali
+                </p>
+
+        
+
+              </div>
+
+              <!-- Tombol Aksi  -->
+              <div class="card-actions justify-end items-center mt-4">
+                {% if user.is_staff %}
+                  <a href="{% url 'news:edit_news' news.id %}" class="btn btn-xs btn-outline rounded-none" style="border-color: #354024; color: #354024;">Edit</a>
+                  
+                  <!-- PERBAIKAN: Form diberi ID unik -->
+                  <form id="delete-form-{{ news.id }}" action="{% url 'news:delete_news' news.id %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <!-- 
+                      PERBAIKAN: 
+                      - Mengganti type="submit" menjadi type="button"
+                      - Menghapus onclick="confirm()" yang tidak berfungsi
+                      - Menambahkan onclick untuk memanggil modal kustom
+                    -->
+                    <button type"button" 
+                            class="btn btn-xs btn-error text-white rounded-none" 
+                            onclick="openDeleteModal('delete-form-{{ news.id }}')">
+                      Hapus
+                    </button>
+                  </form>
+                {% endif %}
+                <a href="{% url 'news:show_news' news.id %}" class="btn btn-sm text-white rounded-none" style="background-color: #354024; border-color: #354024;">Read More</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+  </div> 
+</div>
+
+<!-- 
+  PERBAIKAN: Menambahkan Modal Konfirmasi Hapus (DaisyUI) 
+  Ini menggantikan fungsi confirm() yang diblokir.
+-->
+<dialog id="delete_modal" class="modal">
+  <div class="modal-box rounded-none" style="background-color: #E5D7C4;">
+    <h3 class="font-bold text-lg" style="color: #354024;">Konfirmasi Hapus</h3>
+    <p class="py-4" style="color: #354024;">Anda yakin ingin menghapus berita ini? Tindakan ini tidak dapat dibatalkan.</p>
+    <div class="modal-action">
+      <!-- Tombol "Batal" (menutup modal) -->
+      <button id="modal_cancel_button" class="btn btn-sm rounded-none" style="background-color: #E5D7C4; border-color: #354024; color: #354024;">Batal</button>
+      
+      <!-- Tombol "Hapus" (submit form yang sebenarnya) -->
+      <button id="modal_confirm_delete_button" class="btn btn-sm btn-error text-white rounded-none">Ya, Hapus</button>
+    </div>
+  </div>
+  <!-- Klik di luar untuk menutup -->
+  <form method="dialog" class="modal-backdrop">
+    <button>close</button>
+  </form>
+</dialog>
+
+{% endblock content %}
+
+<!-- 
+  PERBAIKAN: Menambahkan JavaScript untuk modal 
+  (Ini akan ditempatkan di block 'scripts' dari base.html Anda)
+-->
+{% block scripts %}
+{{ block.super }} <!-- Opsional: jika Anda punya script lain di base.html -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // Variabel global untuk menyimpan form ID yang akan di-submit
+        let formToSubmit = null;
+        
+        const modal = document.getElementById('delete_modal');
+        const confirmButton = document.getElementById('modal_confirm_delete_button');
+        const cancelButton = document.getElementById('modal_cancel_button');
+
+        // Fungsi untuk MEMBUKA modal
+        // Kita buat global agar bisa dipanggil dari onclick
+        window.openDeleteModal = function(formId) {
+            formToSubmit = document.getElementById(formId);
+            if (modal) {
+                modal.showModal();
+            }
+        }
+
+        // Event listener untuk tombol HAPUS di dalam modal
+        if (confirmButton) {
+            confirmButton.addEventListener('click', () => {
+                if (formToSubmit) {
+                    formToSubmit.submit();
+                }
+                if (modal) {
+                    modal.close();
+                }
+            });
+        }
+
+        // Event listener untuk tombol BATAL di dalam modal
+        if (cancelButton) {
+            cancelButton.addEventListener('click', () => {
+                if (modal) {
+                    modal.close();
+                }
+            });
+        }
+    });
+</script>
+{% endblock scripts %}

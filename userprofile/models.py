@@ -23,13 +23,18 @@ class UserProfile(AbstractUser):
     ]
     jenis_kelamin = models.CharField(max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
 
-    # history sementara pakai string, idealnya pake ManyToMany relation ke model Gunung)
-    history_gunung = models.TextField(blank=True)
+    # history gunung yang lama (menggunakan textfield)
+    # history_gunung = models.TextField(blank=True)
     
-    # === kalau udah jadi model gunung === 
-    # history_gunung = models.ManyToManyField("mountains.Mountain", blank=True)
-    # def add_history(self, mountain):
-    #     self.history_gunung.add(mountain)
+    history_gunung = models.ManyToManyField(
+        "list_gunung.Mountain",
+        blank=True,
+        related_name="pendaki"
+    )
+
+    def add_history(self, mountain):
+        """Menambahkan gunung ke riwayat pendakian user."""
+        self.history_gunung.add(mountain)
 
     def __str__(self):
         return self.username
