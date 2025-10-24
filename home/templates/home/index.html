@@ -20,12 +20,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative min-h-screen flex items-center py-20">
       
       <!-- Split Layout: Left and Right Text with Center Image -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-48 lg:gap-72 items-center relative w-full bg-red">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-24 lg:gap-36 items-center relative w-full bg-red">
         
         <!-- Left Content -->
         <div class="space-y-6 text-left lg:text-right relative z-10">          
           <!-- Main Heading Part 1 -->
-          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight drop-shadow-lg">
+          <h1 class="text-2xl md:text-3xl lg:text-5xl font-bold leading-tight drop-shadow-lg">
             <span class="text-[#4CAF50]">Menjejak<br>Alam</span>
           </h1>
           
@@ -36,8 +36,8 @@
         </div>
         
         <!-- Center Image - 2x Larger with transparent white removal -->
-        <div class="relative group lg:col-span-1 flex justify-center items-center z-100">
-          <div class="relative w-full max-w-3xl aspect-[3/4] lg:scale-[5] lg:translate-y-40">
+        <div class="relative group lg:col-span-1 flex justify-center items-center z-0">
+          <div class="relative w-full max-w-3xl aspect-[3/4] lg:scale-[3] lg:translate-y-40">
             <!-- Image container with hover effect -->
             <div class="relative w-full h-full rounded-3xl overflow-hidden" style="isolation: isolate;">
 
@@ -61,7 +61,7 @@
            <img src="{% static 'images/front-2.png' %}"
                    alt="Mountain Adventure Team"
                    class="absolute inset-0 w-full h-full object-contain transition-opacity duration-700 opacity-0 group-hover:opacity-100">
-          <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight drop-shadow-lg">
+          <h1 class="text-2xl md:text-3xl lg:text-5xl font-bold leading-tight drop-shadow-lg">
             <span class="text-[#D2691E]">Menyatu<br>dengan<br>Ketinggian.</span>
           </h1>
           
@@ -84,37 +84,37 @@
   </div>
   
   <!-- Stats Section -->
-<div class="relative -mt-20 z-30 bg-gradient-to-br from-[#1E3A10] via-[#2D5016] to-[#4C8C2B] py-20">
-  <div class="max-w-6xl mx-auto px-6 sm:px-8">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center text-white">
-      
-      <!-- Stat 1 -->
-      <div class="space-y-2">
-        <div class="text-5xl font-extrabold">260</div>
-        <p class="text-xl font-medium text-gray-100">Gunung Terdaftar</p>
-        <p class="text-sm text-gray-200">Database lengkap gunung di Indonesia</p>
-      </div>
-      
-      <!-- Stat 2 -->
-      <div class="space-y-2">
-        <div class="text-5xl font-extrabold">10K+</div>
-        <p class="text-xl font-medium text-gray-100">Pendaki Aktif</p>
-        <p class="text-sm text-gray-200">Komunitas pendaki yang terus berkembang</p>
-      </div>
-      
-      <!-- Stat 3 -->
-      <div class="space-y-2">
-        <div class="text-5xl font-extrabold">34</div>
-        <p class="text-xl font-medium text-gray-100">Provinsi</p>
-        <p class="text-sm text-gray-200">Jangkauan di seluruh Indonesia</p>
-      </div>
+  <div class="stats-section relative -mt-20 z-30 bg-gradient-to-br from-[#1E3A10] via-[#2D5016] to-[#4C8C2B] py-20">
+    <div class="max-w-6xl mx-auto px-6 sm:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center text-white">
+        
+        <!-- Stat 1 -->
+        <div class="space-y-2">
+          <div id="stat-mountains" class="text-5xl font-extrabold">0</div>
+          <p class="text-xl font-medium text-gray-100">Gunung Terdaftar</p>
+          <p class="text-sm text-gray-200">Database lengkap gunung di Indonesia</p>
+        </div>
+        
+        <!-- Stat 2 -->
+        <div class="space-y-2">
+          <div id="stat-climbers" class="text-5xl font-extrabold">0</div>
+          <p class="text-xl font-medium text-gray-100">Pendaki Aktif</p>
+          <p class="text-sm text-gray-200">Komunitas pendaki yang terus berkembang</p>
+        </div>
+        
+        <!-- Stat 3 -->
+        <div class="space-y-2">
+          <div id="stat-provinces" class="text-5xl font-extrabold">0</div>
+          <p class="text-xl font-medium text-gray-100">Provinsi</p>
+          <p class="text-sm text-gray-200">Jangkauan di seluruh Indonesia</p>
+        </div>
 
+      </div>
     </div>
-  </div>
 
-  <!-- Optional glassy overlay -->
-  <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-black/10 pointer-events-none"></div>
-</div>
+    <!-- Optional glassy overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-black/10 pointer-events-none"></div>
+  </div>
 
   
   <!-- Features Section -->
@@ -198,8 +198,57 @@
   
 </div>
 
-<style>
-  /* Remove white background from PNG images */
- 
-</style>
+<script>
+  // Animated counter function
+  function animateCounter(element, target, duration = 2000, suffix = '') {
+    const start = 0;
+    const increment = target / (duration / 16);
+    let current = start;
+    
+    const timer = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        element.textContent = target.toLocaleString('id-ID') + suffix;
+        clearInterval(timer);
+      } else {
+        element.textContent = Math.floor(current).toLocaleString('id-ID') + suffix;
+      }
+    }, 16);
+  }
+
+  // Intersection Observer
+  function initStatsAnimation() {
+    const statsSection = document.querySelector('.stats-section');
+    
+    if (!statsSection) return;
+    
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const stat1 = document.querySelector('#stat-mountains');
+          const stat2 = document.querySelector('#stat-climbers');
+          const stat3 = document.querySelector('#stat-provinces');
+          
+          if (stat1) animateCounter(stat1, 260, 2000);
+          if (stat2) animateCounter(stat2, 10000, 2500);
+          if (stat3) animateCounter(stat3, 34, 1500);
+          
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.3
+    });
+    
+    observer.observe(statsSection);
+  }
+
+  // Initialize
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initStatsAnimation);
+  } else {
+    initStatsAnimation();
+  }
+</script>
+
 {% endblock %}

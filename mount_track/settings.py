@@ -52,7 +52,8 @@ INSTALLED_APPS = [
     'community',
     'news',
     'list_gunung',
-    'home'
+    'home',
+    'about',
 ]
 
 MIDDLEWARE = [

@@ -23,12 +23,9 @@ urlpatterns = [
     path('accounts/', include('userprofile.urls')),
     path('community/', include('community.urls')), 
     path('news/', include('news.urls')),
-<<<<<<< HEAD
-=======
     path('about/', include('about.urls')), 
     path('mountains/', include('list_gunung.urls')),
     path('bookings', include('booking.urls')), 
 
->>>>>>> 35f6349 (fix: null data)
 ]
 
