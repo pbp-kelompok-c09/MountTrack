@@ -1,7 +1,8 @@
+# ...existing code...
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from .forms import BookingForm
-from .models import Booking, Mountain
+from .models import Booking, Mountain, BookingMember
 from django.contrib.auth.decorators import login_required
 from userprofile.models import UserProfile
 
@@ -139,7 +140,12 @@ def booking_view(request, gunung_slug):
 def booking_summary(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     user_profile = UserProfile.objects.filter(username=booking.user.username).first()
-    
+
+    pax_cost = booking.pax * 500
+    porter_fee = 250 if booking.porter_required else 0
+    total_cost = pax_cost + porter_fee
+
+    # Mengambil anggota data
     anggota_data = []
     for member in booking.members.all():
         anggota_data.append({
@@ -149,19 +155,36 @@ def booking_summary(request, booking_id):
             'level': member.get_level_display(),
         })
 
-    
     summary = {
         'gunung': booking.gunung.name if booking.gunung else str(booking.gunung),
         'pax': booking.pax,
-        'levels': ', '.join(booking.levels) if isinstance(booking.levels, (list, tuple)) else booking.levels,
+        'levels': booking.levels,
+        'total_cost': total_cost,
         'porter_required': 'Ya' if booking.porter_required else 'Tidak',
-        'anggota_data': anggota_data, 
+        'anggota_data': anggota_data,  # Mengirim data anggota
+        'gunung_image_url': booking.gunung.image_url if booking.gunung else None,
+        'porter_fee': porter_fee,
+        'pax_cost': pax_cost,
     }
+
     return render(request, 'booking/booking_summary.html', {
         'booking_summary': summary,
         'user_profile': user_profile,
         'booking': booking,
     })
 
+
 def home(request):
-    return render(request, 'index.html')  
+    return render(request, 'index.html') 
+
+@login_required
+def edit_booking(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+    form = BookingForm(request.POST or None, instance=booking)
+
+    if form.is_valid():
+        form.save()
+        return redirect('booking:booking_summary', booking_id=booking.id)
+
+    return render(request, 'booking/edit_booking.html', {'form': form, 'booking': booking})
+

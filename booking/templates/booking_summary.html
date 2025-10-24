@@ -1,56 +1,185 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Summary</title>
+    <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/js/all.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-color: #F0FAFA; --card-bg: #FFFFFF; --header-grad-start: #349A74; --header-grad-end: #56B88E; --primary-text: #1F2937; --secondary-text: #6B7280; --green-accent: #22C55E; --green-accent-dark: #16A34A; --green-icon-bg: #E0F2F1; --green-icon-fg: #26A69A; --help-card-bg: #2F9C74; --blue-btn: #2563EB; --dark-gray-btn: #4B5563; --border-color: #E5E7EB; } * { margin: 0; padding: 0; box-sizing: border-box; } body { font-family: 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--primary-text); display: flex; justify-content: center; padding: 2rem 1rem; line-height: 1.6; } .container { width: 100%; max-width: 1150px; } header { background: linear-gradient(180deg, var(--header-grad-start) 0%, var(--header-grad-end) 100%); color: white; padding: 2rem 2.5rem; border-radius: 1.5rem 1.5rem 0 0; display: flex; justify-content: space-between; align-items: flex-start; } .header-left { display: flex; align-items: center; gap: 1rem; } .header-icon { font-size: 2.5rem; opacity: 0.9; } .header-title h1 { font-size: 2rem; font-weight: 700; } .header-title p { font-size: 1rem; opacity: 0.8; font-weight: 400; } .header-right { text-align: right; } .header-right .booking-id-label { font-size: 0.875rem; opacity: 0.8; } .header-right .booking-id-value { font-size: 1.125rem; font-weight: 600; letter-spacing: 0.5px; } main { padding: 2rem 2.5rem; background-color: transparent; } .card { background-color: var(--card-bg); padding: 1.5rem; border-radius: 1rem; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); margin-bottom: 1.5rem; } .confirmation-card { display: flex; align-items: center; gap: 1rem; padding: 1.25rem 1.5rem; border: 1px solid var(--green-icon-bg); background-color: #F6FFFB; } .confirmation-card .icon-circle { background-color: var(--green-accent); color: white; flex-shrink: 0; } .confirmation-card h2 { font-size: 1.125rem; font-weight: 600; color: var(--primary-text); } .confirmation-card p { font-size: 0.875rem; color: var(--secondary-text); } .grid-container { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; align-items: start; } .left-column, .right-column { display: flex; flex-direction: column; } .card-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem; } .icon-circle { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; background-color: var(--green-icon-bg); color: var(--green-icon-fg); font-size: 1.1rem; } .card-title { font-size: 1.125rem; font-weight: 600; } .grid-details { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; } .detail-item .label { font-size: 0.875rem; color: var(--secondary-text); margin-bottom: 0.25rem; } .detail-item .value { font-size: 1rem; font-weight: 500; color: var(--primary-text); } .porter-service { display: flex; align-items: center; gap: 0.5rem; color: var(--green-accent-dark); } .porter-service .fa-circle-check { font-size: 1rem; } .member-card { border: 1px solid var(--border-color); border-radius: 0.75rem; padding: 1rem; display: flex; align-items: flex-start; gap: 1rem; } .member-number { width: 24px; height: 24px; background-color: var(--green-icon-fg); color: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.875rem; font-weight: 600; flex-shrink: 0; margin-top: 4px; } .member-info { flex-grow: 1; } .member-name { font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem; } .member-details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; } .cost-summary .item { display: flex; justify-content: space-between; align-items: center; font-size: 0.9375rem; margin-bottom: 0.75rem; color: var(--secondary-text); } .cost-summary .item .price { color: var(--primary-text); font-weight: 500; } .cost-summary hr { border: none; border-top: 1px solid var(--border-color); margin: 1rem 0; } .cost-summary .total { display: flex; justify-content: space-between; align-items: center; font-weight: 700; font-size: 1rem; } .cost-summary .total .price { color: var(--green-accent-dark); font-size: 1.25rem; } .actions-card .actions-list { display: flex; flex-direction: column; gap: 0.75rem; } .btn { display: flex; justify-content: center; align-items: center; width: 100%; padding: 0.75rem; border: none; border-radius: 0.5rem; color: white; font-weight: 600; font-size: 0.9375rem; cursor: pointer; gap: 0.5rem; transition: opacity 0.2s; } .btn:hover { opacity: 0.9; } .btn-primary { background-color: var(--blue-btn); } .btn-secondary { background-color: var(--green-accent); } .btn-tertiary { background-color: var(--dark-gray-btn); } .help-card { background-color: var(--help-card-bg); color: white; } .help-card .card-header { margin-bottom: 1rem; } .help-card .icon-circle { background-color: rgba(255, 255, 255, 0.2); color: white; } .help-card .card-title { color: white; } .help-card ul { list-style: none; } .help-card li { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem; font-size: 0.9375rem; } .help-card li:last-child { margin-bottom: 0; } .help-card li i { width: 16px; text-align: center; } @media (max-width: 1024px) { body { padding: 1rem 0.5rem; } header, main { padding: 1.5rem; } .header-left { flex-direction: column; align-items: flex-start; gap: 0.5rem; } .header-icon { display: none; } .header-title h1 { font-size: 1.5rem; } .header-title p { font-size: 0.875rem; } .grid-container { grid-template-columns: 1fr; } } @media (max-width: 640px) { .grid-details { grid-template-columns: 1fr; gap: 1rem; } .member-details { grid-template-columns: 1fr; gap: 1rem; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <i class="fa-solid fa-file-invoice header-icon"></i>
+                <div class="header-title">
+                    <h1>Booking Summary</h1>
+                    <p>Review your hiking adventure details</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="booking-id-label">Booking ID</div>
+                <div class="booking-id-value">{{ booking.id }}</div>
+            </div>
+        </header>
+        <main>
+            <section class="card confirmation-card">
+                <div class="icon-circle">
+                    <i class="fa-solid fa-check"></i>
+                </div>
+                <div>
+                    <h2>Booking Confirmed!</h2>
+                    <p>Your mountain hiking adventure has been successfully booked</p>
+                </div>
+            </section>
 
-{% block content %}
-  <h1>Ringkasan Booking</h1>
+            <div class="grid-container">
+                <div class="left-column">
+                    <section class="card">
+                        <div class="card-header">
+                            <div class="icon-circle"><i class="fa-solid fa-mountain-sun"></i></div>
+                            <h2 class="card-title">Trip Information</h2>
+                        </div>
+                        <div class="grid-details">
+                            <div class="detail-item">
+                                <div class="label">Mountain</div>
+                                <div class="value">{{ booking.gunung.nama }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Booking Date</div>
+                                <div class="value">{{ booking.created_at|date:"d/m/Y" }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Total Members</div>
+                                <div class="value">{{ booking.pax }} orang</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Porter Service</div>
+                                <div class="value porter-service">
+                                    {% if booking.porter_required %}
+                                        <i class="fa-solid fa-circle-check"></i>
+                                        <span>Yes</span>
+                                    {% else %}
+                                        <i class="fa-solid fa-circle-xmark"></i>
+                                        <span>No</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
 
-  <div>
-    <p><strong>Nama Pengguna:</strong> {{ user_profile.nama }} | <strong>Gunung:</strong> {{ booking_summary.gunung }}</p>
-  </div>
+                    <section class="card">
+                        <div class="card-header">
+                            <div class="icon-circle"><i class="fa-solid fa-user"></i></div>
+                            <h2 class="card-title">Contact Person</h2>
+                        </div>
+                        <div class="grid-details">
+                            <div class="detail-item">
+                                <div class="label">Nama Lengkap</div>
+                                <div class="value">{{ user_profile.nama }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Email</div>
+                                <div class="value">{{ user_profile.user.email }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">No. Telepon</div>
+                                <div class="value">{{ user_profile.nomor_telepon }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Alamat</div>
+                                <div class="value">{{ user_profile.alamat }}</div>
+                            </div>
+                        </div>
+                    </section>
 
-  <button onclick="toggleSummary()">Tampilkan/Sembunyikan Detail Pemesanan</button>
+                    <section class="card">
+                        <div class="card-header">
+                            <div class="icon-circle"><i class="fa-solid fa-users"></i></div>
+                            <h2 class="card-title">Daftar Anggota</h2>
+                        </div>
+                        {% for member in booking.members.all %}
+                            <div class="member-card">
+                                <div class="member-number">{{ forloop.counter }}</div>
+                                <div class="member-info">
+                                    <div class="member-name">{{ member.name }}</div>
+                                    <div class="member-details">
+                                        <div class="detail-item">
+                                            <div class="label">Usia:</div>
+                                            <div class="value">{{ member.age }} tahun</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="label">Jenis Kelamin:</div>
+                                            <div class="value">{{ member.get_gender_display }}</div>
+                                        </div>
+                                        <div class="detail-item">
+                                            <div class="label">Level:</div>
+                                            <div class="value">{{ member.get_level_display }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </section>
+                </div>
 
-  <div id="booking-details" style="display:none;">
-    <h3>Informasi Pemesanan Terperinci:</h3>
-    <ul>
-      <li><strong>Gunung:</strong> {{ booking_summary.gunung }}</li>
-      <li><strong>Jumlah Anggota:</strong> {{ booking_summary.pax }}</li>
-      <li><strong>Levels:</strong>
-        <ul>
-          {% for level in booking_summary.levels %}
-            <li>{{ level }}</li>
-          {% endfor %}
-        </ul>
-      </li>
-      <li><strong>Porter:</strong> {{ booking_summary.porter_required }}</li>
-    </ul>
+                <div class="right-column">
+                    <section class="card">
+                        <div class="card-header">
+                            <div class="icon-circle"><i class="fa-solid fa-receipt"></i></div>
+                            <h2 class="card-title">Ringkasan Biaya</h2>
+                        </div>
+                        <div class="cost-summary">
+    <div class="item">
+        <span>Biaya per orang</span>
+        <span class="price">{{ booking_summary.pax_cost }}</span>
+    </div>
+    <div class="item">
+        <span>Jumlah peserta</span>
+        <span class="price">{{ booking_summary.pax }} orang</span>
+    </div>
+    <div class="item">
+        <span>Porter service</span>
+        <span class="price">{{ booking_summary.porter_fee }}</span>
+    </div>
+    <hr>
+    <div class="total">
+        <span>Total</span>
+        <span class="price">{{ booking_summary.total_cost }}</span>
+    </div>
+</div>
 
-    <h3>Identitas Anggota:</h3>
-    <ul>
-      {% for anggota in booking_summary.anggota_data %}
-        <li>
-          <p><strong>Nama:</strong> {{ anggota.name }}</p>
-          <p><strong>Usia:</strong> {{ anggota.age }}</p>
-          <p><strong>Jenis Kelamin:</strong> {{ anggota.gender }}</p>
-          <p><strong>Level:</strong> {{ anggota.level }}</p>
-        </li>
-      {% endfor %}
-    </ul>
-  </div>
+                    </section>
 
-  <!-- Tombol untuk kembali ke homepage -->
-  <a href="{% url 'home' %}" class="btn btn-primary">Kembali ke Homepage</a>
+                    <section class="card">
+                        <div class="card-header">
+                            <h2 class="card-title">Aksi</h2>
+                        </div>
+                        <div class="actions-list">
+                            <button class="btn btn-primary">
+                              <a href="{% url 'booking:edit_booking' booking.id %}" style="color:white;">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit Booking
+                                </a>
+                            </button>
+                            <button class="btn btn-secondary">
+                                <i class="fa-solid fa-clock-rotate-left"></i> Lihat Riwayat
+                            </button>
+                           <button class="btn btn-tertiary">
+                            <a href="/" style="color:white;">
+                                <i class="fa-solid fa-house"></i> Kembali ke Beranda
+                            </a>
+                        </button>
 
-  <!-- Tombol untuk kembali ke halaman booking summary -->
-  <a href="{% url 'booking:booking_summary' booking.id %}" class="btn btn-primary">Kembali ke Ringkasan Booking</a>
-
-  <script>
-    function toggleSummary() {
-        var details = document.getElementById("booking-details");
-        if (details.style.display === "none") {
-            details.style.display = "block";  
-        } else {
-            details.style.display = "none";  
-        }
-    }
-  </script>
-{% endblock %}
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
