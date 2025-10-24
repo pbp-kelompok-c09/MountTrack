@@ -12,7 +12,7 @@ Tak hanya sebagai sumber informasi, MountTrack juga menyediakan fitur booking pe
 
 # Daftar Modul
 - **Halaman Autentikasi, Profil dan Admin Portal**: Halaman login, register, edit profil, dan admin portal untuk mengelola pengguna. (Farrel Arrayyan Adrianshah)
-- **List Gunung**: Menyajikan daftar gunung beserta detail informasi seperti lokasi, ketinggian, jalur pendakian, kondisi jalur terkini, dan update cuaca di daerah pendakian. (Muhammad Hamiz Ghani Ayusha)
+- **List Gunung**: Menyajikan daftar gunung beserta detail informasi seperti lokasi, ketinggian, jalur pendakian, dan kondisi jalur terkini di daerah pendakian. (Muhammad Hamiz Ghani Ayusha)
 - **Homepage**: Halaman utama yang menampilkan fitur-fitur unggulan website. (Muhammad Hamiz Ghani Ayusha)
 - **About**: Menyajikan informasi mengenai website. (Muhammad Hamiz Ghani Ayusha)
 - **Booking Pendakian**: Pengguna dapat menjadwalkan sesi pendakian mereka sesuai dengan ketersediaan gunung. (Nimaisya Gina Herapati)
