@@ -92,6 +92,15 @@ def booking_view(request, gunung_slug):
                 porter_required=porter_needed
             )
 
+            for i in range(pax_value):
+                BookingMember.objects.create(
+                    booking=booking,
+                    name=form.cleaned_data.get(f'anggota_{i}_name'),
+                    age=form.cleaned_data.get(f'anggota_{i}_age'),
+                    gender=form.cleaned_data.get(f'anggota_{i}_gender'),
+                    level=form.cleaned_data.get(f'anggota_{i}_level')
+                )
+
             # tambahkan gunung ke history userprofile jika profil tersedia
             if user_profile:
                 try:
@@ -99,12 +108,13 @@ def booking_view(request, gunung_slug):
                 except Exception:
                     # jangan crash jika ada masalah, bisa ditangani logging jika perlu
                     pass
+            return redirect(reverse('booking:booking_summary', kwargs={'booking_id': booking.id}))
 
-            # redirect ke halaman history — ganti 'userprofile:history' jika route berbeda
-            try:
-                return redirect(reverse('userprofile:history'))
-            except Exception:
-                return redirect('/')  # fallback ke homepage
+            # # redirect ke halaman history — ganti 'userprofile:history' jika route berbeda
+            # try:
+            #     return redirect(reverse('userprofile:history'))
+            # except Exception:
+            #     return redirect('/')  # fallback ke homepage
         else:
             anggota_fields = _build_anggota_fields(form, pax_value)
             return render(request, 'booking/booking_form.html', {
@@ -129,14 +139,29 @@ def booking_view(request, gunung_slug):
 def booking_summary(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     user_profile = UserProfile.objects.filter(username=booking.user.username).first()
+    
+    anggota_data = []
+    for member in booking.members.all():
+        anggota_data.append({
+            'name': member.name,
+            'age': member.age,
+            'gender': member.get_gender_display(),
+            'level': member.get_level_display(),
+        })
+
+    
     summary = {
-        'gunung': booking.gunung.nama if booking.gunung else str(booking.gunung),
+        'gunung': booking.gunung.name if booking.gunung else str(booking.gunung),
         'pax': booking.pax,
         'levels': ', '.join(booking.levels) if isinstance(booking.levels, (list, tuple)) else booking.levels,
         'porter_required': 'Ya' if booking.porter_required else 'Tidak',
+        'anggota_data': anggota_data, 
     }
     return render(request, 'booking/booking_summary.html', {
         'booking_summary': summary,
         'user_profile': user_profile,
         'booking': booking,
     })
+
+def home(request):
+    return render(request, 'index.html')  

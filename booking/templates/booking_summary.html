@@ -1,28 +1,49 @@
-<h1>Ringkasan Booking</h1>
+{% extends 'base.html' %}
 
-<div>
+{% block content %}
+  <h1>Ringkasan Booking</h1>
+
+  <div>
     <p><strong>Nama Pengguna:</strong> {{ user_profile.nama }} | <strong>Gunung:</strong> {{ booking_summary.gunung }}</p>
-</div>
+  </div>
 
-<button onclick="toggleSummary()">Tampilkan/Sembunyikan Detail Pemesanan</button>
+  <button onclick="toggleSummary()">Tampilkan/Sembunyikan Detail Pemesanan</button>
 
-<div id="booking-details" style="display:none;">
+  <div id="booking-details" style="display:none;">
     <h3>Informasi Pemesanan Terperinci:</h3>
     <ul>
-        <li><strong>Gunung:</strong> {{ booking_summary.gunung }}</li>
-        <li><strong>Jumlah Anggota:</strong> {{ booking_summary.pax }}</li>
-        <li><strong>Levels:</strong>
-            <ul>
-                {% for level in booking_summary.levels.split(', ') %}
-                    <li>{{ level }}</li>
-                {% endfor %}
-            </ul>
-        </li>
-        <li><strong>Porter:</strong> {{ booking_summary.porter_required }}</li>
+      <li><strong>Gunung:</strong> {{ booking_summary.gunung }}</li>
+      <li><strong>Jumlah Anggota:</strong> {{ booking_summary.pax }}</li>
+      <li><strong>Levels:</strong>
+        <ul>
+          {% for level in booking_summary.levels %}
+            <li>{{ level }}</li>
+          {% endfor %}
+        </ul>
+      </li>
+      <li><strong>Porter:</strong> {{ booking_summary.porter_required }}</li>
     </ul>
-</div>
 
-<script>
+    <h3>Identitas Anggota:</h3>
+    <ul>
+      {% for anggota in booking_summary.anggota_data %}
+        <li>
+          <p><strong>Nama:</strong> {{ anggota.name }}</p>
+          <p><strong>Usia:</strong> {{ anggota.age }}</p>
+          <p><strong>Jenis Kelamin:</strong> {{ anggota.gender }}</p>
+          <p><strong>Level:</strong> {{ anggota.level }}</p>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+
+  <!-- Tombol untuk kembali ke homepage -->
+  <a href="{% url 'home' %}" class="btn btn-primary">Kembali ke Homepage</a>
+
+  <!-- Tombol untuk kembali ke halaman booking summary -->
+  <a href="{% url 'booking:booking_summary' booking.id %}" class="btn btn-primary">Kembali ke Ringkasan Booking</a>
+
+  <script>
     function toggleSummary() {
         var details = document.getElementById("booking-details");
         if (details.style.display === "none") {
@@ -31,4 +52,5 @@
             details.style.display = "none";  
         }
     }
-</script>
+  </script>
+{% endblock %}
