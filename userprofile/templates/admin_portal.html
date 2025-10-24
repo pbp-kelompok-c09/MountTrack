@@ -11,10 +11,6 @@ Admin Portal | MountTrack
     <h1 class="text-2xl font-bold text-center md:text-left">MountTrack Admin Management</h1>
     <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
       <small class="text-[#CFBB99] text-sm">Login sebagai <b>{{ request.user.username }}</b></small>
-        <a href="{% url 'userprofile:logout' %}"
-          class="bg-[#CFBB99] text-[#354024] font-semibold py-2 px-4 rounded-md hover:bg-[#889063] hover:text-[#E5D7C4] transition-colors w-full sm:w-auto text-center">
-          Logout
-        </a>
     </div>
   </div>
 
