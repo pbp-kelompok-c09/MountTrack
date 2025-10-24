@@ -2,29 +2,22 @@ from django.db import models
 from django.utils.text import slugify
 
 class Mountain(models.Model):
-    """Model for mountains in Indonesia"""
-    name = models.CharField(max_length=200)
-    url = models.URLField(blank=True, null=True)
-    height_mdpl = models.IntegerField(null=True, blank=True)
-    province = models.CharField(max_length=100, default='Unknown')
-    image_url = models.URLField(blank=True, null=True)
-    description = models.TextField(blank=True)
-    slug = models.SlugField(max_length=250, unique=True, blank=True)
-    
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        ordering = ['-height_mdpl']
-        verbose_name = 'Mountain'
-        verbose_name_plural = 'Mountains'
-    
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
-    
+    name = models.CharField(max_length=100)
+    url = models.URLField(max_length=255)
+    height_mdpl = models.PositiveIntegerField()
+    province = models.CharField(max_length=100)
+    image_url = models.URLField(max_length=255, blank=True, null=True)
+    description = models.TextField()
+    slug = models.SlugField(max_length=100, unique=True, blank=True)
+
     def __str__(self):
         return self.name
     
-    
+    def save(self, *args, **kwargs):
+        # 1. Pastikan slug belum terisi (biasanya hanya saat objek dibuat pertama kali)
+        if not self.slug:
+            # 2. Buat slug dari nama gunung (misalnya, "Anak Krakatau" -> "anak-krakatau")
+            self.slug = slugify(self.name)
+        
+        # 3. Panggil method save bawaan untuk menyimpan data ke database
+        super().save(*args, **kwargs)
