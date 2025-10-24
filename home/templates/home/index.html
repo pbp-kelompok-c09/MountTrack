@@ -17,71 +17,64 @@
       <!-- Gradient overlay to blend with stats section -->
     </div>
     
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-30 min-h-screen flex items-center py-20">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative min-h-screen flex items-center py-20">
       
       <!-- Split Layout: Left and Right Text with Center Image -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 items-center relative w-full">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-48 lg:gap-72 items-center relative w-full bg-red">
         
         <!-- Left Content -->
-        <div class="space-y-6 text-left lg:text-right relative z-20">
-          <!-- Logo/Brand -->
-          <div class="flex items-center space-x-3 lg:justify-end">
-            <img src="{% static 'images/logo-v4.jpg' %}" alt="MountTrack Logo" class="h-16 w-16">
-            <h2 class="text-3xl font-bold text-[#2D5016]">MOUNTTRACK</h2>
-          </div>
-          
+        <div class="space-y-6 text-left lg:text-right relative z-10">          
           <!-- Main Heading Part 1 -->
           <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight drop-shadow-lg">
             <span class="text-[#4CAF50]">Menjejak<br>Alam</span>
           </h1>
           
           <!-- Description Left -->
-          <p class="text-lg text-gray-700 max-w-md lg:ml-auto drop-shadow">
+          <p class="text-lg text-white max-w-md lg:ml-auto drop-shadow">
             Temukan gunung-gunung Indonesia dan rencanakan pendakian Anda bersama MountTrack.
           </p>
         </div>
         
         <!-- Center Image - 2x Larger with transparent white removal -->
-        <div class="relative group lg:col-span-1 flex justify-center items-center">
-          <div class="relative w-full max-w-3xl aspect-[3/4] lg:scale-[4] lg:translate-y-40">
+        <div class="relative group lg:col-span-1 flex justify-center items-center z-100">
+          <div class="relative w-full max-w-3xl aspect-[3/4] lg:scale-[5] lg:translate-y-40">
             <!-- Image container with hover effect -->
             <div class="relative w-full h-full rounded-3xl overflow-hidden" style="isolation: isolate;">
+
               <!-- Front Image 1 (default) - remove white background with CSS -->
               <img src="{% static 'images/front-1.png' %}" 
                    alt="Mountain Adventure" 
-                   class="absolute inset-0 w-full h-full object-contain transition-opacity duration-700 group-hover:opacity-0">
+                   class="absolute z-100 inset-0 w-full h-full object-contain transition-opacity duration-700 group-hover:opacity-0">
               
               <!-- Front Image 2 (on hover) - remove white background with CSS -->
-              <img src="{% static 'images/front-2.png' %}" 
+              <img src="{% static 'images/front-3.png' %}" 
                    alt="Mountain Adventure Team"
-                   class="absolute inset-0 w-full h-full object-contain transition-opacity duration-700 opacity-0 group-hover:opacity-100">
+                   class="absolute inset-0 z-60 w-full h-full object-contain transition-opacity duration-700 opacity-0 group-hover:opacity-100 bg-transparent">
             </div>
             
           </div>
         </div>
-         
-
               
         <!-- Right Content -->
-        <div class="space-y-6 text-left relative z-20">
+        <div class="space-y-6 text-left relative z-10">
           <!-- Main Heading Part 2 -->
            <img src="{% static 'images/front-2.png' %}"
                    alt="Mountain Adventure Team"
                    class="absolute inset-0 w-full h-full object-contain transition-opacity duration-700 opacity-0 group-hover:opacity-100">
           <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold leading-tight drop-shadow-lg">
-            <span class="text-[#D2691E]">sda<br>dengan<br>Ketinggian.</span>
+            <span class="text-[#D2691E]">Menyatu<br>dengan<br>Ketinggian.</span>
           </h1>
           
           <!-- Description Right -->
-          <p class="text-lg text-gray-700 max-w-md drop-shadow">
+          <p class="text-lg text-white max-w-md drop-shadow">
             Jelajahi keindahan puncak-puncak nusantara dan bergabung dengan komunitas pendaki.
           </p>
           
           <!-- CTA Button -->
           <div class="pt-4">
             <a href="/mountain" 
-               class="inline-block bg-[#2D5016] hover:bg-[#3d6b1f] text-white font-semibold px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-              Jelajahi Gunung
+               class="inline-block bg-[#2D5016] hover:bg-[#3d6b1f] text-white font-bold px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+              JELAJAHI GUNUNG
             </a>
           </div>
         </div>
@@ -90,35 +83,39 @@
     </div>
   </div>
   
-  <!-- Stats Section (starts where bg.jpg ends) -->
-  <div class="bg-gradient-to-r from-[#2D5016] to-[#3d6b1f] py-16 relative z-30 -mt-20">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
-        
-        <!-- Stat 1 -->
-        <div class="space-y-2">
-          <div class="text-5xl font-bold text-white">500+</div>
-          <p class="text-xl text-gray-100">Gunung Terdaftar</p>
-          <p class="text-sm text-gray-200">Database lengkap gunung di Indonesia</p>
-        </div>
-        
-        <!-- Stat 2 -->
-        <div class="space-y-2">
-          <div class="text-5xl font-bold text-white">10K+</div>
-          <p class="text-xl text-gray-100">Pendaki Aktif</p>
-          <p class="text-sm text-gray-200">Komunitas pendaki yang terus berkembang</p>
-        </div>
-        
-        <!-- Stat 3 -->
-        <div class="space-y-2">
-          <div class="text-5xl font-bold text-white">34</div>
-          <p class="text-xl text-gray-100">Provinsi</p>
-          <p class="text-sm text-gray-200">Jangkauan di seluruh Indonesia</p>
-        </div>
-        
+  <!-- Stats Section -->
+<div class="relative -mt-20 z-30 bg-gradient-to-br from-[#1E3A10] via-[#2D5016] to-[#4C8C2B] py-20">
+  <div class="max-w-6xl mx-auto px-6 sm:px-8">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-10 text-center text-white">
+      
+      <!-- Stat 1 -->
+      <div class="space-y-2">
+        <div class="text-5xl font-extrabold">260</div>
+        <p class="text-xl font-medium text-gray-100">Gunung Terdaftar</p>
+        <p class="text-sm text-gray-200">Database lengkap gunung di Indonesia</p>
       </div>
+      
+      <!-- Stat 2 -->
+      <div class="space-y-2">
+        <div class="text-5xl font-extrabold">10K+</div>
+        <p class="text-xl font-medium text-gray-100">Pendaki Aktif</p>
+        <p class="text-sm text-gray-200">Komunitas pendaki yang terus berkembang</p>
+      </div>
+      
+      <!-- Stat 3 -->
+      <div class="space-y-2">
+        <div class="text-5xl font-extrabold">34</div>
+        <p class="text-xl font-medium text-gray-100">Provinsi</p>
+        <p class="text-sm text-gray-200">Jangkauan di seluruh Indonesia</p>
+      </div>
+
     </div>
   </div>
+
+  <!-- Optional glassy overlay -->
+  <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-black/10 pointer-events-none"></div>
+</div>
+
   
   <!-- Features Section -->
   <div class="py-20 bg-gray-50 relative z-30">
