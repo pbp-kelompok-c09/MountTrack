@@ -1,0 +1,47 @@
+{% if not news_list %}
+    <div class="text-center p-10 shadow" style="background-color: #E5D7C4; color: #354024;">
+        <p class="text-xl">
+            {% if request.GET.q %} {# Tampilkan pesan berbeda jika sedang mencari #}
+                Tidak ada berita yang cocok dengan pencarian "{{ request.GET.q }}".
+            {% else %}
+                Belum ada data berita pada MounTrack news.
+            {% endif %}
+        </p>
+    </div>
+{% else %}
+    <div class="space-y-4">
+        {% for news in news_list %}
+            <div class="flex shadow-lg overflow-hidden" style="background-color: #CFBB99;">
+                 {% if news.pinned_thumbnail %}
+                    <div class="w-1/3 flex-shrink-0">
+                        <img src="{{ news.pinned_thumbnail }}" alt="{{ news.title }}" class="w-full h-full object-cover">
+                    </div>
+                {% else %}
+                     <div class="w-1/3 flex-shrink-0 bg-gray-300"></div>
+                {% endif %}
+                <div class="w-2/3 p-4 flex flex-col justify-between">
+                    <div> 
+                        
+                        <h2 class="text-3xl font-bold mb-2 hover:text-[#HEX3D19] transition-colors" style="color: #354024;">
+                            <a href="{% url 'news:show_news' news.id %}">{{ news.title }}</a>
+                        </h2>
+                        <p class="text-l mb-3" style="color: rgb(136, 144, 99);">
+                            <i>{{ news.published_date|date:"d F Y, H:i" }} WIB</i> 
+                            | Dilihat sebanyak: {{ news.news_views }} kali
+                        </p>
+                    </div>
+                    <div class="card-actions justify-end items-center mt-4">
+                        {% if user.is_staff %}
+                            <a href="{% url 'news:edit_news' news.id %}" class="btn btn-sm btn-outline" style="border-color: #354024; color: #354024;">Edit Berita</a>
+                            <form action="{% url 'news:delete_news' news.id %}" method="POST" class="inline">
+                                {% csrf_token %}
+                                <button style="background-color: red !important;" type="submit" class="btn btn-sm btn-error text-white" onclick="return confirm('Anda yakin ingin menghapus berita ini?');">Hapus</button>
+                            </form>
+                        {% endif %}
+                        <a href="{% url 'news:show_news' news.id %}" class="btn btn-sm text-white" style="background-color: #354024; border-color: #354024;">Baca Berita</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
