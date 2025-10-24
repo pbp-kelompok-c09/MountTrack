@@ -32,7 +32,7 @@
     <!-- grid untuk form & riwayat -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
       <!-- form -->
-      <form id="profileForm" method="POST" class="space-y-5">
+      <form id="profileForm" method="POST" class="space-y-5" autocomplete="off">
         {% csrf_token %}
         
         {% for field in form %}
@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
           saveBtn.textContent = "Simpan Perubahan";
         }, 2000);
       } else {
-        alert("Gagal menyimpan perubahan. Coba lagi.");
+        alert("Gagal menyimpan perubahan. Pastikan data valid dan coba lagi.");
       }
     } catch (error) {
       console.error(error);
