@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 {% load static %}
 
@@ -5,6 +6,15 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'community/css/community.css' %}">
+
+<style>
+  /* supaya form nggak ketutup navbar */
+  .community-bg {
+    padding-top: 120px; /* jarak dari atas biar gak ketiban navbar */
+    background-color: #e5d7c4;
+    min-height: 100vh;
+  }
+</style>
 
 <div class="community-bg">
   <div class="community-card">

@@ -1,12 +1,16 @@
+
 {% extends "base.html" %}
 {% block content %}
 <style>
-  
-  body { background-color:#2f3e27; }
+  .community-bg {
+    padding-top: 120px; /* biar gak ketiban navbar */
+    background-color: #e5d7c4;
+    min-height: 100vh;
+  }
 
   .detail-wrap {
     max-width: 880px;
-    margin: 60px auto;
+    margin: auto;
     background: #d9c29a; 
     border-radius: 18px;
     box-shadow: 0 6px 18px rgba(0,0,0,.25);
@@ -23,7 +27,7 @@
   .detail-title {
     font-size: 32px;
     font-weight: 800;
-    color: #234520;
+    color: #4b3b2b;
     margin: 0;
   }
 
@@ -32,9 +36,9 @@
     border-radius: 999px;
     font-weight: 700;
     font-size: 14px;
-    background: #e7f4e6;
-    color: #234520;
-    border: 1.4px solid #1d4f1d4d;
+    background: #f2e6d5;
+    color: #4b3b2b;
+    border: 1.4px solid #a48d6a;
   }
 
   .card {
@@ -54,27 +58,36 @@
   }
   td { color: #222; }
 
-  strong { color: #234520; }
+  strong { color: #4b3b2b; }
 
-  
   .actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 20px; }
+
   .btn {
     padding: 8px 14px;
     border-radius: 999px;
     text-decoration: none;
     font-weight: 700;
-    border: 2px solid #234520;
-    background: #2e5b2c;
-    color: #fff;
-    transition: background .15s ease;
+    border: 2px solid #7a5c3e;
+    background: #b68c64;              
+    color: #fffaf2;
+    transition: all .2s ease;
   }
-  .btn:hover { background: #244923; }
-  .btn-outline {
-    background: #e7d7b8;
-    color: #234520;
+  .btn:hover {
+    background: #a67a52;              
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
   }
 
-  
+  .btn-outline {
+    background: #e7d7b8;
+    color: #4b3b2b;
+    border-color: #7a5c3e;
+    transition: all .2s ease;
+  }
+  .btn-outline:hover {
+    background: #d8c39d;
+  }
+
   .comment-item {
     background: #f3e5cb;
     border-radius: 10px;
@@ -82,7 +95,7 @@
     margin-bottom: 10px;
     border: 1px solid #c9b79f;
   }
-  .comment-item strong { color: #234520; }
+  .comment-item strong { color: #4b3b2b; }
   .comment-item span { color: #3f3f3f; font-size: 14px; }
   .comment-body { margin-top: 4px; white-space: pre-wrap; }
 
@@ -103,103 +116,101 @@
   }
   .comment-form button {
     margin-top: 10px;
-    background: #2e5b2c;
-    color: #fff;
-    border: 2px solid #234520;
+    background: #b68c64;
+    color: #fffaf2;
+    border: 2px solid #7a5c3e;
     padding: 8px 14px;
     border-radius: 999px;
     font-weight: 700;
     cursor: pointer;
+    transition: all .2s ease;
   }
-  .comment-form button:hover { background: #244923; }
+  .comment-form button:hover { background: #a67a52; }
 
-  /* hilangkan link biru default */
-  a { color: #234520; text-decoration: none; font-weight: 600; }
-  a:hover { text-decoration: underline; }
+  .detail-wrap a { color: #4b3b2b; text-decoration: none; font-weight: 600; }
+  .detail-wrap a:hover { text-decoration: underline; }
 </style>
 
-<div class="detail-wrap">
-  <!-- Header -->
-  <div class="detail-head">
-    <h1 class="detail-title">{{ event.title }}</h1>
-    <span class="badge">{{ event.get_status_display }}</span>
-  </div>
+<div class="community-bg">
+  <div class="detail-wrap">
+    <div class="detail-head">
+      <h1 class="detail-title">{{ event.title }}</h1>
+      <span class="badge">{{ event.get_status_display }}</span>
+    </div>
 
-  <!-- Info -->
-  <div class="card">
-    <table>
-      <tr><th>Gunung/Lokasi</th><td>{{ event.mountain_name }}</td></tr>
-      <tr><th>Waktu</th><td>{{ event.date_range_display }}</td></tr>
-      <tr><th>Kapasitas</th><td>{{ event.capacity }} (Confirmed: {{ confirmed_count }})</td></tr>
-      <tr><th>Status</th><td>{{ event.get_status_display }}</td></tr>
-      <tr><th>Kesulitan</th><td>{{ event.get_difficulty_display }}</td></tr>
-      <tr><th>Biaya</th><td>{% if event.price %}Rp {{ event.price|floatformat:0 }}{% else %}-{% endif %}</td></tr>
-      <tr><th>Titik Kumpul</th><td>{{ event.meeting_point|default:"-" }}</td></tr>
-      <tr><th>Kontak</th><td>{{ event.contact_person }}</td></tr>
-      <tr><th>Organizer</th><td>{{ event.organizer }}</td></tr>
-    </table>
+    <div class="card">
+      <table>
+        <tr><th>Gunung/Lokasi</th><td>{{ event.mountain_name }}</td></tr>
+        <tr><th>Waktu</th><td>{{ event.date_range_display }}</td></tr>
+        <tr><th>Kapasitas</th><td>{{ event.capacity }} (Confirmed: {{ confirmed_count }})</td></tr>
+        <tr><th>Status</th><td>{{ event.get_status_display }}</td></tr>
+        <tr><th>Kesulitan</th><td>{{ event.get_difficulty_display }}</td></tr>
+        <tr><th>Biaya</th><td>{% if event.price %}Rp {{ event.price|floatformat:0 }}{% else %}-{% endif %}</td></tr>
+        <tr><th>Titik Kumpul</th><td>{{ event.meeting_point|default:"-" }}</td></tr>
+        <tr><th>Kontak</th><td>{{ event.contact_person }}</td></tr>
+        <tr><th>Organizer</th><td>{{ event.organizer }}</td></tr>
+      </table>
 
-    {% if event.description %}
-      <div style="margin-top:10px">
-        <strong>Deskripsi/Itinerary</strong>
-        <p style="white-space:pre-wrap;color:#222;">{{ event.description }}</p>
-      </div>
-    {% endif %}
-  </div>
+      {% if event.description %}
+        <div style="margin-top:10px">
+          <strong>Deskripsi/Itinerary</strong>
+          <p style="white-space:pre-wrap;color:#222;">{{ event.description }}</p>
+        </div>
+      {% endif %}
+    </div>
 
-  <!-- Actions -->
-  <div class="actions">
-    <a href="{% url 'community:event_list' %}" class="btn-outline btn">← Kembali</a>
+    <div class="actions">
+      <a href="{% url 'community:event_list' %}" class="btn-outline btn">← Kembali</a>
 
-    {% if user.is_authenticated %}
-      {% if user == event.organizer %}
-        <a href="{% url 'community:event_edit' event.pk %}" class="btn">Edit</a>
-        {% if event.status != "CANCELLED" %}
-          <a href="{% url 'community:event_cancel' event.pk %}" class="btn-outline btn">Batalkan</a>
-        {% endif %}
-      {% else %}
-        {% if user_join and user_join.status == "CONFIRMED" %}
-          <a href="{% url 'community:event_leave' event.pk %}" class="btn-outline btn">Keluar dari Event</a>
-        {% elif user_join and user_join.status == "WAITLIST" %}
-          <span class="btn-outline btn">Kamu di Waitlist</span>
-          <a href="{% url 'community:event_leave' event.pk %}" class="btn-outline btn">Batalkan Pendaftaran</a>
+      {% if user.is_authenticated %}
+        {% if user == event.organizer %}
+          <a href="{% url 'community:event_edit' event.pk %}" class="btn">Edit</a>
+          {% if event.status != "CANCELLED" %}
+            <a href="{% url 'community:event_cancel' event.pk %}" class="btn-outline btn">Batalkan</a>
+          {% endif %}
         {% else %}
-          {% if event.status == "OPEN" %}
-            <a href="{% url 'community:event_join' event.pk %}" class="btn">Gabung Event</a>
+          {% if user_join and user_join.status == "CONFIRMED" %}
+            <a href="{% url 'community:event_leave' event.pk %}" class="btn-outline btn">Keluar dari Event</a>
+          {% elif user_join and user_join.status == "WAITLIST" %}
+            <span class="btn-outline btn">Kamu di Waitlist</span>
+            <a href="{% url 'community:event_leave' event.pk %}" class="btn-outline btn">Batalkan Pendaftaran</a>
           {% else %}
-            <span class="btn-outline btn">Pendaftaran tidak tersedia</span>
+            {% if event.status == "OPEN" %}
+              <a href="{% url 'community:event_join' event.pk %}" class="btn">Gabung Event</a>
+            {% else %}
+              <span class="btn-outline btn">Pendaftaran tidak tersedia</span>
+            {% endif %}
           {% endif %}
         {% endif %}
+      {% else %}
+        <a class="btn" href="/accounts/login/?next={{ request.path }}">Login untuk bergabung</a>
       {% endif %}
-    {% else %}
-      <a class="btn" href="/accounts/login/?next={{ request.path }}">Login untuk bergabung</a>
-    {% endif %}
-  </div>
+    </div>
 
-  <!-- Komentar -->
-  <div class="card">
-    <h3 style="margin-top:0;color:#234520;">Komentar</h3>
-    {% for c in comments %}
-      <div class="comment-item">
-        <div style="display:flex;justify-content:space-between;">
-          <strong>{{ c.user }}</strong>
-          <span>{{ c.created_at|date:"d M Y H:i" }}</span>
+    <div class="card">
+      <h3 style="margin-top:0;color:#4b3b2b;">Komentar</h3>
+      {% for c in comments %}
+        <div class="comment-item">
+          <div style="display:flex;justify-content:space-between;">
+            <strong>{{ c.user }}</strong>
+            <span>{{ c.created_at|date:"d M Y H:i" }}</span>
+          </div>
+          <div class="comment-body">{{ c.body }}</div>
         </div>
-        <div class="comment-body">{{ c.body }}</div>
-      </div>
-    {% empty %}
-      <div style="color:#3f3f3f;">Belum ada komentar.</div>
-    {% endfor %}
+      {% empty %}
+        <div style="color:#3f3f3f;">Belum ada komentar.</div>
+      {% endfor %}
 
-    {% if user.is_authenticated %}
-      <form method="post" class="comment-form">
-        {% csrf_token %}
-        {{ comment_form.body }}
-        <button type="submit">Kirim</button>
-      </form>
-    {% else %}
-      <a class="btn" href="/accounts/login/?next={{ request.path }}">Login untuk berkomentar</a>
-    {% endif %}
+      {% if user.is_authenticated %}
+        <form method="post" class="comment-form">
+          {% csrf_token %}
+          {{ comment_form.body }}
+          <button type="submit">Kirim</button>
+        </form>
+      {% else %}
+        <a class="btn" href="/accounts/login/?next={{ request.path }}">Login untuk berkomentar</a>
+      {% endif %}
+    </div>
   </div>
 </div>
 {% endblock %}
