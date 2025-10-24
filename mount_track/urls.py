@@ -25,7 +25,7 @@ urlpatterns = [
     path('news/', include('news.urls')),
     path('about/', include('about.urls')), 
     path('mountains/', include('list_gunung.urls')),
-    path('bookings', include('booking.urls')), 
+    path('booking/', include('booking.urls')), 
 
 ]
 
