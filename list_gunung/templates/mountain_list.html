@@ -1,0 +1,375 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Gunung - Indonesia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a4d2e 0%, #2d5016 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .search-filter-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-input-wrapper {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 2px solid #1a4d2e;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #4a7c59;
+            box-shadow: 0 0 0 3px rgba(26, 77, 46, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #1a4d2e;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: #5d4037;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #8d6e63;
+            border-radius: 8px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #5d4037;
+        }
+
+        .results-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .mountain-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .mountain-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+        .mountain-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+        }
+
+        .mountain-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #1a4d2e 0%, #2d5016 100%);
+        }
+
+        .mountain-content {
+            padding: 20px;
+        }
+
+        .mountain-name {
+            font-size: 1.5em;
+            color: #1a4d2e;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .mountain-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #5d4037;
+            font-size: 14px;
+        }
+
+        .info-icon {
+            width: 18px;
+            height: 18px;
+            color: #8d6e63;
+        }
+
+        .mountain-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .view-detail-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #1a4d2e 0%, #2d5016 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .view-detail-btn:hover {
+            background: linear-gradient(135deg, #2d5016 0%, #1a4d2e 100%);
+            transform: translateX(5px);
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 12px;
+            color: #666;
+        }
+
+        .no-results h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            color: #5d4037;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .mountain-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-box {
+                flex-direction: column;
+            }
+
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏔️ Daftar Gunung Indonesia</h1>
+            <p>Jelajahi keindahan gunung-gunung di Indonesia</p>
+        </div>
+
+        <div class="search-filter-section">
+            <form method="GET" id="filterForm">
+                <div class="search-box">
+                    <div class="search-input-wrapper">
+                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                        <input 
+                            type="text" 
+                            class="search-input" 
+                            name="search" 
+                            placeholder="Cari nama gunung..." 
+                            value="{{ search_query }}"
+                            id="searchInput"
+                        >
+                    </div>
+                </div>
+
+                <div class="filter-section">
+                    <span class="filter-label">Filter:</span>
+                    
+                    <select name="province" class="filter-select" id="provinceFilter">
+                        <option value="">Semua Provinsi</option>
+                        {% for province in provinces %}
+                        <option value="{{ province }}" {% if selected_province == province %}selected{% endif %}>
+                            {{ province }}
+                        </option>
+                        {% endfor %}
+                    </select>
+
+                    <select name="height_range" class="filter-select" id="heightFilter">
+                        <option value="">Semua Ketinggian</option>
+                        <option value="0-1000" {% if height_range == '0-1000' %}selected{% endif %}>< 1000 mdpl</option>
+                        <option value="1000-2000" {% if height_range == '1000-2000' %}selected{% endif %}>1000-2000 mdpl</option>
+                        <option value="2000-3000" {% if height_range == '2000-3000' %}selected{% endif %}>2000-3000 mdpl</option>
+                        <option value="3000-4000" {% if height_range == '3000-4000' %}selected{% endif %}>> 3000 mdpl</option>
+                    </select>
+
+                    <select name="sort" class="filter-select" id="sortFilter">
+                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Nama (A-Z)</option>
+                        <option value="-name" {% if sort_by == '-name' %}selected{% endif %}>Nama (Z-A)</option>
+                        <option value="height_mdpl" {% if sort_by == 'height_mdpl' %}selected{% endif %}>Ketinggian (Rendah-Tinggi)</option>
+                        <option value="-height_mdpl" {% if sort_by == '-height_mdpl' %}selected{% endif %}>Ketinggian (Tinggi-Rendah)</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+
+        <div class="results-info">
+            <span>Menampilkan {{ mountains|length }} gunung</span>
+        </div>
+
+        {% if mountains %}
+        <div class="mountain-grid">
+            {% for mountain in mountains %}
+            <div class="mountain-card" onclick="window.location.href='{% url 'mountain_detail' mountain.name %}'">
+                <img src="{{ mountain.image_url }}" alt="{{ mountain.name }}" class="mountain-image" onerror="this.style.display='none'">
+                <div class="mountain-content">
+                    <h2 class="mountain-name">{{ mountain.name }}</h2>
+                    <div class="mountain-info">
+                        <div class="info-item">
+                            <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                                <polyline points="2 17 12 22 22 17"></polyline>
+                                <polyline points="2 12 12 17 22 12"></polyline>
+                            </svg>
+                            <span><strong>{{ mountain.height_mdpl }}</strong> mdpl</span>
+                        </div>
+                        <div class="info-item">
+                            <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                            <span>{{ mountain.province }}</span>
+                        </div>
+                    </div>
+                    <p class="mountain-description">{{ mountain.description }}</p>
+                    <a href="{% url 'mountain_detail' mountain.id %}" class="view-detail-btn">Lihat Detail →</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-results">
+            <h3>Tidak ada gunung ditemukan</h3>
+            <p>Coba ubah filter atau kata kunci pencarian Anda</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Auto-submit form when filters change
+        const filterSelects = document.querySelectorAll('.filter-select');
+        const searchInput = document.getElementById('searchInput');
+        
+        filterSelects.forEach(select => {
+            select.addEventListener('change', () => {
+                document.getElementById('filterForm').submit();
+            });
+        });
+
+        // Submit on search with slight delay
+        let searchTimeout;
+        searchInput.addEventListener('input', () => {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                document.getElementById('filterForm').submit();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
+{% endblock %}
