@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block meta %}
-<title>Profil Saya - MountTrack</title>
-{% endblock meta %}
+{% block title %}
+Profil Saya | MountTrack
+{% endblock %}
 
 {% block content %}
 <div class="min-h-screen bg-[#E5D7C4] flex items-center justify-center py-10 px-6 pt-40">
@@ -16,10 +16,6 @@
     <div class="mb-6 text-sm text-[#354024] text-center">
       <p>Login sebagai: <b>{{ request.user.username }}</b></p>
       <div class="mt-3 space-x-2">
-        <a href="{% url 'userprofile:logout' %}" 
-           class="bg-[#354024] text-[#E5D7C4] font-semibold py-2 px-4 rounded-md hover:bg-[#4C3D19] transition-colors">
-          Logout
-        </a>
         {% if request.user.is_staff %}
         <a href="{% url 'userprofile:admin_portal' %}"
            class="bg-[#889063] text-[#354024] font-semibold py-2 px-4 rounded-md hover:bg-[#4C3D19] hover:text-[#E5D7C4] transition-colors">

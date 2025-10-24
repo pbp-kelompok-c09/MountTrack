@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils.text import slugify
 
-
 class Mountain(models.Model):
     """Model for mountains in Indonesia"""
     name = models.CharField(max_length=200)
@@ -27,3 +26,5 @@ class Mountain(models.Model):
     
     def __str__(self):
         return self.name
+    
+    
