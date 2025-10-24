@@ -11,7 +11,7 @@ MountTrack adalah platform informasi pendakian yang menghadirkan daftar gunung a
 Tak hanya sebagai sumber informasi, MountTrack juga menyediakan fitur booking pendakian gunung yang memudahkan pengguna dalam melakukan reservasi jalur resmi secara langsung melalui aplikasi. Melalui fitur komunitas, pengguna juga dapat berinteraksi dan mengelola rencana pendakian, menciptakan ekosistem yang kolaboratif bagi para pecinta alam di seluruh Indonesia.
 
 # Daftar Modul
-- **Halaman Autentikasi, Profil dan Admin Portal**: Halaman login, register, edit profil, dan admin portal untuk mengelola pengguna. (Farrel Arrayyan Adrianshah)
+- **Halaman Autentikasi, Profil dan Admin Portal**: Halaman login, register, profil, dan admin portal untuk mengelola pengguna. (Farrel Arrayyan Adrianshah)
 - **List Gunung**: Menyajikan daftar gunung beserta detail informasi seperti lokasi, ketinggian, jalur pendakian, dan kondisi jalur terkini di daerah pendakian. (Muhammad Hamiz Ghani Ayusha)
 - **Homepage**: Halaman utama yang menampilkan fitur-fitur unggulan website. (Muhammad Hamiz Ghani Ayusha)
 - **About**: Menyajikan informasi mengenai website. (Muhammad Hamiz Ghani Ayusha)
