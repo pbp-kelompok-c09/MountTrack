@@ -1,0 +1,49 @@
+import django.db.models.deletion
+import django.utils.timezone
+from django.db import migrations, models
+
+
+class Migration(migrations.Migration):
+
+    dependencies = [
+        ('booking', '0004_alter_booking_gunung'),
+        ('list_gunung', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.AlterModelOptions(
+            name='booking',
+            options={'ordering': ['-created_at']},
+        ),
+        migrations.AddField(
+            model_name='booking',
+            name='created_at',
+            field=models.DateTimeField(default=django.utils.timezone.now),
+        ),
+        migrations.AlterField(
+            model_name='booking',
+            name='gunung',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='list_gunung.mountain'),
+        ),
+        migrations.AlterField(
+            model_name='booking',
+            name='levels',
+            field=models.JSONField(blank=True, default=list),
+        ),
+        migrations.AlterField(
+            model_name='booking',
+            name='pax',
+            field=models.PositiveIntegerField(default=1),
+        ),
+        migrations.CreateModel(
+            name='BookingMember',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=150)),
+                ('age', models.PositiveIntegerField(blank=True, null=True)),
+                ('gender', models.CharField(blank=True, choices=[('M', 'Male'), ('F', 'Female'), ('O', 'Other')], max_length=1, null=True)),
+                ('level', models.CharField(choices=[('beginner', 'Beginner'), ('intermediate', 'Intermediate'), ('advanced', 'Advanced')], max_length=20)),
+                ('booking', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='members', to='booking.booking')),
+            ],
+        ),
+    ]
