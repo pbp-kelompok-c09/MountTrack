@@ -8,18 +8,16 @@
 # Deskripsi Aplikasi
 MountTrack adalah platform informasi pendakian yang menghadirkan daftar gunung aktif untuk didaki, lengkap dengan update cuaca real-time, status pendaftaran, serta kondisi jalur terkini. Selain itu, MountTrack juga menyajikan berita dan tren terbaru seputar dunia pecinta alam, sehingga pendaki dapat merencanakan perjalanan dengan aman dan terarah.
 
+Tak hanya sebagai sumber informasi, MountTrack juga menyediakan fitur booking pendakian gunung yang memudahkan pengguna dalam melakukan reservasi jalur resmi secara langsung melalui aplikasi. Melalui fitur komunitas, pengguna juga dapat berinteraksi dan mengelola rencana pendakian, menciptakan ekosistem yang kolaboratif bagi para pecinta alam di seluruh Indonesia.
+
 # Daftar Modul
 - **Halaman Autentikasi, Profil dan Admin Portal**: Halaman login, register, edit profil, dan admin portal untuk mengelola pengguna. (Farrel Arrayyan Adrianshah)
 - **List Gunung**: Menyajikan daftar gunung beserta detail informasi seperti lokasi, ketinggian, jalur pendakian, kondisi jalur terkini, dan update cuaca di daerah pendakian. (Muhammad Hamiz Ghani Ayusha)
-- **Homepage**: Menyajikan rangkuman informasi gunung dan berita. (Muhammad Hamiz Ghani Ayusha)
+- **Homepage**: Halaman utama yang menampilkan fitur-fitur unggulan website. (Muhammad Hamiz Ghani Ayusha)
+- **About**: Menyajikan informasi mengenai website. (Muhammad Hamiz Ghani Ayusha)
 - **Booking Pendakian**: Pengguna dapat menjadwalkan sesi pendakian mereka sesuai dengan ketersediaan gunung. (Nimaisya Gina Herapati)
 - **News**: Menyajikan berita terkini seputar gunung, kebijakan pendakian, kondisi jalur, hingga informasi menarik lainnya yang relevan bagi pendaki. (Ryan Gibran Purwcakra Sihaloho)
 - **Community**: Informasi mengenai event pendaki gunung seperti melakukan pendakian bersama (open trip). (Dibrienna Rauseuky Ramadhan)
-
-(TAMBAHAN MODUL)
-- **About**
-- **Homepage**
-
 
 # Initial Dataset
 Untuk dataset awal, kami menggunakan daftar gunung di Indonesia dari datagunung.com:
@@ -29,8 +27,8 @@ Kemudian dari list gunung di atas, akan kami ambil informasi nama gunung, keting
 
 
 # Role Pengguna
-- **Belum Login**: Dapat melihat halaman homepage dan berita.
-- **Login sebagai User**: Dapat membuat booking pendakian, membuat post komunitas baru, melengkapi profil, melihat berita, dan melihat list informasi gunung.
+- **Belum Login**: Dapat melihat halaman homepage, berita, dan profile page dengan data yang terbatas.
+- **Login sebagai User**: Dapat membuat booking pendakian, membuat post komunitas baru, melengkapi profil, melihat profil orang lain, melihat berita, dan melihat list informasi gunung.
 - **Login sebagai Admin**: Dapat merubah status kesediaan gunung, membuat berita baru, dan akses admin portal.
 
 # Link PWS
