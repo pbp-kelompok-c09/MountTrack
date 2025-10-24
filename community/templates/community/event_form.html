@@ -6,6 +6,38 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'community/css/community.css' %}">
 
+<style>
+  html, body {
+    background: #E5D7C4 !important;
+  }
+  body::before {
+    background: none !important;
+  }
+
+  header a,
+  .site-header a,
+  nav a,
+  .navbar a,
+  .navbar .nav-link {
+    color: #ffffff !important;
+  }
+  header a:hover,
+  .site-header a:hover,
+  nav a:hover,
+  .navbar a:hover,
+  .navbar .nav-link:hover {
+    color: #ffffff !important;
+    opacity: .9;
+  }
+
+  /* biar sejajar dengan style community lain */
+  .community-bg {
+    min-height: 100vh;
+    padding-top: 120px;
+    background-color: #e5d7c4;
+  }
+</style>
+
 <div class="community-bg">
   <div class="community-card">
     <h1 class="community-title">{% if mode == "edit" %}Edit Event{% else %}Buat Event{% endif %}</h1>
@@ -15,32 +47,63 @@
       {{ form.non_field_errors }}
 
       <div class="row">
-        <div>{{ form.title.label_tag }} {{ form.title }}</div>
-        <div>{{ form.mountain_name.label_tag }} {{ form.mountain_name }}</div>
+        <div>
+          <label for="{{ form.title.id_for_label }}">Judul</label>
+          {{ form.title }}
+        </div>
+        <div>
+          <label for="{{ form.mountain_name.id_for_label }}">Gunung / Lokasi</label>
+          {{ form.mountain_name }}
+        </div>
       </div>
 
       <div class="row">
-        <div>{{ form.start_at.label_tag }} {{ form.start_at }}</div>
-        <div>{{ form.end_at.label_tag }} {{ form.end_at }}</div>
+        <div>
+          <label for="{{ form.start_at.id_for_label }}">Mulai</label>
+          {{ form.start_at }}
+        </div>
+        <div>
+          <label for="{{ form.end_at.id_for_label }}">Selesai</label>
+          {{ form.end_at }}
+        </div>
       </div>
 
       <div class="row">
-        <div>{{ form.capacity.label_tag }} {{ form.capacity }}</div>
-        <div>{{ form.price.label_tag }} {{ form.price }}</div>
+        <div>
+          <label for="{{ form.capacity.id_for_label }}">Kapasitas</label>
+          {{ form.capacity }}
+        </div>
+        <div>
+          <label for="{{ form.price.id_for_label }}">Biaya (Rp)</label>
+          {{ form.price }}
+        </div>
       </div>
 
       <div class="row">
-        <div>{{ form.difficulty.label_tag }} {{ form.difficulty }}</div>
-        <div>{{ form.status.label_tag }} {{ form.status }}</div>
+        <div>
+          <label for="{{ form.difficulty.id_for_label }}">Tingkat Kesulitan</label>
+          {{ form.difficulty }}
+        </div>
+        <div>
+          <label for="{{ form.status.id_for_label }}">Status</label>
+          {{ form.status }}
+        </div>
       </div>
 
       <div class="row">
-        <div>{{ form.meeting_point.label_tag }} {{ form.meeting_point }}</div>
-        <div>{{ form.contact_person.label_tag }} {{ form.contact_person }}</div>
+        <div>
+          <label for="{{ form.meeting_point.id_for_label }}">Titik Kumpul</label>
+          {{ form.meeting_point }}
+        </div>
+        <div>
+          <label for="{{ form.contact_person.id_for_label }}">Kontak</label>
+          {{ form.contact_person }}
+        </div>
       </div>
 
       <div>
-        {{ form.description.label_tag }} {{ form.description }}
+        <label for="{{ form.description.id_for_label }}">Deskripsi</label>
+        {{ form.description }}
       </div>
 
       <div class="community-actions">

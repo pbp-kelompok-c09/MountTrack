@@ -53,7 +53,9 @@
     {% endif %}
 
 
-    {% include 'components/navbar.html' %}
+    {% block navbar %}
+        {% include 'components/navbar.html' %}
+    {% endblock navbar %}
 
     <!-- Page content -->
     <main class="">
