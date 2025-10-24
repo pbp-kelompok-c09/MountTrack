@@ -1,47 +1,167 @@
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth.decorators import login_required
-from .models import Booking
-# from .models import Mountain
+from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from .forms import BookingForm
+from .models import Booking, Mountain
+from django.contrib.auth.decorators import login_required
 from userprofile.models import UserProfile
-from django.http import HttpResponse
+
+def _build_anggota_fields(form, pax_value):
+    anggota_fields = []
+    for i in range(pax_value):
+        name_field = form[f'anggota_{i}_name'] if f'anggota_{i}_name' in form.fields else None
+        age_field = form[f'anggota_{i}_age'] if f'anggota_{i}_age' in form.fields else None
+        gender_field = form[f'anggota_{i}_gender'] if f'anggota_{i}_gender' in form.fields else None
+        level_field = form[f'anggota_{i}_level'] if f'anggota_{i}_level' in form.fields else None
+
+        anggota_fields.append({
+            'name': name_field,
+            'age': age_field,
+            'gender': gender_field,
+            'level': level_field,
+        })
+    return anggota_fields
 
 @login_required
-def booking_view(request, gunung_id):
-    # gunung = get_object_or_404(Gunung, id=gunung_id)  
-    user_profile = UserProfile.objects.get(user=request.user)  
-    porter_needed = False   
-    booking_summary = None  
+def booking_view(request, gunung_slug):
+    gunung = get_object_or_404(Mountain, slug=gunung_slug)
+    user_profile = UserProfile.objects.filter(username=request.user.username).first()
 
+    # Tentukan pax_value prioritas: POST > GET param > default 1
+    pax_value = 1
     if request.method == 'POST':
-        form = BookingForm(request.POST)
+        try:
+            pax_value = int(request.POST.get('pax', 1))
+        except (TypeError, ValueError):
+            pax_value = 1
+    else:
+        try:
+            pax_value = int(request.GET.get('pax', 1))
+        except (TypeError, ValueError):
+            pax_value = 1
+
+    # Buat form sesuai pax_value sehingga field anggota dibuat
+    form = BookingForm(request.POST or None, pax=pax_value)
+
+    # Jika POST pertama hanya berisi pax (belum ada field anggota_0_name), tampilkan form anggota
+    if request.method == 'POST' and not any(k.startswith('anggota_0_') for k in request.POST.keys()):
+        anggota_fields = _build_anggota_fields(form, pax_value)
+        return render(request, 'booking/booking_form.html', {
+            'form': form,
+            'user_profile': user_profile,
+            'gunung': gunung,
+            'pax': pax_value,
+            'anggota_fields': anggota_fields,
+        })
+
+    # Final submission: semua field anggota ada
+    if request.method == 'POST':
         if form.is_valid():
-            pax = form.cleaned_data['pax']
-            levels = form.cleaned_data['levels']
-            
-            if all(level == 'beginner' for level in levels):  
+            levels = []
+            anggota_list = []
+            for i in range(pax_value):
+                name = form.cleaned_data.get(f'anggota_{i}_name')
+                age = form.cleaned_data.get(f'anggota_{i}_age')
+                gender = form.cleaned_data.get(f'anggota_{i}_gender')
+                level = form.cleaned_data.get(f'anggota_{i}_level')
+                levels.append(level)
+                anggota_list.append({'name': name, 'age': age, 'gender': gender, 'level': level})
+
+            # logika porter
+            porter_needed = False
+            if all(l == 'beginner' for l in levels):
                 porter_needed = True
-            elif any(level == 'beginner' for level in levels) and levels.count('intermediate') >= 2: 
+            elif any(l == 'beginner' for l in levels) and levels.count('intermediate') >= 2:
                 porter_needed = True
 
-            if porter_needed or any(level != 'beginner' for level in levels):  # Booking bisa dilakukan jika ada porter atau tidak semua beginner
-                booking = Booking.objects.create(
-                    user=request.user,
-                    mountain=Mountain.objects.get(name=gunung_id),
-                    pax=pax,
-                    levels=levels,
-                    porter_required=porter_needed
+            if porter_needed and form.cleaned_data.get('porter_hire') != 'yes':
+                form.add_error('porter_hire', 'Booking ini membutuhkan penyewaan porter. Pilih "Ya" untuk melanjutkan.')
+                anggota_fields = _build_anggota_fields(form, pax_value)
+                return render(request, 'booking/booking_form.html', {
+                    'form': form,
+                    'user_profile': user_profile,
+                    'gunung': gunung,
+                    'pax': pax_value,
+                    'anggota_fields': anggota_fields,
+                })
+
+            booking = Booking.objects.create(
+                user=request.user,
+                gunung=gunung,
+                pax=pax_value,
+                levels=levels,
+                porter_required=porter_needed
+            )
+
+            for i in range(pax_value):
+                BookingMember.objects.create(
+                    booking=booking,
+                    name=form.cleaned_data.get(f'anggota_{i}_name'),
+                    age=form.cleaned_data.get(f'anggota_{i}_age'),
+                    gender=form.cleaned_data.get(f'anggota_{i}_gender'),
+                    level=form.cleaned_data.get(f'anggota_{i}_level')
                 )
-                
-                booking_summary = {
-                    'gunung': gunung.nama,
-                    'pax': pax,
-                    'levels': ', '.join(levels),
-                    'porter_required': 'Yes' if porter_needed else 'No',
-                }
-                return render(request, 'booking/booking_summary.html', {'booking_summary': booking_summary})
-        else:
-            return HttpResponse("Form is invalid. Please check your input.")
 
-    form = BookingForm()
-    return render(request, 'booking/booking_form.html', {'gunung': gunung, 'user_profile': user_profile, 'form': form})
+            # tambahkan gunung ke history userprofile jika profil tersedia
+            if user_profile:
+                try:
+                    user_profile.add_history(gunung)
+                except Exception:
+                    # jangan crash jika ada masalah, bisa ditangani logging jika perlu
+                    pass
+            return redirect(reverse('booking:booking_summary', kwargs={'booking_id': booking.id}))
+
+            # # redirect ke halaman history — ganti 'userprofile:history' jika route berbeda
+            # try:
+            #     return redirect(reverse('userprofile:history'))
+            # except Exception:
+            #     return redirect('/')  # fallback ke homepage
+        else:
+            anggota_fields = _build_anggota_fields(form, pax_value)
+            return render(request, 'booking/booking_form.html', {
+                'form': form,
+                'user_profile': user_profile,
+                'gunung': gunung,
+                'pax': pax_value,
+                'anggota_fields': anggota_fields,
+            })
+
+    # GET: tampilkan form awal (dengan anggota sesuai pax_value)
+    anggota_fields = _build_anggota_fields(form, pax_value)
+    return render(request, 'booking/booking_form.html', {
+        'form': form,
+        'user_profile': user_profile,
+        'gunung': gunung,
+        'pax': pax_value,
+        'anggota_fields': anggota_fields,
+    })
+
+@login_required
+def booking_summary(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+    user_profile = UserProfile.objects.filter(username=booking.user.username).first()
+    
+    anggota_data = []
+    for member in booking.members.all():
+        anggota_data.append({
+            'name': member.name,
+            'age': member.age,
+            'gender': member.get_gender_display(),
+            'level': member.get_level_display(),
+        })
+
+    
+    summary = {
+        'gunung': booking.gunung.name if booking.gunung else str(booking.gunung),
+        'pax': booking.pax,
+        'levels': ', '.join(booking.levels) if isinstance(booking.levels, (list, tuple)) else booking.levels,
+        'porter_required': 'Ya' if booking.porter_required else 'Tidak',
+        'anggota_data': anggota_data, 
+    }
+    return render(request, 'booking/booking_summary.html', {
+        'booking_summary': summary,
+        'user_profile': user_profile,
+        'booking': booking,
+    })
+
+def home(request):
+    return render(request, 'index.html')  
