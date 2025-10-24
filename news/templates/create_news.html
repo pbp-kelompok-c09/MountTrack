@@ -1,89 +1,237 @@
-<h2>Buat Berita Baru</h2>
+{% extends 'base.html' %}
+{% load static %}
 
-<form method="POST" novalidate>
-    {% csrf_token %}
+{% block content %}
+
+<style>
+  .card-body input[type="text"],
+  .card-body input[type="url"],
+  .card-body textarea {
+    background-color: #E5D7C4 !important; 
+    border-color: #354024 !important;     
+    border-width: 2px;
+    color: #354024; 
+  }
+
+  
+  .card-body input[type="text"]::placeholder,
+  .card-body input[type="url"]::placeholder,
+  .card-body textarea::placeholder {
+    color: #354024;
+    opacity: 0.6;
+  }
+
+ 
+  .card-body input[type="text"]:focus,
+  .card-body input[type="url"]:focus,
+  .card-body textarea:focus {
+    outline: 2px solid transparent;
+    outline-offset: 2px;
+    border-color: #354024 !important;
+    box-shadow: 0 0 0 3px rgba(53, 64, 36, 0.3); 
+  }
+
+  
+  .card-body input[type="file"] {
+    background-color: #E5D7C4;
+    border-color: #354024;
+    border-width: 2px;
+    color: #354024;
+    border-radius: 0.5rem; 
+  }
+  
+  
+  .card-body input[type="file"]::file-selector-button {
+      background-color: #354024;
+      color: #E5D7C4; 
+      border: none;
+      padding-left: 1rem;
+      padding-right: 1rem;
+      height: 100%;
+      margin-right: 1rem;
+      border-radius: 0.375rem 0 0 0.375rem; 
+      cursor: pointer;
+  }
+</style>
+
+<div class="min-h-screen p-4 md:p-8" style="background-color: #8A9A5B;" data-theme="light">
+  
+  <div class="card max-w-4xl mx-auto shadow-xl" style="background-color: #CFBB99;">
     
-    <h3>Detail Berita</h3>
-    {{ news_form.as_p }}
-    
-    <hr>
-    
-    <h3>Gambar Tambahan</h3>
-    
-    {{ image_formset.management_form }}
-    
-    <div id="image-form-list">
+    <form method="POST" novalidate class="card-body">
+      {% csrf_token %}
+
+      <h2 class="card-title text-3xl mb-4" style="color: #354024;">
+        {{ page_title|default:"Buat Berita Baru" }}
+      </h2>
+
+      <div class="space-y-4">
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text" style="color: #354024;">{{ news_form.title.label }}</span>
+          </label>
+          {{ news_form.title }} 
+          {% if news_form.title.errors %}
+          <label class="label">
+            {% for error in news_form.title.errors %}
+            <span class="label-text-alt text-red-600 font-medium">{{ error }}</span>
+            {% endfor %}
+          </label>
+          {% endif %}
+        </div>
+
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text" style="color: #354024;">{{ news_form.content.label }}</span>
+          </label>
+          {{ news_form.content }}
+          {% if news_form.content.errors %}
+          <label class="label">
+            {% for error in news_form.content.errors %}
+            <span class="label-text-alt text-red-600 font-medium">{{ error }}</span>
+            {% endfor %}
+          </label>
+          {% endif %}
+        </div>
+
+        <div class="form-control w-full">
+          <label class="label">
+            <span class="label-text" style="color: #354024;">{{ news_form.pinned_thumbnail.label }}</span>
+          </label>
+          {{ news_form.pinned_thumbnail }}
+          {% if news_form.pinned_thumbnail.errors %}
+          <label class="label">
+            {% for error in news_form.pinned_thumbnail.errors %}
+            <span class="label-text-alt text-red-600 font-medium">{{ error }}</span>
+            {% endfor %}
+          </label>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="divider text-lg" style="color: #354024;">Gambar Tambahan</div>
+
+      {% if image_formset.non_form_errors %}
+      <div class="alert alert-error shadow-lg mb-4">
+        <div>
+          <span>
+            <strong>Error:</strong>
+            {% for error in image_formset.non_form_errors %}
+              {{ error }}
+            {% endfor %}
+          </span>
+        </div>
+      </div>
+      {% endif %}
+
+      {{ image_formset.management_form }}
+
+      <div id="image-form-list" class="space-y-4">
         {% for form in image_formset %}
-            <div class="image-form">
-                
-                <p>
-                    {{ form.image_url.label_tag }}
-                    {{ form.image_url }}
-                    {{ form.image_url.errors }}
-                </p>
-
-                {{ form.id }}
-
-                {% if form.instance.pk and image_formset.can_delete %}
-                    <label>
-                        Hapus Gambar Ini: {{ form.DELETE }}
-                    </label>
-                {% endif %}
-                </div>
-            <br>
+        <div class="image-form p-4 border rounded-md border-4" style="border-color: #354024;">
+          <div class="form-control w-full">
+            <label class="label">
+              <span class="label-text" style="color: #354024;">{{ form.image_url.label }}</span>
+            </label>
+            {{ form.image_url }}
+            {% if form.image_url.errors %}
+            <label class="label">
+              {% for error in form.image_url.errors %}
+              <span class="label-text-alt text-red-600 font-medium">{{ error }}</span>
+              {% endfor %}
+            </label>
+            {% endif %}
+          </div>
+          {{ form.id }}
+          {% if form.instance.pk %}
+          <div style="display: none;">
+            {{ form.DELETE }}
+          </div>
+          <button type="button" class="btn btn-error btn-sm mt-2 js-delete-existing-image">Hapus Gambar Ini</button>
+          {% endif %}
+        </div>
         {% endfor %}
-    </div>
-    
-    <button type="button" id="add-image-form" class="btn btn-secondary btn-sm">+ Tambah Gambar Lain</button>
-    
-    <hr>
-    
-    <button type="submit" class="btn btn-primary">Simpan Berita</button>
-</form>
+      </div>
 
-<div id="empty-form-template" style="display: none;">
-    <div class="image-form">
-        <p>
-            {{ image_formset.empty_form.image_url.label_tag }}
-            {{ image_formset.empty_form.image_url }}
-        </p>
-        <button type="button" class="remove-image-form btn btn-danger btn-sm">Hapus Gambar Ini</button>
-    </div>
-    <br>
+      <button type="button" id="add-image-form" class="btn btn-outline mt-4" style="border-color: #354024; color: #354024; background-color: #E5D7C4;">
+        + Tambah Gambar Lain
+      </button>
+
+      <div class="divider"></div>
+      <div class="card-actions justify-end">
+        <button type="submit" class="btn text-white" style="background-color: #354024; border-color: #354024;">
+          Unggah Berita
+        </button>
+      </div>
+    </form>
+  </div>
 </div>
 
+<div id="empty-form-template" style="display: none;">
+  <div class="form-wrapper-js mt-4">
+    <div class="image-form p-4 border rounded-md border-4" style="border-color: #354024;">
+      <div class="form-control w-full">
+        <label class="label">
+          <span class="label-text" style="color: #354024;">{{ image_formset.empty_form.image_url.label }}</span>
+        </label>
+        {{ image_formset.empty_form.image_url }}
+      </div>
+      <button type="button" class="remove-image-form btn btn-error btn-sm mt-2">Hapus Gambar Ini</button>
+    </div>
+  </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const addFormBtn = document.getElementById('add-image-form');
-    const formList = document.getElementById('image-form-list');
-    const template = document.getElementById('empty-form-template').innerHTML;
-    const totalFormsInput = document.getElementById('id_images-TOTAL_FORMS');
+  const addFormBtn = document.getElementById('add-image-form');
+  const formList = document.getElementById('image-form-list');
+  const template = document.getElementById('empty-form-template').innerHTML;
+  const totalFormsInput = document.getElementById('id_images-TOTAL_FORMS');
 
-    addFormBtn.addEventListener('click', function() {
-        let currentFormCount = parseInt(totalFormsInput.value);
-        const newFormHtml = template.replace(/__prefix__/g, currentFormCount);
-        formList.insertAdjacentHTML('beforeend', newFormHtml);
-        totalFormsInput.value = currentFormCount + 1;
-    });
+  if (!totalFormsInput) {
+    console.error("Error: Tidak dapat menemukan input 'id_images-TOTAL_FORMS'.");
+  }
 
-    // Event listener untuk tombol hapus (yang dibuat oleh JS)
-    formList.addEventListener('click', function(event) {
-        if (event.target.classList.contains('remove-image-form')) {
-            // Temukan 'image-form' terdekat dan hapus
-            const formWrapper = event.target.closest('.image-form');
-            if (formWrapper) {
-                const br = formWrapper.nextElementSibling; // Hapus <br> setelahnya
-                if(br && br.tagName === 'BR') {
-                    br.remove();
-                }
-                formWrapper.remove();
-                
-                // PENTING: Kita tidak perlu mengurangi TOTAL_FORMS.
-                // Django cukup pintar untuk menangani form yang 'hilang'
-                // selama ID-nya tidak ada (karena ini form baru).
-            }
+  // Tambah form gambar baru
+  addFormBtn.addEventListener('click', function() {
+    let currentFormCount = parseInt(totalFormsInput.value);
+    const newFormHtml = template.replace(/__prefix__/g, currentFormCount);
+    formList.insertAdjacentHTML('beforeend', newFormHtml);
+    totalFormsInput.value = currentFormCount + 1;
+  });
+
+  // Hapus form gambar (baru atau lama)
+  formList.addEventListener('click', function(event) {
+    if (event.target.classList.contains('remove-image-form')) {
+      const formWrapper = event.target.closest('.form-wrapper-js');
+      if (formWrapper) {
+        formWrapper.remove();
+      }
+    }
+
+    if (event.target.classList.contains('js-delete-existing-image')) {
+      if (!confirm('Gambar ini akan dihapus saat Anda menekan "Unggah Berita". Lanjutkan?')) {
+        return;
+      }
+      const formWrapper = event.target.closest('.image-form');
+      if (formWrapper) {
+        const deleteInput = formWrapper.querySelector('input[type="checkbox"][name$="-DELETE"]');
+        if (deleteInput) {
+          deleteInput.checked = true;
         }
+        formWrapper.style.display = 'none';
+      }
+    }
+  });
+
+  // pesan Django (toast)
+  const djangoMessages = JSON.parse('{{ messages_json|escapejs }}');
+  if (djangoMessages && djangoMessages.length > 0) {
+    djangoMessages.forEach(msg => {
+      showToast(msg.text, msg.color);
     });
+  }
 });
 </script>
+
+{% endblock %}

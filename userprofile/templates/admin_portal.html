@@ -4,72 +4,34 @@
 {% endblock meta %}
 
 {% block content %}
-<style>
-  .admin-page { background:#E5D7C4; min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:2.5rem 1.5rem; }
 
-  /* header */
-  .admin-header { width:100%; max-width:80rem; background:#354024; color:#E5D7C4; border-top-left-radius:0.75rem; border-top-right-radius:0.75rem; padding:1.5rem; display:flex; justify-content:space-between; align-items:center; }
-  .admin-header h1 { font-size:1.5rem; font-weight:700; }
-  .admin-header small { color:#CFBB99; }
-
-  /* konten di admin card */
-  .admin-card { width:100%; max-width:80rem; background:#F8F4EF; border:1px solid #CFBB99; border-bottom-left-radius:0.75rem; border-bottom-right-radius:0.75rem; padding:1.5rem; }
-
-  /* tabel */
-  #userTable { width:100%; border-collapse:collapse; }
-  #userTable thead th { background:rgba(207,187,153,0.3); color:#354024; padding:0.75rem; border-bottom:1px solid #CFBB99; text-align:left; }
-  #userTable tbody td { padding:0.75rem; border-bottom:1px solid #CFBB99; color:#354024; }
-  #userTable tbody tr:hover { background:rgba(229,215,196,0.6); }
-
-  /* tombol aksi tabel */
-  #userTable button { background:#354024; color:#E5D7C4; border:none; padding:0.4rem 0.6rem; border-radius:0.375rem; cursor:pointer; font-size:0.875rem; }
-  #userTable button + button { margin-left:0.5rem; }
-  #userTable button[style*="red"] { background:#DC2626 !important; color:#fff !important; }
-
-  /* status teks */
-  #loading { color:#354024; font-style:italic; margin:0.5rem 0; }
-  #error { color:#DC2626; margin:0.5rem 0; }
-
-  /* tombol tambah user */
-  #openAddUserPopup { background:#354024; color:#E5D7C4; padding:0.5rem 0.75rem; border-radius:0.375rem; font-weight:600; }
-  #openAddUserPopup:hover { background:#4C3D19; }
-
-  /* popup tambah user */
-  #addUserPopup { background:#F8F4EF; border:1px solid #CFBB99; border-radius:0.75rem; padding:1rem; margin-top:1rem; max-width:32rem; width:100%; }
-  #addUserPopup h3 { color:#354024; font-weight:600; font-size:1.125rem; margin-bottom:0.75rem; }
-  #addUserPopup label { display:block; color:#354024; font-size:0.9rem; margin-top:0.5rem; }
-  #addUserPopup input { width:100%; padding:0.5rem 0.75rem; border:1px solid #889063; border-radius:0.375rem; margin-top:0.25rem; background:#fff; color:#354024; }
-  #saveUser { background:#354024; color:#E5D7C4; padding:0.5rem 0.75rem; border-radius:0.375rem; font-weight:600; }
-  #saveUser:hover { background:#4C3D19; }
-  #closePopup { background:transparent; border:1px solid #889063; color:#354024; padding:0.5rem 0.75rem; border-radius:0.375rem; margin-left:0.5rem; }
-  #closePopup:hover { background:rgba(207,187,153,0.4); }
-</style>
-
-<div class="admin-page">
-  <div class="admin-header">
-    <h1>MountTrack Admin Management</h1>
-    <div class="flex items-center gap-4">
-      <small>Login sebagai <b>{{ request.user.username }}</b></small>
-      <a href="{% url 'userprofile:logout' %}" class="bg-[#CFBB99] text-[#354024] font-semibold py-2 px-4 rounded-md hover:bg-[#889063] hover:text-[#E5D7C4] transition-colors">
-        Logout
-      </a>
+<div class="admin-page bg-[#E5D7C4] min-h-screen flex flex-col items-center py-10 px-6">
+  
+  <div class="admin-header w-full max-w-7xl bg-[#354024] text-[#E5D7C4] rounded-t-xl p-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+    <h1 class="text-2xl font-bold text-center md:text-left">MountTrack Admin Management</h1>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+      <small class="text-[#CFBB99] text-sm">Login sebagai <b>{{ request.user.username }}</b></small>
+        <a href="{% url 'userprofile:logout' %}"
+          class="bg-[#CFBB99] text-[#354024] font-semibold py-2 px-4 rounded-md hover:bg-[#889063] hover:text-[#E5D7C4] transition-colors w-full sm:w-auto text-center">
+          Logout
+        </a>
     </div>
   </div>
 
-  <div class="admin-card">
-    <!-- loading dan error state -->
-    <div id="loading" style="display:none;">Loading...</div>
-    <div id="error" style="color:red; display:none;"></div>
+  <div class="admin-card w-full max-w-7xl bg-[#F8F4EF] border border-[#CFBB99] rounded-b-xl p-6">
+    
+    <div id="loading" class="text-[#354024] italic my-2" style="display:none;">Loading...</div>
+    <div id="error" class="text-red-600 my-2" style="display:none;"></div>
 
-    <!-- tabel untuk daftar user -->
     <div class="overflow-x-auto mt-3">
-      <table border="1" cellpadding="8" id="userTable">
+      <table border="1" cellpadding="8" id="userTable" class="w-full border-collapse">
         <thead>
           <tr>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Action</th>
+            <th class="bg-[#CFBB99]/30 text-[#354024] p-3 border-b border-[#CFBB99] text-left">Username</th>
+            <!-- email disembunyikan di mobile -->
+            <th class="bg-[#CFBB99]/30 text-[#354024] p-3 border-b border-[#CFBB99] text-left hidden sm:table-cell">Email</th>
+            <th class="bg-[#CFBB99]/30 text-[#354024] p-3 border-b border-[#CFBB99] text-left">Role</th>
+            <th class="bg-[#CFBB99]/30 text-[#354024] p-3 border-b border-[#CFBB99] text-left">Action</th>
           </tr>
         </thead>
         <tbody id="userTableBody"></tbody>
@@ -77,17 +39,33 @@
     </div>
 
     <br>
-    <!-- tombol tambah user -->
-    <button id="openAddUserPopup">Tambah User</button>
+    <button id="openAddUserPopup" class="bg-[#354024] text-[#E5D7C4] py-2 px-3 rounded-md font-semibold hover:bg-[#4C3D19] transition-colors">
+      Tambah User
+    </button>
 
-    <!-- popup form -->
-    <div id="addUserPopup" style="display:none">
-      <h3>Tambah User Baru</h3>
-      <label>Username: <input type="text" id="newUsername"></label><br>
-      <label>Email: <input type="email" id="newEmail"></label><br>
-      <label>Password: <input type="password" id="newPassword"></label><br><br>
-      <button id="saveUser">Simpan</button>
-      <button id="closePopup">Tutup</button>
+    <div id="addUserPopup" class="bg-[#F8F4EF] border border-[#CFBB99] rounded-xl p-4 mt-4 max-w-lg w-full" style="display:none">
+      <h3 class="text-[#354024] font-semibold text-lg mb-3">Tambah User Baru</h3>
+      
+      <label class="block text-[#354024] text-sm mt-2">Username: 
+        <input type="text" id="newUsername" class="w-full py-2 px-3 border border-[#889063] rounded-md mt-1 bg-white text-[#354024]">
+      </label>
+      
+      <label class="block text-[#354024] text-sm mt-2">Email: 
+        <input type="email" id="newEmail" class="w-full py-2 px-3 border border-[#889063] rounded-md mt-1 bg-white text-[#354024]">
+      </label>
+      
+      <label class="block text-[#354024] text-sm mt-2">Password: 
+        <input type="password" id="newPassword" class="w-full py-2 px-3 border border-[#889063] rounded-md mt-1 bg-white text-[#354024]">
+      </label>
+      
+      <div class="mt-4">
+        <button id="saveUser" class="bg-[#354024] text-[#E5D7C4] py-2 px-3 rounded-md font-semibold hover:bg-[#4C3D19] transition-colors">
+          Simpan
+        </button>
+        <button id="closePopup" class="bg-transparent border border-[#889063] text-[#354024] py-2 px-3 rounded-md ml-2 hover:bg-[#CFBB99]/40 transition-colors">
+          Tutup
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -113,6 +91,12 @@ async function fetchUsers() {
   loadingDiv.style.display = "block";
   errorDiv.style.display = "none";
   userTableBody.innerHTML = "";
+  
+  // definisi class tailwind
+  const cellClasses = "p-3 border-b border-[#CFBB99] text-[#354024]";
+  const rowClasses = "hover:bg-[#E5D7C4]/60";
+  const toggleBtnClasses = "bg-[#354024] text-[#E5D7C4] py-1.5 px-2.5 rounded-md text-sm cursor-pointer";
+  const deleteBtnClasses = "bg-red-600 text-white py-1.5 px-2.5 rounded-md text-sm cursor-pointer ml-2";
 
   try {
     const response = await fetch(API_GET_USERS);
@@ -120,39 +104,45 @@ async function fetchUsers() {
     const users = await response.json();
 
     if (users.length === 0) {
-      userTableBody.innerHTML = "<tr><td colspan='4'>Belum ada pengguna.</td></tr>";
+      userTableBody.innerHTML = "<tr><td colspan='4' class='" + cellClasses + "'>Belum ada pengguna.</td></tr>";
     } else {
       users.forEach(user => {
         const row = document.createElement("tr");
+        row.className = rowClasses; 
 
         // buat cell untuk setiap kolom
         const usernameCell = document.createElement("td");
+        usernameCell.className = cellClasses; 
         usernameCell.textContent = user.username;
 
         const emailCell = document.createElement("td");
+        emailCell.className = cellClasses + " hidden sm:table-cell";
         emailCell.textContent = user.email || "-";
 
         const roleCell = document.createElement("td");
+        roleCell.className = cellClasses; 
         roleCell.textContent = user.is_staff ? "Admin" : "User";
 
         const actionCell = document.createElement("td");
+        actionCell.className = cellClasses; 
 
         // kalau bukan diri sendiri, buat tombol aksi
         if (user.username !== "{{ request.user.username }}") {
           const toggleBtn = document.createElement("button");
+          toggleBtn.className = toggleBtnClasses; 
           toggleBtn.textContent = user.is_staff ? "Hapus Admin" : "Jadikan Admin";
           toggleBtn.addEventListener("click", () => toggleAdmin(user.id, user.is_staff));
 
           const deleteBtn = document.createElement("button");
+          deleteBtn.className = deleteBtnClasses; 
           deleteBtn.textContent = "Hapus User";
-          deleteBtn.style.color = "red";
-          deleteBtn.style.marginLeft = "5px";
           deleteBtn.addEventListener("click", () => deleteUser(user.id));
 
           actionCell.appendChild(toggleBtn);
           actionCell.appendChild(deleteBtn);
         } else {
           const info = document.createElement("i");
+          info.className = "text-xs italic text-gray-600";
           info.textContent = "(Tidak bisa ubah diri sendiri!)";
           actionCell.appendChild(info);
         }
