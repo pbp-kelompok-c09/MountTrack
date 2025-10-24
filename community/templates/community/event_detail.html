@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 {% block content %}
 <style>
@@ -27,7 +26,7 @@
   .detail-title {
     font-size: 32px;
     font-weight: 800;
-    color: #4b3b2b;
+    color: #234520; /* hijau gelap seperti di list page */
     margin: 0;
   }
 
@@ -36,9 +35,9 @@
     border-radius: 999px;
     font-weight: 700;
     font-size: 14px;
-    background: #f2e6d5;
-    color: #4b3b2b;
-    border: 1.4px solid #a48d6a;
+    background: #efe6d6;  /* lebih soft */
+    color: #234520;
+    border: 1.4px solid #b8a890;
   }
 
   .card {
@@ -58,30 +57,31 @@
   }
   td { color: #222; }
 
-  strong { color: #4b3b2b; }
+  strong { color: #234520; }
 
   .actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 10px 0 20px; }
 
+  /* tombol disamakan dengan halaman list (hijau) */
   .btn {
     padding: 8px 14px;
     border-radius: 999px;
     text-decoration: none;
     font-weight: 700;
-    border: 2px solid #7a5c3e;
-    background: #b68c64;              
-    color: #fffaf2;
+    border: 2px solid #234520;
+    background: #e7d7b8;        
+    color: #ffffff;
     transition: all .2s ease;
   }
   .btn:hover {
-    background: #a67a52;              
+    background: #e7d7b8;        /* hover hijau lebih gelap */
     transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(0,0,0,0.2);
   }
 
   .btn-outline {
     background: #e7d7b8;
-    color: #4b3b2b;
-    border-color: #7a5c3e;
+    color: #234520;
+    border-color: #234520;
     transition: all .2s ease;
   }
   .btn-outline:hover {
@@ -95,7 +95,7 @@
     margin-bottom: 10px;
     border: 1px solid #c9b79f;
   }
-  .comment-item strong { color: #4b3b2b; }
+  .comment-item strong { color: #234520; }
   .comment-item span { color: #3f3f3f; font-size: 14px; }
   .comment-body { margin-top: 4px; white-space: pre-wrap; }
 
@@ -116,18 +116,18 @@
   }
   .comment-form button {
     margin-top: 10px;
-    background: #b68c64;
-    color: #fffaf2;
-    border: 2px solid #7a5c3e;
+    background: #2e5b2c;  /* samain tombol form */
+    color: #ffffff;
+    border: 2px solid #234520;
     padding: 8px 14px;
     border-radius: 999px;
     font-weight: 700;
     cursor: pointer;
     transition: all .2s ease;
   }
-  .comment-form button:hover { background: #a67a52; }
+  .comment-form button:hover { background: #244923; }
 
-  .detail-wrap a { color: #4b3b2b; text-decoration: none; font-weight: 600; }
+  .detail-wrap a { color: #234520; text-decoration: none; font-weight: 600; }
   .detail-wrap a:hover { text-decoration: underline; }
 </style>
 
@@ -188,7 +188,7 @@
     </div>
 
     <div class="card">
-      <h3 style="margin-top:0;color:#4b3b2b;">Komentar</h3>
+      <h3 style="margin-top:0;color:#234520;">Komentar</h3>
       {% for c in comments %}
         <div class="comment-item">
           <div style="display:flex;justify-content:space-between;">
