@@ -54,21 +54,21 @@
   }
 </style>
 
-<div class="min-h-screen p-4 md:p-8" style="background-color: #8A9A5B;" data-theme="light">
+<div class="min-h-screen px-4 md:px-8 pb-4 md:pb-8 pt-40" style="background-color: #E5D7C4;" data-theme="light">
   
-  <div class="card max-w-4xl mx-auto shadow-xl" style="background-color: #CFBB99;">
+  <div class="card max-w-4xl mx-auto shadow-xl" style="background-color: rgb(136, 144, 99);">
     
     <form method="POST" novalidate class="card-body">
       {% csrf_token %}
 
-      <h2 class="card-title text-3xl mb-4" style="color: #354024;">
+      <h2 class="card-title text-3xl mb-4" style="color: #E5D7C4;">
         {{ page_title|default:"Buat Berita Baru" }}
       </h2>
 
       <div class="space-y-4">
         <div class="form-control w-full">
           <label class="label">
-            <span class="label-text" style="color: #354024;">{{ news_form.title.label }}</span>
+            <span class="label-text" style="color: #354024; font-size: 15pt; font-weight: 600;" >Judul Berita</span>
           </label>
           {{ news_form.title }} 
           {% if news_form.title.errors %}
@@ -82,7 +82,7 @@
 
         <div class="form-control w-full">
           <label class="label">
-            <span class="label-text" style="color: #354024;">{{ news_form.content.label }}</span>
+            <span class="label-text" style="color: #354024; font-size: 15pt; font-weight: 600;">Isi Berita</span>
           </label>
           {{ news_form.content }}
           {% if news_form.content.errors %}
@@ -96,7 +96,7 @@
 
         <div class="form-control w-full">
           <label class="label">
-            <span class="label-text" style="color: #354024;">{{ news_form.pinned_thumbnail.label }}</span>
+            <span class="label-text" style="color: #354024; font-size: 15pt; font-weight: 600;">Thumbnail</span>
           </label>
           {{ news_form.pinned_thumbnail }}
           {% if news_form.pinned_thumbnail.errors %}
