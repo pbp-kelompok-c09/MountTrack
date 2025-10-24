@@ -23,5 +23,6 @@ urlpatterns = [
     path('accounts/', include('userprofile.urls')),
     path('community/', include('community.urls')), 
     path('news/', include('news.urls')),
+    path('booking/', include('booking.urls')),
 ]
 

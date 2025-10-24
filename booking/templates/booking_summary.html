@@ -11,7 +11,13 @@
     <ul>
         <li><strong>Gunung:</strong> {{ booking_summary.gunung }}</li>
         <li><strong>Jumlah Anggota:</strong> {{ booking_summary.pax }}</li>
-        <li><strong>Levels:</strong> {{ booking_summary.levels }}</li>
+        <li><strong>Levels:</strong>
+            <ul>
+                {% for level in booking_summary.levels.split(', ') %}
+                    <li>{{ level }}</li>
+                {% endfor %}
+            </ul>
+        </li>
         <li><strong>Porter:</strong> {{ booking_summary.porter_required }}</li>
     </ul>
 </div>
