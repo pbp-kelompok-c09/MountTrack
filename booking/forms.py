@@ -1,12 +1,17 @@
 from django import forms
+from .models import Booking, BookingMember
 
-class BookingForm(forms.Form):
+class BookingForm(forms.ModelForm):
     pax = forms.IntegerField(label='Jumlah Anggota', min_value=1, initial=1)
     porter_hire = forms.ChoiceField(
         choices=[('', '---'), ('yes','Ya'),('no','Tidak')],
         required=False,
         label='Sewa Porter? (jika diperlukan)'
     )
+
+    class Meta:
+        model = Booking
+        fields = ['pax', 'porter_hire']
 
     def __init__(self, *args, **kwargs):
         pax = kwargs.pop('pax', None)
