@@ -18,8 +18,8 @@
             <div class="header-left">
                 <i class="fa-solid fa-file-invoice header-icon"></i>
                 <div class="header-title">
-                    <h1>Booking Summary</h1>
-                    <p>Review your hiking adventure details</p>
+                    <h1>Ringkasan Booking</h1>
+                    <p>Lihatlah rangkuman petualangan kamu</p>
                 </div>
             </div>
             <div class="header-right">
@@ -33,8 +33,8 @@
                     <i class="fa-solid fa-check"></i>
                 </div>
                 <div>
-                    <h2>Booking Confirmed!</h2>
-                    <p>Your mountain hiking adventure has been successfully booked</p>
+                    <h2>Booking Berhasil!</h2>
+                    <p>Petualangan pendakian gunung Anda telah berhasil dipesan!</p>
                 </div>
             </section>
 
@@ -43,30 +43,30 @@
                     <section class="card">
                         <div class="card-header">
                             <div class="icon-circle"><i class="fa-solid fa-mountain-sun"></i></div>
-                            <h2 class="card-title">Trip Information</h2>
+                            <h2 class="card-title">Informasi Pendakian</h2>
                         </div>
                         <div class="grid-details">
                             <div class="detail-item">
-                                <div class="label">Mountain</div>
+                                <div class="label">Gunung</div>
                                 <div class="value">{{ booking.gunung.nama }}</div>
                             </div>
                             <div class="detail-item">
-                                <div class="label">Booking Date</div>
+                                <div class="label">Tanggal Booking</div>
                                 <div class="value">{{ booking.created_at|date:"d/m/Y" }}</div>
                             </div>
                             <div class="detail-item">
-                                <div class="label">Total Members</div>
+                                <div class="label">Total Anggota</div>
                                 <div class="value">{{ booking.pax }} orang</div>
                             </div>
                             <div class="detail-item">
-                                <div class="label">Porter Service</div>
+                                <div class="label">Jasa Porter</div>
                                 <div class="value porter-service">
                                     {% if booking.porter_required %}
                                         <i class="fa-solid fa-circle-check"></i>
-                                        <span>Yes</span>
+                                        <span>Ya</span>
                                     {% else %}
                                         <i class="fa-solid fa-circle-xmark"></i>
-                                        <span>No</span>
+                                        <span>Tidak</span>
                                     {% endif %}
                                 </div>
                             </div>
@@ -76,7 +76,7 @@
                     <section class="card">
                         <div class="card-header">
                             <div class="icon-circle"><i class="fa-solid fa-user"></i></div>
-                            <h2 class="card-title">Contact Person</h2>
+                            <h2 class="card-title">Narahubung</h2>
                         </div>
                         <div class="grid-details">
                             <div class="detail-item">
@@ -144,7 +144,7 @@
         <span class="price">{{ booking_summary.pax }} orang</span>
     </div>
     <div class="item">
-        <span>Porter service</span>
+        <span>Jasa Porter</span>
         <span class="price">{{ booking_summary.porter_fee }}</span>
     </div>
     <hr>

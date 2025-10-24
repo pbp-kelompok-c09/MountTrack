@@ -27,7 +27,6 @@ def booking_view(request, gunung_slug):
     gunung = get_object_or_404(Mountain, slug=gunung_slug)
     user_profile = UserProfile.objects.filter(username=request.user.username).first()
 
-    # Tentukan pax_value prioritas: POST > GET param > default 1
     pax_value = 1
     if request.method == 'POST':
         try:
@@ -40,10 +39,8 @@ def booking_view(request, gunung_slug):
         except (TypeError, ValueError):
             pax_value = 1
 
-    # Buat form sesuai pax_value sehingga field anggota dibuat
     form = BookingForm(request.POST or None, pax=pax_value)
 
-    # Jika POST pertama hanya berisi pax (belum ada field anggota_0_name), tampilkan form anggota
     if request.method == 'POST' and not any(k.startswith('anggota_0_') for k in request.POST.keys()):
         anggota_fields = _build_anggota_fields(form, pax_value)
         return render(request, 'booking/booking_form.html', {
@@ -173,18 +170,31 @@ def booking_summary(request, booking_id):
         'booking': booking,
     })
 
-
 def home(request):
-    return render(request, 'index.html') 
+    return render(request, 'home/index.html') 
 
 @login_required
 def edit_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
-    form = BookingForm(request.POST or None, instance=booking)
+    # user_profile = UserProfile.objects.filter(username=request.user.username).first()
+    member_data = booking.members.all()
+    form = BookingForm(request.POST or None, instance=booking, pax=booking.pax)
+
+    for i, member in enumerate(member_data):
+        form.fields[f'anggota_{i}_name'].initial = member.name
+        form.fields[f'anggota_{i}_age'].initial = member.age
+        form.fields[f'anggota_{i}_gender'].initial = member.gender
+        form.fields[f'anggota_{i}_level'].initial = member.level
 
     if form.is_valid():
         form.save()
+
+
         return redirect('booking:booking_summary', booking_id=booking.id)
 
     return render(request, 'booking/edit_booking.html', {'form': form, 'booking': booking})
 
+@login_required
+def all_bookings(request):
+    bookings = Booking.objects.filter(user=request.user)  # Mendapatkan semua booking untuk user yang sedang login
+    return render(request, 'booking/all_bookings.html', {'bookings': bookings})
