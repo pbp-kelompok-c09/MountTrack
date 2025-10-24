@@ -44,6 +44,6 @@ def mountain_list(request):
     }
     return render(request, 'mountain_list.html', context)
 
-def mountain_detail(request, id):
-    mountain = get_object_or_404(Mountain, id=id)
+def mountain_detail(request, name):
+    mountain = get_object_or_404(Mountain, name=name)
     return render(request, 'mountain_detail.html', {'mountain': mountain})

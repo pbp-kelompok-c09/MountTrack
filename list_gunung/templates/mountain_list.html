@@ -1,375 +1,236 @@
 {% extends 'base.html' %}
-
 {% load static %}
 
+{% block title %}Daftar Gunung | MountTrack{% endblock %}
+
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #D4C4B0 0%, #E8DFD4 50%, #D4C4B0 100%);
+        min-height: 100vh;
+        position: relative;
+    }
+
+    .hero-section {
+        margin-top: 10rem;
+        padding-top: 2rem;
+    }
+
+    .hero-section h1 {
+        margin-top: 10rem;
+        color: #2D5016;
+        font-size: 3rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 2rem;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .filter-card {
+        background: white;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    .filter-input, .filter-select {
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        padding: 0.875rem 1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .filter-input:focus, .filter-select:focus {
+        outline: none;
+        border-color: #2D5016;
+        box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+    }
+
+    .mountain-card {
+        transition: all 0.3s ease;
+        background: white;
+    }
+
+    .mountain-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .results-section {
+        position: relative;
+        z-index: 1;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2.5rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        margin-top: 2rem;
+    }
+
+    .btn-primary {
+        background: #2D5016;
+        color: white;
+        padding: 0.875rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background: #1f3810;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(45, 80, 22, 0.4);
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #374151;
+        padding: 0.875rem 2rem;
+        border-radius: 12px;
+        font-weight: 600;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
+    }
+
+    .btn-secondary:hover {
+        background: #f9fafb;
+        border-color: #9ca3af;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Gunung - Indonesia</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<div class="container mx-auto px-4 py-8">
+    <div class="hero-section mt-48">
+        <h1 class="text-5xl font-bold text-[#2D5016] mt-48 mb-8 text-center">Jelajahi Gunung Indonesia</h1>
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1a4d2e 0%, #2d5016 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-            padding: 20px;
-        }
-
-        .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .header p {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-
-        .search-filter-section {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .search-box {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .search-input-wrapper {
-            flex: 1;
-            min-width: 250px;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 12px 15px 12px 45px;
-            border: 2px solid #1a4d2e;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #4a7c59;
-            box-shadow: 0 0 0 3px rgba(26, 77, 46, 0.1);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #1a4d2e;
-        }
-
-        .filter-section {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .filter-label {
-            font-weight: 600;
-            color: #5d4037;
-        }
-
-        .filter-select {
-            padding: 10px 15px;
-            border: 2px solid #8d6e63;
-            border-radius: 8px;
-            background: white;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .filter-select:focus {
-            outline: none;
-            border-color: #5d4037;
-        }
-
-        .results-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            color: white;
-            font-size: 14px;
-        }
-
-        .mountain-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-
-        .mountain-card {
-            background: white;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-            cursor: pointer;
-        }
-
-        .mountain-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 12px rgba(0,0,0,0.2);
-        }
-
-        .mountain-image {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            background: linear-gradient(135deg, #1a4d2e 0%, #2d5016 100%);
-        }
-
-        .mountain-content {
-            padding: 20px;
-        }
-
-        .mountain-name {
-            font-size: 1.5em;
-            color: #1a4d2e;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .mountain-info {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #5d4037;
-            font-size: 14px;
-        }
-
-        .info-icon {
-            width: 18px;
-            height: 18px;
-            color: #8d6e63;
-        }
-
-        .mountain-description {
-            color: #666;
-            font-size: 14px;
-            line-height: 1.6;
-            display: -webkit-box;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            margin-bottom: 15px;
-        }
-
-        .view-detail-btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background: linear-gradient(135deg, #1a4d2e 0%, #2d5016 100%);
-            color: white;
-            text-decoration: none;
-            border-radius: 6px;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        .view-detail-btn:hover {
-            background: linear-gradient(135deg, #2d5016 0%, #1a4d2e 100%);
-            transform: translateX(5px);
-        }
-
-        .no-results {
-            text-align: center;
-            padding: 60px 20px;
-            background: white;
-            border-radius: 12px;
-            color: #666;
-        }
-
-        .no-results h3 {
-            font-size: 1.5em;
-            margin-bottom: 10px;
-            color: #5d4037;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8em;
-            }
-
-            .mountain-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .search-box {
-                flex-direction: column;
-            }
-
-            .filter-section {
-                flex-direction: column;
-                align-items: stretch;
-            }
-
-            .filter-select {
-                width: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>🏔️ Daftar Gunung Indonesia</h1>
-            <p>Jelajahi keindahan gunung-gunung di Indonesia</p>
-        </div>
-
-        <div class="search-filter-section">
-            <form method="GET" id="filterForm">
-                <div class="search-box">
-                    <div class="search-input-wrapper">
-                        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <path d="m21 21-4.35-4.35"></path>
-                        </svg>
-                        <input 
-                            type="text" 
-                            class="search-input" 
-                            name="search" 
-                            placeholder="Cari nama gunung..." 
-                            value="{{ search_query }}"
-                            id="searchInput"
-                        >
-                    </div>
+        <form method="GET" action="{% url 'mountain_list' %}" class="filter-card">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-5 items-end">
+                
+                <div>
+                    <label for="search" class="block text-sm font-semibold text-gray-700 mb-2">Cari Nama Gunung</label>
+                    <input type="text" 
+                           name="search" 
+                           id="search" 
+                           placeholder="Contoh: Merapi"
+                           value="{{ search_query }}"
+                           class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:border-[#2D5016] focus:ring-2 focus:ring-[#2D5016] focus:ring-opacity-20 p-3 transition duration-200">
                 </div>
 
-                <div class="filter-section">
-                    <span class="filter-label">Filter:</span>
-                    
-                    <select name="province" class="filter-select" id="provinceFilter">
+                <div>
+                    <label for="province" class="block text-sm font-semibold text-gray-700 mb-2">Filter Provinsi</label>
+                    <select name="province" id="province" class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:border-[#2D5016] focus:ring-2 focus:ring-[#2D5016] focus:ring-opacity-20 p-3 bg-white transition duration-200">
                         <option value="">Semua Provinsi</option>
                         {% for province in provinces %}
-                        <option value="{{ province }}" {% if selected_province == province %}selected{% endif %}>
-                            {{ province }}
-                        </option>
+                            <option value="{{ province }}" {% if province == selected_province %}selected{% endif %}>
+                                {{ province }}
+                            </option>
                         {% endfor %}
                     </select>
+                </div>
 
-                    <select name="height_range" class="filter-select" id="heightFilter">
+                <div>
+                    <label for="height_range" class="block text-sm font-semibold text-gray-700 mb-2">Filter Ketinggian (mdpl)</label>
+                    <select name="height_range" id="height_range" class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:border-[#2D5016] focus:ring-2 focus:ring-[#2D5016] focus:ring-opacity-20 p-3 bg-white transition duration-200">
                         <option value="">Semua Ketinggian</option>
-                        <option value="0-1000" {% if height_range == '0-1000' %}selected{% endif %}>< 1000 mdpl</option>
-                        <option value="1000-2000" {% if height_range == '1000-2000' %}selected{% endif %}>1000-2000 mdpl</option>
-                        <option value="2000-3000" {% if height_range == '2000-3000' %}selected{% endif %}>2000-3000 mdpl</option>
-                        <option value="3000-4000" {% if height_range == '3000-4000' %}selected{% endif %}>> 3000 mdpl</option>
-                    </select>
-
-                    <select name="sort" class="filter-select" id="sortFilter">
-                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Nama (A-Z)</option>
-                        <option value="-name" {% if sort_by == '-name' %}selected{% endif %}>Nama (Z-A)</option>
-                        <option value="height_mdpl" {% if sort_by == 'height_mdpl' %}selected{% endif %}>Ketinggian (Rendah-Tinggi)</option>
-                        <option value="-height_mdpl" {% if sort_by == '-height_mdpl' %}selected{% endif %}>Ketinggian (Tinggi-Rendah)</option>
+                        <option value="0-1000" {% if height_range == '0-1000' %}selected{% endif %}>0 - 1000 mdpl</option>
+                        <option value="1000-2000" {% if height_range == '1000-2000' %}selected{% endif %}>1000 - 2000 mdpl</option>
+                        <option value="2000-3000" {% if height_range == '2000-3000' %}selected{% endif %}>2000 - 3000 mdpl</option>
+                        <option value="3000-4000" {% if height_range == '3000-4000' %}selected{% endif %}>3000+ mdpl</option>
                     </select>
                 </div>
-            </form>
-        </div>
 
-        <div class="results-info">
-            <span>Menampilkan {{ mountains|length }} gunung</span>
+                <div>
+                    <label for="sort" class="block text-sm font-semibold text-gray-700 mb-2">Urutkan Berdasarkan</label>
+                    <select name="sort" id="sort" class="mt-1 block w-full rounded-lg border-2 border-gray-300 shadow-sm focus:border-[#2D5016] focus:ring-2 focus:ring-[#2D5016] focus:ring-opacity-20 p-3 bg-white transition duration-200">
+                        <option value="name" {% if sort_by == 'name' %}selected{% endif %}>Nama (A-Z)</option>
+                        <option value="-name" {% if sort_by == '-name' %}selected{% endif %}>Nama (Z-A)</option>
+                        <option value="height_mdpl" {% if sort_by == 'height_mdpl' %}selected{% endif %}>Ketinggian (Terendah)</option>
+                        <option value="-height_mdpl" {% if sort_by == '-height_mdpl' %}selected{% endif %}>Ketinggian (Tertinggi)</option>
+                    </select>
+                </div>
+                
+            </div>
+            
+            <div class="mt-8 flex justify-end gap-4">
+                <a href="{% url 'mountain_list' %}" 
+                   class="px-8 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl shadow-md text-center hover:bg-gray-100 hover:border-gray-400 transition duration-300">
+                    Reset Filter
+                </a>
+                
+                <button type="submit" 
+                        class="px-8 py-3 bg-[#2D5016] text-white font-semibold rounded-xl shadow-md hover:bg-[#1f3810] hover:shadow-lg transform hover:-translate-y-0.5 transition duration-300">
+                    Terapkan Filter
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="results-section">
+        <div class="mb-6 pb-5 border-b-2 border-gray-200">
+            <h2 class="text-2xl font-bold text-[#2D5016]">Hasil Pencarian</h2>
+            {% if mountains %}
+                <p class="text-gray-600 mt-2 text-base">Ditemukan {{ mountains|length }} gunung.</p>
+            {% endif %}
         </div>
 
         {% if mountains %}
-        <div class="mountain-grid">
-            {% for mountain in mountains %}
-            <div class="mountain-card" onclick="window.location.href='{% url 'mountain_detail' mountain.name %}'">
-                <img src="{{ mountain.image_url }}" alt="{{ mountain.name }}" class="mountain-image" onerror="this.style.display='none'">
-                <div class="mountain-content">
-                    <h2 class="mountain-name">{{ mountain.name }}</h2>
-                    <div class="mountain-info">
-                        <div class="info-item">
-                            <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
-                                <polyline points="2 17 12 22 22 17"></polyline>
-                                <polyline points="2 12 12 17 22 12"></polyline>
-                            </svg>
-                            <span><strong>{{ mountain.height_mdpl }}</strong> mdpl</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                
+                {% for mountain in mountains %}
+                <div class="mountain-card bg-white rounded-2xl shadow-lg overflow-hidden border-t-4 border-[#2D5016]">
+                    
+                    <img src="{% if mountain.image_url %}{{ mountain.image_url }}{% else %}{% static 'images/default_mountain.jpg' %}{% endif %}" 
+                         alt="{{ mountain.name }}" 
+                         class="w-full h-52 object-cover">
+
+                    <div class="p-5">
+                        <h2 class="text-xl font-bold text-gray-800 mb-3 hover:text-[#4CAF50] transition duration-200">
+                            <a href="{% url 'mountain_detail' name=mountain.name %}">
+                                {{ mountain.name }}
+                            </a>
+                        </h2>
+
+                        <div class="space-y-2 mb-4">
+                            <p class="text-sm text-gray-600">
+                                <span class="font-semibold text-[#D2691E]">📏 {{ mountain.height_mdpl }} mdpl</span>
+                            </p>
+                            <p class="text-sm text-gray-600">
+                                <span class="font-semibold text-[#2D5016]">📍 {{ mountain.province }}</span>
+                            </p>
                         </div>
-                        <div class="info-item">
-                            <svg class="info-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                <circle cx="12" cy="10" r="3"></circle>
-                            </svg>
-                            <span>{{ mountain.province }}</span>
-                        </div>
+                        
+                        <a href="{% url 'mountain_detail' name=mountain.name %}" 
+                           class="block w-full text-center bg-[#4CAF50] text-white py-2.5 px-4 rounded-lg text-sm font-semibold hover:bg-[#3d8b40] transform hover:-translate-y-0.5 transition duration-300 shadow-md">
+                            Lihat Detail
+                        </a>
                     </div>
-                    <p class="mountain-description">{{ mountain.description }}</p>
-                    <a href="{% url 'mountain_detail' mountain.id %}" class="view-detail-btn">Lihat Detail →</a>
                 </div>
+                {% endfor %}
+
             </div>
-            {% endfor %}
-        </div>
         {% else %}
-        <div class="no-results">
-            <h3>Tidak ada gunung ditemukan</h3>
-            <p>Coba ubah filter atau kata kunci pencarian Anda</p>
-        </div>
+            <div class="p-12 text-center bg-white rounded-2xl shadow-md">
+                <div class="text-6xl mb-4">🏔️</div>
+                <p class="text-xl text-gray-600 mb-2">
+                    Tidak ada gunung yang cocok dengan kriteria pencarian Anda
+                </p>
+                <p class="text-gray-500 mb-6">
+                    Coba ubah filter atau reset pencarian Anda
+                </p>
+                <a href="{% url 'mountain_list' %}" 
+                   class="inline-block px-6 py-3 bg-[#2D5016] text-white rounded-lg font-semibold hover:bg-[#1f3810] transition duration-300">
+                    Tampilkan Semua Gunung
+                </a>
+            </div>
         {% endif %}
     </div>
 
-    <script>
-        // Auto-submit form when filters change
-        const filterSelects = document.querySelectorAll('.filter-select');
-        const searchInput = document.getElementById('searchInput');
-        
-        filterSelects.forEach(select => {
-            select.addEventListener('change', () => {
-                document.getElementById('filterForm').submit();
-            });
-        });
-
-        // Submit on search with slight delay
-        let searchTimeout;
-        searchInput.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                document.getElementById('filterForm').submit();
-            }, 500);
-        });
-    </script>
-</body>
-</html>
+</div>
 {% endblock %}
