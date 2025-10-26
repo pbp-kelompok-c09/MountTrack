@@ -11,13 +11,14 @@
     background-color: #CFBB99; 
   }
 
-
   .container {
-    width: 100%; 
-    box-sizing: border-box;  
-    margin: 0 auto;  
-    background-color: #CFBB99;
-}
+    width: 100%;
+    max-width: 1200px; /* Maksimal lebar konten */
+    padding-left: 30px;
+    padding-right: 30px;
+    margin: 0 auto;  /* Menjaga agar konten berada di tengah */
+    box-sizing: border-box;
+  }
 
 
   .bt-hero {
@@ -267,51 +268,8 @@
 <div id="bt-toast"
      data-porter-error="{% if form.errors.porter_hire %}{{ form.errors.porter_hire.0|escapejs }}{% endif %}"
      style="position: fixed; right: 18px; bottom: 18px; z-index: 9999; pointer-events: none;"></div>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-$(document).ready(function () {
-  $('#booking-form').on('submit', function(e) {
-    e.preventDefault(); 
-
-    var formData = $(this).serialize();  
-    var csrfToken = $('input[name="csrfmiddlewaretoken"]').val();
-
-    $.ajax({
-      type: 'POST',
-      url: '{% url "booking:submit" %}', 
-      headers: {
-        'X-CSRFToken': csrfToken // Pastikan CSRF token ditambahkan
-      },
-      success: function(response) {
-        if (response.success) {
-          alert('Booking Successful');
-          window.location.href = response.redirect_url;
-        } else {
-          alert('Error: ' + JSON.stringify(response.errors)); // Menampilkan error jika form tidak valid
-        }
-      },
-      error: function(xhr, status, error) {
-        console.log(xhr.responseText);  // Log error untuk debugging
-        alert('There was an error with your booking.');
-      }
-    });
-  });
-});
-
-  // Handle increment and decrement of Pax
-  $('#inc').click(function() {
-    var paxValue = parseInt($('#id_pax').val());
-    $('#id_pax').val(paxValue + 1);
-  });
-
-  $('#dec').click(function() {
-    var paxValue = parseInt($('#id_pax').val());
-    if (paxValue > 1) {
-      $('#id_pax').val(paxValue - 1);
-    }
-  });
-
 (function(){
   const dec = document.getElementById('dec');
   const inc = document.getElementById('inc');
@@ -456,7 +414,7 @@ $(document).ready(function () {
     setTimeout(()=>{ container.scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
   });
 
-   // submit guard: kalau semua anggota beginner, wajib pilih porter_hire == 'yes'
+  // submit guard: kalau semua anggota beginner, wajib pilih porter_hire == 'yes'
   if (formEl) {
     formEl.addEventListener('submit', function(e){
       const selects = Array.from(document.querySelectorAll('select[name$="_level"]'));
