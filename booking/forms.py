@@ -1,8 +1,21 @@
 from django import forms
-from .models import Booking, BookingMember
+from .models import Booking, BookingMember, Mountain
+from django.forms import modelformset_factory
 
 class BookingForm(forms.ModelForm):
-    pax = forms.IntegerField(label='Jumlah Anggota', min_value=1, initial=1)
+    gunung = forms.ModelChoiceField(
+        queryset=Mountain.objects.all(),
+        empty_label="Pilih Gunung",
+        required=True,  # Pastikan field ini wajib
+    )
+
+    pax = forms.IntegerField(
+        label='Jumlah Anggota',
+        min_value=1,
+        initial=1,
+        required=True,  # Pastikan field ini wajib
+    )
+
     porter_hire = forms.ChoiceField(
         choices=[('', '---'), ('yes','Ya'),('no','Tidak')],
         required=False,
@@ -11,7 +24,7 @@ class BookingForm(forms.ModelForm):
 
     class Meta:
         model = Booking
-        fields = ['pax', 'porter_hire']
+        fields = ['gunung', 'pax', 'porter_hire']
 
     def __init__(self, *args, **kwargs):
         pax = kwargs.pop('pax', None)
@@ -33,3 +46,4 @@ class BookingForm(forms.ModelForm):
                 label=f'Level Anggota {i+1}',
                 required=True
             )
+

@@ -5,6 +5,11 @@ from .forms import BookingForm
 from .models import Booking, Mountain, BookingMember
 from django.contrib.auth.decorators import login_required
 from userprofile.models import UserProfile
+from django.http import JsonResponse
+import logging
+
+
+# logger = logging.getLogger(__name__)
 
 def _build_anggota_fields(form, pax_value):
     anggota_fields = []
@@ -23,10 +28,9 @@ def _build_anggota_fields(form, pax_value):
     return anggota_fields
 
 @login_required
-def booking_view(request, gunung_slug):
-    gunung = get_object_or_404(Mountain, slug=gunung_slug)
+def booking_view(request):
+    # gunung = get_object_or_404(Mountain, slug=gunung_slug)
     user_profile = UserProfile.objects.filter(username=request.user.username).first()
-
     pax_value = 1
     if request.method == 'POST':
         try:
@@ -40,13 +44,12 @@ def booking_view(request, gunung_slug):
             pax_value = 1
 
     form = BookingForm(request.POST or None, pax=pax_value)
-
     if request.method == 'POST' and not any(k.startswith('anggota_0_') for k in request.POST.keys()):
         anggota_fields = _build_anggota_fields(form, pax_value)
         return render(request, 'booking/booking_form.html', {
             'form': form,
             'user_profile': user_profile,
-            'gunung': gunung,
+            # 'gunung': gunung,
             'pax': pax_value,
             'anggota_fields': anggota_fields,
         })
@@ -77,14 +80,15 @@ def booking_view(request, gunung_slug):
                 return render(request, 'booking/booking_form.html', {
                     'form': form,
                     'user_profile': user_profile,
-                    'gunung': gunung,
+                    # 'gunung': gunung,
                     'pax': pax_value,
                     'anggota_fields': anggota_fields,
                 })
 
             booking = Booking.objects.create(
                 user=request.user,
-                gunung=gunung,
+                # gunung=gunung,
+                gunung=form.cleaned_data['gunung'],
                 pax=pax_value,
                 levels=levels,
                 porter_required=porter_needed
@@ -99,13 +103,13 @@ def booking_view(request, gunung_slug):
                     level=form.cleaned_data.get(f'anggota_{i}_level')
                 )
 
-            # tambahkan gunung ke history userprofile jika profil tersedia
-            if user_profile:
-                try:
-                    user_profile.add_history(gunung)
-                except Exception:
-                    # jangan crash jika ada masalah, bisa ditangani logging jika perlu
-                    pass
+            # # tambahkan gunung ke history userprofile jika profil tersedia
+            # if user_profile:
+            #     try:
+            #         user_profile.add_history(gunung)
+            #     except Exception:
+            #         # jangan crash jika ada masalah, bisa ditangani logging jika perlu
+            #         pass
             return redirect(reverse('booking:booking_summary', kwargs={'booking_id': booking.id}))
 
             # # redirect ke halaman history — ganti 'userprofile:history' jika route berbeda
@@ -118,7 +122,7 @@ def booking_view(request, gunung_slug):
             return render(request, 'booking/booking_form.html', {
                 'form': form,
                 'user_profile': user_profile,
-                'gunung': gunung,
+                # 'gunung': gunung,
                 'pax': pax_value,
                 'anggota_fields': anggota_fields,
             })
@@ -128,7 +132,7 @@ def booking_view(request, gunung_slug):
     return render(request, 'booking/booking_form.html', {
         'form': form,
         'user_profile': user_profile,
-        'gunung': gunung,
+        # 'gunung': gunung,
         'pax': pax_value,
         'anggota_fields': anggota_fields,
     })
@@ -153,13 +157,14 @@ def booking_summary(request, booking_id):
         })
 
     summary = {
-        'gunung': booking.gunung.name if booking.gunung else str(booking.gunung),
+        # 'gunung': booking.gunung.name if booking.gunung else str(booking.gunung),
+        'gunung': booking.gunung.name,
         'pax': booking.pax,
         'levels': booking.levels,
         'total_cost': total_cost,
         'porter_required': 'Ya' if booking.porter_required else 'Tidak',
         'anggota_data': anggota_data,  # Mengirim data anggota
-        'gunung_image_url': booking.gunung.image_url if booking.gunung else None,
+        # 'gunung_image_url': booking.gunung.image_url if booking.gunung else None,
         'porter_fee': porter_fee,
         'pax_cost': pax_cost,
     }
@@ -194,7 +199,55 @@ def edit_booking(request, booking_id):
 
     return render(request, 'booking/edit_booking.html', {'form': form, 'booking': booking})
 
+
+# @login_required
+# def submit_booking(request):
+
+#     if request.method == 'POST':
+       
+#         form = BookingForm(request.POST)
+
+#         if form.is_valid():
+#             logger.info(f"Form cleaned data: {form.cleaned_data}")  # Log cleaned data
+
+#             booking = form.save(commit=False)
+#             booking.user = request.user
+#             booking.save()
+
+#             pax_value = int(request.POST.get('pax', 1))  # Ambil nilai pax dari POST
+#             for i in range(pax_value):
+#                 member_name = form.cleaned_data.get(f'anggota_{i}_name')
+#                 member_age = form.cleaned_data.get(f'anggota_{i}_age')
+#                 member_gender = form.cleaned_data.get(f'anggota_{i}_gender')
+#                 member_level = form.cleaned_data.get(f'anggota_{i}_level')
+
+#                 if not all([member_name, member_age, member_gender, member_level]):
+#                     logger.error(f"Missing data for member {i}: name={member_name}, age={member_age}, gender={member_gender}, level={member_level}")
+#                     return JsonResponse({'success': False, 'errors': form.errors.as_json()})
+
+#                 # Simpan data anggota
+#                 BookingMember.objects.create(
+#                     booking=booking,
+#                     name=member_name,
+#                     age=member_age,
+#                     gender=member_gender,
+#                     level=member_level
+#                 )
+
+#             return JsonResponse({
+#                 'success': True,
+#                 'message': 'Booking Successful',
+#                 'redirect_url': reverse('booking:booking_summary', kwargs={'booking_id': booking.id})
+#             })
+#         else:
+#             logger.error(f"Form validation failed: {form.errors}")
+#             return JsonResponse({'success': False, 'errors': form.errors.as_json()})
+
+#     return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+
+
 @login_required
 def all_bookings(request):
-    bookings = Booking.objects.filter(user=request.user)  # Mendapatkan semua booking untuk user yang sedang login
+    bookings = Booking.objects.filter(user=request.user)  # Retrieve all bookings for the logged-in user
     return render(request, 'booking/all_bookings.html', {'bookings': bookings})

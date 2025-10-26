@@ -1,103 +1,200 @@
-
 {% extends 'base.html' %}
 
 {% block content %}
 <style>
+
+  html, body {
+    padding: 0;
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #CFBB99; 
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1200px; /* Maksimal lebar konten */
+    padding-left: 30px;
+    padding-right: 30px;
+    margin: 0 auto;  /* Menjaga agar konten berada di tengah */
+    box-sizing: border-box;
+  }
+
+
+  .bt-hero {
+    margin-top: 120px; /* Jarak antara navbar dan konten */
+    padding-top: 18px;
+    background: #E5D7C4;  /* Pastikan background sesuai */
+    color: #4C3019;  /* Pastikan warna teks tetap terang */
+  }
+  
+  /* Menambahkan padding kiri-kanan pada .bt-card */
   .bt-card {
-    background: #ffffff;
+    background: #E5D7C4;
     border-radius: 12px;
     box-shadow: 0 8px 20px rgba(13, 37, 23, 0.06);
-    padding: 22px;
+    padding: 20px 30px; /* Padding kiri-kanan */
     margin: 18px 0;
   }
+
+  .anggota {
+    border: 1px dashed #889063;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    background: #CFBB99;
+  }
+  .anggota h4 {
+    margin: 0 0 8px 0;
+    color: #102114;
+    font-size: 0.98rem;
+  }
+
+  /* Menghilangkan bagian abu-abu pada bagian atas form */
   .bt-hero {
-    background: linear-gradient(90deg,#1fa06a 0%, #2db07b 100%);
+    background: linear-gradient(90deg, #354024 0%, #889063 100%);
     color: #fff;
     padding: 18px 22px;
     border-radius: 12px;
     margin-bottom: 18px;
   }
+
   .bt-section-title {
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-bottom:12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
   }
-  .bt-section-title h3 { margin:0; font-size:1.05rem; color:#0b3f2a; }
+  .bt-section-title h3 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #294122;
+  }
+
   .user-info-grid {
-    display:grid;
+    display: grid;
     grid-template-columns: 1fr 1fr;
-    gap:12px;
+    gap: 12px;
   }
+
   .field {
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    margin-bottom:6px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 6px;
   }
-  .field label { font-size:0.85rem; color:#2a6a4a; }
+
+  #id_pax, #id_porter_hire {
+    background: #ffffff !important;
+    color: #4C3019;
+    border: 1px solid #889063;
+  }
+
+  .anggota input, .anggota select, .anggota textarea {
+    background: #ffffff !important;
+    color: #4C3019;
+    border: 1px solid #889063;
+  }
+
+  .field label {
+    font-size: 0.85rem;
+    color: #102114;
+  }
+
   .field input, .field select, .field textarea {
-    border:1px solid #dfeee6;
-    padding:10px 12px;
-    border-radius:8px;
-    background:#fbfffd;
-    font-size:0.95rem;
-    outline:none;
+    border: 1px solid #889063;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background: #ffffff;
+    font-size: 0.95rem;
+    outline: none;
   }
+
   .field input:focus, .field select:focus, .field textarea:focus {
-    box-shadow:0 0 0 3px rgba(37, 154, 100, 0.08);
-    border-color:#2db07b;
+    box-shadow: 0 0 0 3px rgba(37, 154, 100, 0.08);
+    border-color: #354024;
   }
+
   .group-size {
-    display:flex;
-    align-items:center;
-    gap:8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
+
   .qty-btn {
-    background:#f1fbf6;
-    border:1px solid #dfeee6;
-    color:#177a4f;
-    padding:6px 10px;
-    border-radius:8px;
-    cursor:pointer;
-    font-weight:700;
+    background: #FFEED2;
+    border: 1px solid #dfeee6;
+    color: #889063;
+    padding: 6px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
   }
+
   .submit-btn {
-    background:#1fa06a;
-    color:white;
-    padding:12px 18px;
-    border-radius:10px;
-    border:none;
-    cursor:pointer;
-    font-weight:700;
-    box-shadow:0 6px 16px rgba(31,160,106,0.18);
+    background: #889063;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    box-shadow: 0 6px 16px rgba(31, 160, 106, 0.18);
   }
-  .anggota { border:1px dashed #e3f5ea; padding:12px; border-radius:10px; margin-bottom:12px; background:#fcfffc;}
-  .anggota h4 { margin:0 0 8px 0; color:#16663f; font-size:0.98rem; }
-  @media (max-width:700px){
-    .user-info-grid { grid-template-columns: 1fr; }
+
+  .anggota {
+    border: 1px dashed #889063;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    background: #CFBB99;
+  }
+
+  .anggota h4 {
+    margin: 0 0 8px 0;
+    color: #16663f;
+    font-size: 0.98rem;
+  }
+
+  /* Responsive design for smaller screens */
+   @media (max-width: 700px) {
+    .user-info-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .container {
+      padding-left: 15px; /* Kurangi padding di layar kecil */
+      padding-right: 15px;
+    }
+
+    .bt-hero {
+      margin-top: 140px; /* Jarak lebih besar untuk navbar di perangkat kecil */
+    }
   }
 </style>
 
+<div class="container">
 <div class="bt-hero">
-  <h2 style="margin:0; font-weight:700;">
-    Booking Pendakian — 
+  <h2 style="margin: 0; font-weight: 700;">
+    Booking Pendakian 
     {% if gunung %}
       {{ gunung.nama }}
     {% else %}
       -
     {% endif %}
   </h2>
-  <div style="opacity:0.95; margin-top:6px;">Isi identitas grup dan anggota untuk melanjutkan pemesanan</div>
+  <div style="opacity: 0.95; margin-top: 6px;">Isi identitas grup dan anggota untuk melanjutkan pemesanan</div>
 </div>
 
 <div class="bt-card">
   <div class="bt-section-title">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden><circle cx="12" cy="12" r="10" fill="#e9f8ef"/></svg>
-    <h3>Your Information</h3>
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
+      <circle cx="12" cy="12" r="10" fill="#e9f8ef"/>
+    </svg>
+    <h3>Informasi Anda</h3>
   </div>
 
-  <div class="user-info-grid" style="margin-bottom:12px;">
+  <div class="user-info-grid" style="margin-bottom: 12px;">
     <div class="field">
       <label>Nama</label>
       <input type="text" value="{{ user_profile.nama }}" readonly>
@@ -118,31 +215,37 @@
 
   <form method="POST" id="booking-form" class="bt-form">
     {% csrf_token %}
+    <div class="user-info-grid" style="margin-bottom: 12px;">
+      <div class="field">
+        <label>Pilih Gunung</label>
+        {{ form.gunung }}  <!-- Dropdown untuk memilih gunung -->
+      </div>
+    </div>
 
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px;">
       <div>
-        <label style="display:block; font-size:0.9rem; color:#2a6a4a; margin-bottom:6px;">Jumlah Anggota</label>
+        <label style="display: block; font-size: 0.9rem; color: #2a6a4a; margin-bottom: 6px;">Jumlah Anggota</label>
         <div class="group-size">
           <button type="button" id="dec" class="qty-btn">−</button>
           {{ form.pax }}
           <button type="button" id="inc" class="qty-btn">+</button>
-          <button type="button" id="generate-anggota" class="qty-btn" style="margin-left:8px;">Terapkan</button>
+          <button type="button" id="generate-anggota" class="qty-btn" style="margin-left: 8px;">Terapkan</button>
         </div>
       </div>
 
-      <div style="min-width:220px;">
-        <label style="display:block; font-size:0.9rem; color:#2a6a4a; margin-bottom:6px;">Sewa Porter</label>
+      <div style="min-width: 220px;">
+        <label style="display: block; font-size: 0.9rem; color: #2a6a4a; margin-bottom: 6px;">Sewa Porter</label>
         {{ form.porter_hire }}
       </div>
     </div>
 
-    <h3 style="margin-top:6px; color:#16663f;">Detail Anggota</h3>
+    <h3 style="margin-top: 20px; color: #16663f;">Detail Anggota</h3>
     <div id="anggota-container">
       {% if anggota_fields %}
         {% for anggota in anggota_fields %}
           <div class="anggota">
             <h4>Anggota {{ forloop.counter }}</h4>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
               {% if anggota.name %}<div class="field">{{ anggota.name.label_tag }} {{ anggota.name }}</div>{% endif %}
               {% if anggota.age %}<div class="field">{{ anggota.age.label_tag }} {{ anggota.age }}</div>{% endif %}
               {% if anggota.gender %}<div class="field">{{ anggota.gender.label_tag }} {{ anggota.gender }}</div>{% endif %}
@@ -153,17 +256,18 @@
       {% endif %}
     </div>
 
-    <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:10px;">
-      <div style="color:#6a8b74; font-size:0.9rem;">Pastikan data anggota lengkap sebelum submit.</div>
+    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 10px;">
+      <div style="color: #4C3019; font-size: 0.9rem;">Pastikan data anggota lengkap sebelum submit.</div>
       <button type="submit" class="submit-btn">Submit Booking</button>
     </div>
   </form>
+</div>
 </div>
 
 <!-- store server-side porter error in data-attribute to avoid template tags inside JS -->
 <div id="bt-toast"
      data-porter-error="{% if form.errors.porter_hire %}{{ form.errors.porter_hire.0|escapejs }}{% endif %}"
-     style="position:fixed;right:18px;bottom:18px;z-index:9999;pointer-events:none;"></div>
+     style="position: fixed; right: 18px; bottom: 18px; z-index: 9999; pointer-events: none;"></div>
 
 <script>
 (function(){
@@ -336,6 +440,7 @@
       setTimeout(()=> showToast(porterErr, { bg: '#f86b6b' }), 80);
     }
   });
+
 })();
 </script>
 {% endblock %}
