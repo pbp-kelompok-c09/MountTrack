@@ -10,5 +10,5 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('edit/<int:booking_id>/', views.edit_booking, name='edit_booking'),
     path('all-bookings/', views.all_bookings, name='all_bookings'),
-    path('submit/', views.submit_booking, name='submit'),
+    # path('submit/', views.submit_booking, name='submit'),
 ]
