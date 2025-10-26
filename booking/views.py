@@ -26,7 +26,7 @@ def _build_anggota_fields(form, pax_value):
 def booking_view(request):
     # gunung = get_object_or_404(Mountain, slug=gunung_slug)
     user_profile = UserProfile.objects.filter(username=request.user.username).first()
-
+    form = BookingForm(request.POST or None)
     pax_value = 1
     if request.method == 'POST':
         try:
@@ -77,7 +77,7 @@ def booking_view(request):
                 return render(request, 'booking/booking_form.html', {
                     'form': form,
                     'user_profile': user_profile,
-                    'gunung': gunung,
+                    # 'gunung': gunung,
                     'pax': pax_value,
                     'anggota_fields': anggota_fields,
                 })
@@ -85,6 +85,7 @@ def booking_view(request):
             booking = Booking.objects.create(
                 user=request.user,
                 # gunung=gunung,
+                gunung=form.cleaned_data['gunung'],
                 pax=pax_value,
                 levels=levels,
                 porter_required=porter_needed
@@ -153,13 +154,14 @@ def booking_summary(request, booking_id):
         })
 
     summary = {
-        'gunung': booking.gunung.name if booking.gunung else str(booking.gunung),
+        # 'gunung': booking.gunung.name if booking.gunung else str(booking.gunung),
+        'gunung': booking.gunung.name,
         'pax': booking.pax,
         'levels': booking.levels,
         'total_cost': total_cost,
         'porter_required': 'Ya' if booking.porter_required else 'Tidak',
         'anggota_data': anggota_data,  # Mengirim data anggota
-        'gunung_image_url': booking.gunung.image_url if booking.gunung else None,
+        # 'gunung_image_url': booking.gunung.image_url if booking.gunung else None,
         'porter_fee': porter_fee,
         'pax_cost': pax_cost,
     }
