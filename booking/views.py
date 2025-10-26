@@ -5,6 +5,10 @@ from .forms import BookingForm
 from .models import Booking, Mountain, BookingMember
 from django.contrib.auth.decorators import login_required
 from userprofile.models import UserProfile
+from django.http import JsonResponse
+import logging
+
+logger = logging.getLogger(__name__)
 
 def _build_anggota_fields(form, pax_value):
     anggota_fields = []
@@ -196,7 +200,62 @@ def edit_booking(request, booking_id):
 
     return render(request, 'booking/edit_booking.html', {'form': form, 'booking': booking})
 
+
+@login_required
+def submit_booking(request):
+    logger = logging.getLogger(__name__)
+    if request.method == 'POST':
+        form = BookingForm(request.POST)
+
+        # Log data POST untuk debugging
+        logger.info(f"Form data received: {request.POST}")
+
+        if form.is_valid():
+            # Membuat booking tanpa menyimpan terlebih dahulu
+            booking = form.save(commit=False)
+            booking.user = request.user  # Menambahkan user yang sedang login
+            booking.save()  # Simpan booking terlebih dahulu
+
+            # Ambil jumlah pax dan buat anggota
+            pax_value = int(request.POST.get('pax', 1))
+            for i in range(pax_value):
+                member_name = form.cleaned_data.get(f'anggota_{i}_name')
+                member_age = form.cleaned_data.get(f'anggota_{i}_age')
+                member_gender = form.cleaned_data.get(f'anggota_{i}_gender')
+                member_level = form.cleaned_data.get(f'anggota_{i}_level')
+
+                # Pastikan semua field anggota ada
+                if member_name and member_age and member_gender and member_level:
+                    BookingMember.objects.create(
+                        booking=booking,
+                        name=member_name,
+                        age=member_age,
+                        gender=member_gender,
+                        level=member_level
+                    )
+                else:
+                    # Jika ada data anggota yang hilang, log dan beri response error
+                    logger.error(f"Missing data for member {i}: {member_name}, {member_age}, {member_gender}, {member_level}")
+                    return JsonResponse({'success': False, 'message': 'Missing data for one or more members.'})
+
+            # Mengembalikan response sukses dengan URL redirect ke booking summary
+            return JsonResponse({
+                'success': True,
+                'message': 'Booking Successful',
+                'redirect_url': reverse('booking:booking_summary', kwargs={'booking_id': booking.id})
+            })
+
+        else:
+         
+            error_messages = form.errors.as_json()
+            logger.error(f"Form validation failed: {error_messages}")
+            return JsonResponse({'success': False, 'errors': form.errors})
+
+    return JsonResponse({'success': False, 'message': 'Invalid request'})
+
+
+
 @login_required
 def all_bookings(request):
-    bookings = Booking.objects.filter(user=request.user)  # Mendapatkan semua booking untuk user yang sedang login
+    bookings = Booking.objects.filter(user=request.user)  # Retrieve all bookings for the logged-in user
     return render(request, 'booking/all_bookings.html', {'bookings': bookings})
