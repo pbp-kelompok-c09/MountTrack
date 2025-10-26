@@ -3,6 +3,11 @@
 
 {% block content %}
 <style>
+  .bt-hero {
+    margin-top: 120px; /* Atur margin top untuk memberi ruang agar navbar tidak menutupi form */
+    padding-top: 18px;
+  }
+  
   .bt-card {
     background: #CFBB99;
     border-radius: 12px;
@@ -10,6 +15,21 @@
     padding: 22px;
     margin: 18px 0;
   }
+
+  .anggota {
+    border: 1px dashed #e3f5ea;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    background: #fcfffc;
+  }
+  .anggota h4 {
+    margin: 0 0 8px 0;
+    color: #16663f;
+    font-size: 0.98rem;
+  }
+
+
   .bt-hero {
     background: linear-gradient(90deg,#1fa06a 0%, #2db07b 100%);
     color: #fff;
@@ -35,7 +55,10 @@
     gap:6px;
     margin-bottom:6px;
   }
-  #id_pax, #id_porter_hire {
+
+   #id_pax, #id_porter_hire {
+
+
     background: #ffffff !important; /* Set white background for these inputs */
     color: #4C3019; /* Warm brown text color */
     border: 1px solid #dfeee6; /* Border to match the form styling */
@@ -46,6 +69,7 @@
     color: #4C3019; /* Warm brown text color */
     border: 1px solid #dfeee6; /* Border to match the form styling */
   }
+
   .field label { font-size:0.85rem; color:#2a6a4a; }
   .field input, .field select, .field textarea {
     border:1px solid #dfeee6;
@@ -56,7 +80,7 @@
     outline:none;
   }
   .field input:focus, .field select:focus, .field textarea:focus {
-    box-shadow:0 0 0 3px #ffffff;
+    box-shadow:0 0 0 3px rgba(37, 154, 100, 0.08);
     border-color:#2db07b;
   }
   .group-size {
@@ -90,7 +114,7 @@
   }
 </style>
 
-<!-- <div class="bt-hero">
+<div class="bt-hero">
   <h2 style="margin:0; font-weight:700;">
     Booking Pendakian — 
     {% if gunung %}
@@ -100,7 +124,7 @@
     {% endif %}
   </h2>
   <div style="opacity:0.95; margin-top:6px;">Isi identitas grup dan anggota untuk melanjutkan pemesanan</div>
-</div> -->
+</div>
 
 <div class="bt-card">
   <div class="bt-section-title">
@@ -130,6 +154,15 @@
   <form method="POST" id="booking-form" class="bt-form">
     {% csrf_token %}
 
+    <!-- Pilih Gunung -->
+    <div class="user-info-grid" style="margin-bottom:12px;">
+      <div class="field">
+        <label>Pilih Gunung</label>
+        {{ form.gunung }}  <!-- Dropdown untuk memilih gunung -->
+      </div>
+    </div>
+    
+    <!-- Jumlah Anggota dan Sewa Porter -->
     <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:12px;">
       <div>
         <label style="display:block; font-size:0.9rem; color:#2a6a4a; margin-bottom:6px;">Jumlah Anggota</label>
@@ -147,7 +180,8 @@
       </div>
     </div>
 
-    <h3 style="margin-top:6px; color:#16663f;">Detail Anggota</h3>
+    <!-- Judul "Detail Anggota" dipindahkan ke atas -->
+    <h3 style="margin-top:20px; color:#16663f;">Detail Anggota</h3>
     <div id="anggota-container">
       {% if anggota_fields %}
         {% for anggota in anggota_fields %}

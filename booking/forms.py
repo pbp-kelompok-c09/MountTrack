@@ -1,7 +1,12 @@
 from django import forms
-from .models import Booking, BookingMember
+from .models import Booking, BookingMember, Mountain
 
 class BookingForm(forms.ModelForm):
+    gunung = forms.ModelChoiceField(
+        queryset=Mountain.objects.all(),
+        empty_label="Pilih Gunung",  # Pilihan default jika tidak ada yang dipilih
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     pax = forms.IntegerField(label='Jumlah Anggota', min_value=1, initial=1)
     porter_hire = forms.ChoiceField(
         choices=[('', '---'), ('yes','Ya'),('no','Tidak')],
@@ -11,7 +16,7 @@ class BookingForm(forms.ModelForm):
 
     class Meta:
         model = Booking
-        fields = ['pax', 'porter_hire']
+        fields = ['gunung', 'pax', 'porter_hire']
 
     def __init__(self, *args, **kwargs):
         pax = kwargs.pop('pax', None)
