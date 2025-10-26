@@ -23,8 +23,8 @@ def _build_anggota_fields(form, pax_value):
     return anggota_fields
 
 @login_required
-def booking_view(request, gunung_slug):
-    gunung = get_object_or_404(Mountain, slug=gunung_slug)
+def booking_view(request):
+    # gunung = get_object_or_404(Mountain, slug=gunung_slug)
     user_profile = UserProfile.objects.filter(username=request.user.username).first()
 
     pax_value = 1
@@ -46,7 +46,7 @@ def booking_view(request, gunung_slug):
         return render(request, 'booking/booking_form.html', {
             'form': form,
             'user_profile': user_profile,
-            'gunung': gunung,
+            # 'gunung': gunung,
             'pax': pax_value,
             'anggota_fields': anggota_fields,
         })
@@ -84,7 +84,7 @@ def booking_view(request, gunung_slug):
 
             booking = Booking.objects.create(
                 user=request.user,
-                gunung=gunung,
+                # gunung=gunung,
                 pax=pax_value,
                 levels=levels,
                 porter_required=porter_needed
@@ -99,13 +99,13 @@ def booking_view(request, gunung_slug):
                     level=form.cleaned_data.get(f'anggota_{i}_level')
                 )
 
-            # tambahkan gunung ke history userprofile jika profil tersedia
-            if user_profile:
-                try:
-                    user_profile.add_history(gunung)
-                except Exception:
-                    # jangan crash jika ada masalah, bisa ditangani logging jika perlu
-                    pass
+            # # tambahkan gunung ke history userprofile jika profil tersedia
+            # if user_profile:
+            #     try:
+            #         user_profile.add_history(gunung)
+            #     except Exception:
+            #         # jangan crash jika ada masalah, bisa ditangani logging jika perlu
+            #         pass
             return redirect(reverse('booking:booking_summary', kwargs={'booking_id': booking.id}))
 
             # # redirect ke halaman history — ganti 'userprofile:history' jika route berbeda
@@ -118,7 +118,7 @@ def booking_view(request, gunung_slug):
             return render(request, 'booking/booking_form.html', {
                 'form': form,
                 'user_profile': user_profile,
-                'gunung': gunung,
+                # 'gunung': gunung,
                 'pax': pax_value,
                 'anggota_fields': anggota_fields,
             })
@@ -128,7 +128,7 @@ def booking_view(request, gunung_slug):
     return render(request, 'booking/booking_form.html', {
         'form': form,
         'user_profile': user_profile,
-        'gunung': gunung,
+        # 'gunung': gunung,
         'pax': pax_value,
         'anggota_fields': anggota_fields,
     })
