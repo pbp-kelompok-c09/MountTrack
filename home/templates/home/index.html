@@ -116,11 +116,63 @@
     <div class="absolute inset-0 bg-gradient-to-t from-black/10 via-transparent to-black/10 pointer-events-none"></div>
   </div>
 
-  
-  <!-- Features Section -->
-  <div class="py-20 bg-gray-50 relative z-30">
+  <!-- About MountTrack Section -->
+  <div class="py-20 bg-white relative z-30">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <!-- Left: Image/Visual -->
+        <div class="relative">
+          <div class="aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl">
+            <img src="{% static 'images/about-mounttrack.jpg' %}" 
+                 alt="Tentang MountTrack" 
+                 class="w-full h-full object-cover"
+                 onerror="this.src='https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800'">
+          </div>
+          <!-- Decorative element -->
+          <div class="absolute -bottom-6 -right-6 w-64 h-64 bg-[#2D5016] opacity-10 rounded-full -z-10"></div>
+        </div>
+        
+        <!-- Right: Content -->
+        <div class="space-y-6">
+          <h2 class="text-3xl md:text-4xl font-bold text-[#2D5016]">
+            Apa itu MountTrack?
+          </h2>
+          <p class="text-lg text-gray-700 leading-relaxed">
+            MountTrack adalah platform digital terlengkap untuk para pecinta alam dan pendaki gunung di Indonesia. Kami menyediakan informasi akurat, terpercaya, dan terupdate tentang gunung-gunung di seluruh nusantara.
+          </p>
+          <p class="text-lg text-gray-700 leading-relaxed">
+            Dengan MountTrack, Anda dapat merencanakan pendakian dengan lebih baik, menemukan jalur pendakian yang sesuai dengan kemampuan, serta terhubung dengan komunitas pendaki dari berbagai daerah.
+          </p>
+          <div class="pt-4">
+            <div class="flex items-start space-x-3 mb-4">
+              <svg class="w-6 h-6 text-[#4CAF50] flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              <p class="text-gray-700">Database gunung terlengkap dengan informasi detail</p>
+            </div>
+            <div class="flex items-start space-x-3 mb-4">
+              <svg class="w-6 h-6 text-[#4CAF50] flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              <p class="text-gray-700">Komunitas pendaki aktif dan supportif</p>
+            </div>
+            <div class="flex items-start space-x-3">
+              <svg class="w-6 h-6 text-[#4CAF50] flex-shrink-0 mt-1" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+              <p class="text-gray-700">Informasi dan kondisi gunung</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- Features Section - Vertical Stack -->
+  <div class="py-20 bg-gray-50 relative z-30">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
         <h2 class="text-3xl md:text-4xl font-bold text-[#2D5016] mb-4">
           Fitur Unggulan
         </h2>
@@ -129,45 +181,175 @@
         </p>
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <!-- Vertical Feature Stack -->
+      <div class="space-y-12">
         
         <!-- Feature 1 -->
-        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border-t-4 border-[#2D5016]">
-          <div class="w-16 h-16 bg-[#2D5016] bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-            <svg class="w-8 h-8 text-[#2D5016]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-6 bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-[#2D5016]">
+          <div class="w-20 h-20 bg-[#2D5016] bg-opacity-10 rounded-2xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-10 h-10 text-[#2D5016]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path>
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-[#2D5016] mb-3">Database Lengkap</h3>
-          <p class="text-gray-600">
-            Informasi detail tentang gunung-gunung di Indonesia, termasuk ketinggian, lokasi, dan jalur pendakian.
-          </p>
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold text-[#2D5016] mb-3">Database Lengkap</h3>
+            <p class="text-gray-600 text-lg leading-relaxed">
+              Informasi detail tentang gunung-gunung di Indonesia, termasuk ketinggian, lokasi, jalur pendakian, tingkat kesulitan, dan estimasi waktu pendakian yang akurat.
+            </p>
+          </div>
         </div>
         
         <!-- Feature 2 -->
-        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border-t-4 border-[#8B4513]">
-          <div class="w-16 h-16 bg-[#8B4513] bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-            <svg class="w-8 h-8 text-[#8B4513]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-6 bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-[#8B4513]">
+          <div class="w-20 h-20 bg-[#8B4513] bg-opacity-10 rounded-2xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-10 h-10 text-[#8B4513]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-[#8B4513] mb-3">Komunitas</h3>
-          <p class="text-gray-600">
-            Bergabung dengan komunitas pendaki, berbagi pengalaman, dan temukan teman seperjalanan.
-          </p>
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold text-[#8B4513] mb-3">Komunitas</h3>
+            <p class="text-gray-600 text-lg leading-relaxed">
+              Bergabung dengan komunitas pendaki aktif, berbagi pengalaman dan tips, temukan teman seperjalanan, dan dapatkan insight berharga dari pendaki berpengalaman.
+            </p>
+          </div>
         </div>
         
-        <!-- Feature 3 -->
-        <div class="bg-white p-8 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border-t-4 border-[#2D5016]">
-          <div class="w-16 h-16 bg-[#2D5016] bg-opacity-10 rounded-full flex items-center justify-center mb-4">
-            <svg class="w-8 h-8 text-[#2D5016]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        <!-- Feature 3 - Berita -->
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-6 bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-[#2D5016]">
+          <div class="w-20 h-20 bg-[#2D5016] bg-opacity-10 rounded-2xl flex items-center justify-center flex-shrink-0">
+            <svg class="w-10 h-10 text-[#2D5016]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"></path>
             </svg>
           </div>
-          <h3 class="text-xl font-semibold text-[#2D5016] mb-3">Statistik</h3>
-          <p class="text-gray-600">
-            Catat dan pantau perjalanan pendakian Anda dengan statistik yang lengkap dan detail.
+          <div class="flex-1">
+            <h3 class="text-2xl font-bold text-[#2D5016] mb-3">Berita & Informasi</h3>
+            <p class="text-gray-600 text-lg leading-relaxed">
+              Dapatkan informasi terkini seputar dunia pendakian, berita gunung di Indonesia, tips keselamatan, update cuaca, dan artikel edukatif untuk meningkatkan pengalaman pendakian Anda.
+            </p>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <!-- Testimonials Section -->
+  <div class="py-20 bg-gray-50 relative z-30">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-[#2D5016] mb-4">
+          Kata Mereka
+        </h2>
+        <p class="text-lg text-gray-600">
+          Pengalaman pendaki yang telah menggunakan MountTrack
+        </p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        
+        <!-- Testimonial 1 -->
+        <div class="bg-white p-8 rounded-xl shadow-lg">
+          <div class="flex items-center mb-4">
+            <div class="flex text-yellow-500">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-gray-600 mb-6 italic">
+            "MountTrack sangat membantu saya dalam merencanakan pendakian ke Gunung Rinjani. Informasinya lengkap dan akurat!"
           </p>
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-[#2D5016] rounded-full flex items-center justify-center text-white font-bold mr-4">
+              AR
+            </div>
+            <div>
+              <p class="font-semibold text-[#2D5016]">Ahmad Rizki</p>
+              <p class="text-sm text-gray-500">Pendaki dari Jakarta</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Testimonial 2 -->
+        <div class="bg-white p-8 rounded-xl shadow-lg">
+          <div class="flex items-center mb-4">
+            <div class="flex text-yellow-500">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-gray-600 mb-6 italic">
+            "Komunitasnya ramah dan supportif. Saya banyak belajar dari pengalaman pendaki lain di MountTrack."
+          </p>
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-[#8B4513] rounded-full flex items-center justify-center text-white font-bold mr-4">
+              SP
+            </div>
+            <div>
+              <p class="font-semibold text-[#2D5016]">Siti Permata</p>
+              <p class="text-sm text-gray-500">Pendaki dari Bandung</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Testimonial 3 -->
+        <div class="bg-white p-8 rounded-xl shadow-lg">
+          <div class="flex items-center mb-4">
+            <div class="flex text-yellow-500">
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+              <svg class="w-5 h-5 fill-current" viewBox="0 0 20 20">
+                <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
+              </svg>
+            </div>
+          </div>
+          <p class="text-gray-600 mb-6 italic">
+            "Database gunungnya lengkap banget! Semua info yang dibutuhkan ada di sini. Recommended!"
+          </p>
+          <div class="flex items-center">
+            <div class="w-12 h-12 bg-[#2D5016] rounded-full flex items-center justify-center text-white font-bold mr-4">
+              BW
+            </div>
+            <div>
+              <p class="font-semibold text-[#2D5016]">Budi Wijaya</p>
+              <p class="text-sm text-gray-500">Pendaki dari Surabaya</p>
+            </div>
+          </div>
         </div>
         
       </div>
@@ -184,7 +366,7 @@
         Bergabunglah dengan ribuan pendaki lainnya dan mulai jelajahi keindahan alam Indonesia
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <a href="/mountain" 
+        <a href="/mountains" 
            class="inline-block bg-white text-[#2D5016] hover:bg-gray-100 font-semibold px-8 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl">
           Lihat Daftar Gunung
         </a>
