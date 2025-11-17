@@ -7,6 +7,7 @@ from django.http import JsonResponse
 
 from .models import News, ImageNews
 from .forms import NewsForm, ImageNewsFormSet
+from django.db.models import Q
 
 
 def show_main(request):
@@ -14,8 +15,14 @@ def show_main(request):
     View utama yang menampilkan daftar berita terbaru.
     """
     news_list = News.objects.all().order_by('-published_date')
+    liked_news_ids = []
+    if request.user.is_authenticated:
+        # Ambil daftar ID berita yang sudah di-like oleh user
+        liked_news_ids = request.user.news_likes.values_list('id', flat=True)
+    
     context = {
-        'news_list': news_list
+        'news_list': news_list,
+        'liked_news_ids': liked_news_ids,
     }
     return render(request, 'page_news.html', context)
 
@@ -58,9 +65,16 @@ def show_news(request, news_id):
     news.increment_views()
     related_images = news.images.all()  
 
+    #cek status like
+    is_liked = False
+    if news.likes.filter(id=request.user.id).exists():
+        is_liked = True
+
     context = {
         'news': news,
         'images': related_images,
+        'total_likes': news.total_likes(), # Kirim jumlah like
+        'is_liked': is_liked,              # Kirim status (True/False)
     }
     return render(request, 'show_news.html', context)
 
@@ -129,6 +143,31 @@ def search_news(request):
         
         news_list = News.objects.all().order_by('-published_date')
 
-    context = {'news_list': news_list}
+    liked_news_ids = []
+    if request.user.is_authenticated:
+        liked_news_ids = request.user.news_likes.values_list('id', flat=True)
+                                                             
+    context = {'news_list': news_list,
+               'liked_news_ids': liked_news_ids,}
 
     return render(request, 'news_list_partial.html', context)
+
+@login_required(login_url='userprofile:login')
+@require_POST
+def like_news(request, news_id):
+    news = get_object_or_404(News, id=news_id)
+    
+    # Toggle Like
+    if news.likes.filter(id=request.user.id).exists():
+        news.likes.remove(request.user)
+        is_liked = False
+    else:
+        news.likes.add(request.user)
+        is_liked = True
+    
+    # Kembalikan data JSON
+    return JsonResponse({
+        'status': 'success',
+        'is_liked': is_liked,
+        'total_likes': news.total_likes()
+    })
