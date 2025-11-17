@@ -1,7 +1,7 @@
 {% if not news_list %}
     <div class="text-center p-10 shadow" style="background-color: #E5D7C4; color: #354024;">
         <p class="text-xl">
-            {% if request.GET.q %} {# Tampilkan pesan berbeda jika sedang mencari #}
+            {% if request.GET.q %}
                 Tidak ada berita yang cocok dengan pencarian "{{ request.GET.q }}".
             {% else %}
                 Belum ada data berita pada MounTrack news.
@@ -16,12 +16,11 @@
                     <div class="w-1/3 flex-shrink-0">
                         <img src="{{ news.pinned_thumbnail }}" alt="{{ news.title }}" class="w-full h-full object-cover">
                     </div>
-                {% else %}
+                 {% else %}
                      <div class="w-1/3 flex-shrink-0 bg-gray-300"></div>
-                {% endif %}
+                 {% endif %}
                 <div class="w-2/3 p-4 flex flex-col justify-between">
                     <div> 
-                        
                         <h2 class="text-3xl font-bold mb-2 hover:text-[#HEX3D19] transition-colors" style="color: #354024;">
                             <a href="{% url 'news:show_news' news.id %}">{{ news.title }}</a>
                         </h2>
@@ -30,7 +29,35 @@
                             | Dilihat sebanyak: {{ news.news_views }} kali
                         </p>
                     </div>
-                    <div class="card-actions justify-end items-center mt-4">
+                    
+                    <div class="card-actions justify-end items-center mt-4 space-x-2">
+                        
+                        {% if user.is_authenticated %}
+                            <button 
+                                class="btn btn-xs gap-1 like-button transition-all duration-200
+                                       {% if news.id in liked_news_ids %} btn-error text-white {% else %} btn-outline btn-error {% endif %}"
+                                data-id="{{ news.id }}"
+                                data-url="{% url 'news:like_news' news.id %}">
+                                
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" 
+                                     fill="{% if news.id in liked_news_ids %}currentColor{% else %}none{% endif %}" 
+                                     viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                                
+                                <span class="like-count">{{ news.total_likes }}</span>
+                            </button>
+                        {% else %}
+                            <a href="{% url 'userprofile:login' %}" class="btn btn-xs btn-outline btn-disabled gap-1" style="border-color: #354024; color: #354024; background-color: transparent; opacity: 1;">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                </svg>
+                                <span>{{ news.total_likes }}</span>
+                            </a>
+                        {% endif %}
+                        <div class="flex-grow"></div>
+                        
                         {% if user.is_staff %}
                             <a href="{% url 'news:edit_news' news.id %}" class="btn btn-sm btn-outline" style="border-color: #354024; color: #354024;">Edit Berita</a>
                             <form action="{% url 'news:delete_news' news.id %}" method="POST" class="inline">
@@ -38,7 +65,9 @@
                                 <button style="background-color: red !important;" type="submit" class="btn btn-sm btn-error text-white" onclick="return confirm('Anda yakin ingin menghapus berita ini?');">Hapus</button>
                             </form>
                         {% endif %}
+                        
                         <a href="{% url 'news:show_news' news.id %}" class="btn btn-sm text-white" style="background-color: #354024; border-color: #354024;">Baca Berita</a>
+
                     </div>
                 </div>
             </div>

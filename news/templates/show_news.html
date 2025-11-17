@@ -14,6 +14,9 @@
 
   <div class="card max-w-4xl mx-auto shadow-xl" style="background-color: #CFBB99;">
     <div class="card-body">
+      
+      
+      {% csrf_token %}
 
       <h1 class="card-title text-4xl font-bold mb-4" style="color: #354024;">
         {{ news.title }}
@@ -38,6 +41,34 @@
         </div>
       </div>
 
+      <div class="flex items-center gap-4 mb-6">
+        {% if user.is_authenticated %}
+            <!-- Tombol 'button' ini akan dikontrol oleh JavaScript -->
+            <button id="like-btn-detail" 
+                    class="btn btn-sm gap-2 transition-all duration-200 {% if is_liked %} btn-error text-white {% else %} btn-outline btn-error {% endif %}"
+                    data-url="{% url 'news:like_news' news.id %}">
+                
+                <!-- Icon Hati -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" 
+                     fill="{% if is_liked %}currentColor{% else %}none{% endif %}" 
+                     viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                </svg>
+                
+                <!-- Jumlah Like -->
+                <span id="like-count-detail">{{ total_likes }}</span>
+            </button>
+        {% else %}
+            <!-- Tampilan untuk User Belum Login (Non-clickable) -->
+            <div class="btn btn-sm btn-disabled gap-2 bg-transparent border-none text-gray-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+                {{ total_likes }} Likes
+            </div>
+            <a href="{% url 'userprofile:login' %}" class="text-xs link link-hover text-[#354024]">Login to like</a>
+        {% endif %}
+      </div>
+      
+
       {% if news.pinned_thumbnail %}
         <figure class="mb-6">
           <img src="{{ news.pinned_thumbnail }}" alt="Thumbnail untuk {{ news.title }}" class="w-full h-auto max-h-[500px] object-cover rounded-lg shadow-md">
@@ -51,18 +82,16 @@
 
       <div class="divider text-lg" style="color: #354024;"></div>
 
-      {% if news.images.all %}
-        
+      <!-- Gambar Tambahan (Galeri) -->
+      {% if images %}
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
-          
-          {% for img in news.images.all %}
+          {% for img in images %}
           <div>
             <label for="img-modal-{{ img.id }}">
               <img src="{{ img.image_url }}" alt="Gambar tambahan" 
                    class="w-full h-48 object-cover rounded-lg shadow-md cursor-pointer hover:opacity-80 transition-opacity">
             </label>
             
-           
             <input type="checkbox" id="img-modal-{{ img.id }}" class="modal-toggle" />
             <div class="modal">
               <div class="modal-box w-11/12 max-w-5xl relative p-0">
@@ -70,14 +99,20 @@
                 <img src="{{ img.image_url }}" alt="Gambar tambahan" class="w-full h-auto rounded-lg">
               </div>
               
-              <label classs="modal-backdrop" for="img-modal-{{ img.id }}">Tutup</label>
+             
+              <label class="modal-backdrop" for="img-modal-{{ img.id }}">Tutup</label>
             </div>
           </div>
           {% endfor %}
         </div>
-          
-
       {% endif %}
+      <!-- Akhir Gambar Tambahan -->
+      
+      {% if not images %}
+        <!-- Pesan ini muncul jika 'images' (dari view) kosong -->
+        <p style="color: #354024;">Tidak ada gambar tambahan untuk berita ini.</p>
+      {% endif %}
+
 
       <div class="divider"></div>
 
@@ -94,5 +129,65 @@
     </div>
   </div>
 </div>
+
+<!-- script ajax like-->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const likeBtn = document.getElementById('like-btn-detail');
+    
+    // Ambil token CSRF dari input tersembunyi yang kita tambahkan di atas
+    const csrfTokenInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
+    const csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
+
+    if (likeBtn) {
+        likeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            
+            const url = this.dataset.url;
+            
+            this.classList.add('scale-90');
+            setTimeout(() => this.classList.remove('scale-90'), 100);
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    // Update Angka
+                    const countSpan = document.getElementById('like-count-detail');
+                    if (countSpan) countSpan.textContent = data.total_likes;
+
+                    // Update Tampilan Tombol & Icon
+                    const icon = this.querySelector('svg');
+                    
+                    if (data.is_liked) {
+                        // Liked: 
+                        this.classList.remove('btn-outline');
+                        this.classList.add('btn-error', 'text-white');
+                        if (icon) icon.setAttribute('fill', 'currentColor');
+                    } else {
+                        // Unliked: 
+                        this.classList.add('btn-outline');
+                        this.classList.remove('btn-error', 'text-white');
+                        this.classList.add('btn-error'); 
+                        if (icon) icon.setAttribute('fill', 'none');
+                    }
+                }
+            })
+            .catch(error => console.error('Error liking news:', error));
+        });
+    }
+});
+</script>
+
 
 {% endblock content %}
