@@ -50,7 +50,6 @@ def login_user(request):
         form = AuthenticationForm()
     return render(request, "login.html", {"form": form})
 
-
 def logout_user(request):
     logout(request)
     return redirect("news:page_news")  # redirect ke halaman utama berita, diubah oleh ryan.
@@ -173,3 +172,104 @@ def public_profile_view(request, username):
         "target_user": user_target
     }
     return render(request, "public_profile.html", context)
+
+@csrf_exempt
+def loginapp(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        if user.is_active:
+            login(request, user)
+            return JsonResponse({
+                "username": user.username,
+                "status": True,
+                "message": "Login successful!",
+                "nama": user.nama,
+                "umur": user.umur,
+                "nomor_telepon": user.nomor_telepon,
+                "category_experience": user.category_experience,
+                "jenis_kelamin": user.jenis_kelamin,
+            }, status=200)
+        else:
+            return JsonResponse({
+                "status": False,
+                "message": "Login failed, account is disabled."
+            }, status=401)
+
+    else:
+        return JsonResponse({
+            "status": False,
+            "message": "Login failed, please check your username or password."
+        }, status=401)
+
+
+@csrf_exempt
+def registerapp(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data['username']
+        password1 = data['password1']
+        password2 = data['password2']
+
+        nama = data.get('nama', username)
+        umur = data.get('umur')
+        nomor_telepon = data.get('nomor_telepon', '')
+        jenis_kelamin = data.get('jenis_kelamin')
+        category_experience = data.get('category_experience', 'beginner')
+
+        # cek password
+        if password1 != password2:
+            return JsonResponse({
+                "status": False,
+                "message": "Passwords do not match."
+            }, status=400)
+        
+        # cek username
+        if UserProfile.objects.filter(username=username).exists():
+            return JsonResponse({
+                "status": False,
+                "message": "Username already exists."
+            }, status=400)
+        
+        # buat user baru
+        user = UserProfile.objects.create_user(
+            username=username,
+            password=password1,
+            nama=nama,
+            umur=umur,
+            nomor_telepon=nomor_telepon,
+            jenis_kelamin=jenis_kelamin,
+            category_experience=category_experience,
+        )
+        user.save()
+        
+        return JsonResponse({
+            "username": user.username,
+            "status": 'success',
+            "message": "User created successfully!"
+        }, status=200)
+    
+    else:
+        return JsonResponse({
+            "status": False,
+            "message": "Invalid request method."
+        }, status=400)
+    
+
+@csrf_exempt
+def logoutapp(request):
+    username = request.user.username if request.user.is_authenticated else None
+    try:
+        logout(request)
+        return JsonResponse({
+            "username": username,
+            "status": True,
+            "message": "Logged out successfully!"
+        }, status=200)
+    except:
+        return JsonResponse({
+            "status": False,
+            "message": "Logout failed."
+        }, status=401)
