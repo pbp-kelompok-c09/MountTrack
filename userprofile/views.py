@@ -343,3 +343,51 @@ def profileapp(request):
             "status": False,
             "message": "Invalid request method."
         }, status=405)
+    
+@csrf_exempt
+@login_required(login_url='/accounts/login')
+def manage_user_app(request):
+    if not request.user.is_staff:
+        return JsonResponse({"error": "Forbidden"}, status=403)
+
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid method"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    user_id = data.get("user_id")
+    action = data.get("action")
+
+    if not user_id or action not in ("toggle", "delete"):
+        return JsonResponse({"error": "Invalid parameters"}, status=400)
+
+    try:
+        target_user = UserProfile.objects.get(id=user_id)
+    except UserProfile.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+
+    if target_user == request.user:
+        return JsonResponse({
+            "success": False,
+            "message": "Tidak bisa mengubah atau menghapus diri sendiri."
+        }, status=400)
+
+    if action == "toggle":
+        target_user.is_staff = not target_user.is_staff
+        target_user.save()
+        return JsonResponse({
+            "success": True,
+            "message": "Status admin diperbarui.",
+            "is_staff": target_user.is_staff,
+        }, status=200)
+
+    elif action == "delete":
+        target_user.delete()
+        return JsonResponse({
+            "success": True,
+            "message": "User berhasil dihapus."
+        }, status=200)
+
