@@ -218,6 +218,7 @@ def registerapp(request):
         nomor_telepon = data.get('nomor_telepon', '')
         jenis_kelamin = data.get('jenis_kelamin')
         category_experience = data.get('category_experience', 'beginner')
+        email = data.get('email', '').strip()
 
         # cek password
         if password1 != password2:
@@ -242,6 +243,7 @@ def registerapp(request):
             nomor_telepon=nomor_telepon,
             jenis_kelamin=jenis_kelamin,
             category_experience=category_experience,
+            email=email,
         )
         user.save()
         
@@ -273,3 +275,71 @@ def logoutapp(request):
             "status": False,
             "message": "Logout failed."
         }, status=401)
+    
+@csrf_exempt
+def profileapp(request):
+    # pastikan user sudah login
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            "status": False,
+            "message": "Authentication required."
+        }, status=401)
+
+    user = request.user
+
+    # GET: return data profil
+    if request.method == "GET":
+        # ambil riwayat pendakian sebagai list nama gunung
+        history = list(user.history_gunung.values_list("name", flat=True))
+
+        return JsonResponse({
+            "status": True,
+            "username": user.username,
+            "nama": user.nama or "",
+            "umur": user.umur,
+            "nomor_telepon": user.nomor_telepon or "",
+            "email": user.email or "",
+            "category_experience": user.category_experience,
+            "jenis_kelamin": user.jenis_kelamin,
+            "is_staff": user.is_staff,
+            "history_gunung": history,
+        }, status=200)
+
+    # POST: update data profil
+    elif request.method == "POST":
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "status": False,
+                "message": "Invalid JSON."
+            }, status=400)
+
+        nama = data.get("nama", "").strip()
+        umur = data.get("umur")
+        nomor_telepon = data.get("nomor_telepon", "").strip()
+        email = data.get("email", "").strip()
+        category_experience = data.get("category_experience")
+        jenis_kelamin = data.get("jenis_kelamin")
+
+        user.umur = umur
+        user.nomor_telepon = nomor_telepon
+        user.email = email
+        if category_experience in dict(UserProfile.EXPERIENCE_CHOICES):
+            user.category_experience = category_experience
+        if jenis_kelamin in dict(UserProfile.GENDER_CHOICES) or jenis_kelamin in (None, ""):
+            user.jenis_kelamin = jenis_kelamin or None
+
+        user.nama = nama
+        user.save()
+
+        return JsonResponse({
+            "status": True,
+            "message": "Profil berhasil diperbarui."
+        }, status=200)
+
+    else:
+        return JsonResponse({
+            "status": False,
+            "message": "Invalid request method."
+        }, status=405)
