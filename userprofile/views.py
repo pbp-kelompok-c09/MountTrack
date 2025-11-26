@@ -180,28 +180,22 @@ def loginapp(request):
     
     user = authenticate(username=username, password=password)
     if user is not None:
-        if user.is_active:
-            login(request, user)
-            return JsonResponse({
-                "username": user.username,
-                "status": True,
-                "message": "Login successful!",
-                "nama": user.nama,
-                "umur": user.umur,
-                "nomor_telepon": user.nomor_telepon,
-                "category_experience": user.category_experience,
-                "jenis_kelamin": user.jenis_kelamin,
-            }, status=200)
-        else:
-            return JsonResponse({
-                "status": False,
-                "message": "Login failed, account is disabled."
-            }, status=401)
+        login(request, user)
+        return JsonResponse({
+            "username": user.username,
+            "status": True,
+            "message": "Login successful!",
+            "nama": user.nama,
+            "umur": user.umur,
+            "nomor_telepon": user.nomor_telepon,
+            "category_experience": user.category_experience,
+            "jenis_kelamin": user.jenis_kelamin,
+        }, status=200)
 
     else:
         return JsonResponse({
             "status": False,
-            "message": "Login failed, please check your username or password."
+            "message": "Login gagal, mohon cek kembali username dan password anda."
         }, status=401)
 
 
@@ -224,14 +218,14 @@ def registerapp(request):
         if password1 != password2:
             return JsonResponse({
                 "status": False,
-                "message": "Passwords do not match."
+                "message": "Kedua password tidak cocok."
             }, status=400)
         
         # cek username
         if UserProfile.objects.filter(username=username).exists():
             return JsonResponse({
                 "status": False,
-                "message": "Username already exists."
+                "message": "Username sudah dipakai."
             }, status=400)
         
         # buat user baru
@@ -250,7 +244,7 @@ def registerapp(request):
         return JsonResponse({
             "username": user.username,
             "status": 'success',
-            "message": "User created successfully!"
+            "message": "Akun sukses dibuat!"
         }, status=200)
     
     else:
@@ -268,12 +262,12 @@ def logoutapp(request):
         return JsonResponse({
             "username": username,
             "status": True,
-            "message": "Logged out successfully!"
+            "message": "Logout sukses!"
         }, status=200)
     except:
         return JsonResponse({
             "status": False,
-            "message": "Logout failed."
+            "message": "Logout gagal."
         }, status=401)
     
 @csrf_exempt
