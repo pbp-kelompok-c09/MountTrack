@@ -106,11 +106,19 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8">   
+<div class="container mx-auto px-4 py-8" data-user-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}">   
     <div class="hero-section mt-48">
-        <h1 class="text-5xl font-bold text-[#2D5016] mt-48 mb-8 text-center">Jelajahi Gunung Indonesia</h1>
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-5xl font-bold text-[#2D5016] mt-48 mb-8 text-center flex-grow">Jelajahi Gunung Indonesia</h1>
+            {% if user.is_authenticated %}
+            <a href="{% url 'mountain_create' %}" 
+               class="bg-[#2D5016] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#1f3810] transition duration-300 shadow-md mt-48">
+                + Tambah Gunung
+            </a>
+            {% endif %}
+        </div>
 
-        <form method="GET" action="{% url 'mountain_list' %}" class="filter-card">
+        <form method="GET" action="{% url 'mountain_list' %}" id="filterForm" class="filter-card">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-5 items-end">
                 
                 <div>
@@ -207,10 +215,22 @@
                         </div>
                         
                         <a href="{% url 'mountain_detail' name=mountain.name %}" 
-                           class="block w-full text-center bg-[#4CAF50] text-white py-2.5 px-4 rounded-lg text-sm font-semibold hover:bg-[#3d8b40] transform hover:-translate-y-0.5 transition duration-300 shadow-md">
+                           class="block w-full text-center bg-[#4CAF50] text-white py-2.5 px-4 rounded-lg text-sm font-semibold hover:bg-[#3d8b40] transform hover:-translate-y-0.5 transition duration-300 shadow-md mb-2">
                             Lihat Detail
                         </a>
 
+                        {% if user.is_authenticated %}
+                        <div class="grid grid-cols-2 gap-2 mt-2">
+                            <a href="{% url 'mountain_edit' mountain_id=mountain.id %}" 
+                               class="block text-center bg-blue-500 text-white py-2 px-3 rounded-lg text-xs font-semibold hover:bg-blue-600 transition duration-300">
+                                Edit
+                            </a>
+                            <button data-id="{{ mountain.id }}" data-name="{{ mountain.name|escape }}" onclick="deleteMountain(this.dataset.id, this.dataset.name)" 
+                                    class="bg-red-500 text-white py-2 px-3 rounded-lg text-xs font-semibold hover:bg-red-600 transition duration-300">
+                                Hapus
+                            </button>
+                        </div>
+                        {% endif %}
         
                     </div>
                 </div>
@@ -235,4 +255,165 @@
     </div>
 
 </div>
+
+<script>
+    // AJAX for filtering mountains without page reload
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterForm = document.getElementById('filterForm');
+        const filterInputs = filterForm.querySelectorAll('input, select');
+        
+        // Add event listener for real-time filtering
+        filterInputs.forEach(input => {
+            input.addEventListener('change', function() {
+                applyFiltersAjax();
+            });
+        });
+        
+        // Search with debounce
+        const searchInput = document.getElementById('search');
+        let searchTimeout;
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                applyFiltersAjax();
+            }, 500); // Wait 500ms after user stops typing
+        });
+    });
+
+    function applyFiltersAjax() {
+        const form = document.getElementById('filterForm');
+        const formData = new FormData(form);
+        const params = new URLSearchParams(formData);
+        
+        // Show loading state
+        const resultsSection = document.querySelector('.results-section');
+        resultsSection.style.opacity = '0.5';
+        
+        fetch(`/mountains/api/mountains/?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                updateMountainList(data.mountains);
+                updateResultsCount(data.count);
+                resultsSection.style.opacity = '1';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                resultsSection.style.opacity = '1';
+                alert('Terjadi kesalahan saat memuat data');
+            });
+    }
+
+    function updateMountainList(mountains) {
+        const container = document.querySelector('.grid.grid-cols-1.sm\\:grid-cols-2');
+        const noResultsDiv = document.querySelector('.p-12.text-center');
+        
+        if (mountains.length === 0) {
+            if (container) container.style.display = 'none';
+            if (noResultsDiv) noResultsDiv.style.display = 'block';
+            return;
+        }
+        
+        if (noResultsDiv) noResultsDiv.style.display = 'none';
+        if (container) {
+            container.style.display = 'grid';
+            container.innerHTML = mountains.map(mountain => createMountainCard(mountain)).join('');
+        }
+    }
+
+    function createMountainCard(mountain) {
+        const imageUrl = mountain.image_url || '/static/images/default_mountain.jpg';
+        const detailUrl = `/mountains/${encodeURIComponent(mountain.name)}/`;
+        const isAuthenticated = document.querySelector('[data-user-authenticated]').dataset.userAuthenticated === 'true';
+        const editButtons = isAuthenticated ? `
+            <div class="grid grid-cols-2 gap-2 mt-2">
+                <a href="/mountains/edit/${mountain.id}/" 
+                   class="block text-center bg-blue-500 text-white py-2 px-3 rounded-lg text-xs font-semibold hover:bg-blue-600 transition duration-300">
+                    Edit
+                </a>
+                <button onclick="deleteMountain(${mountain.id}, '${mountain.name.replace(/'/g, "\\'")}')"
+                        class="bg-red-500 text-white py-2 px-3 rounded-lg text-xs font-semibold hover:bg-red-600 transition duration-300">
+                    Hapus
+                </button>
+            </div>` : '';
+        
+        return `
+            <div class="mountain-card bg-white rounded-2xl shadow-lg overflow-hidden border-t-4 border-[#2D5016]">
+                <img src="${imageUrl}" 
+                     alt="${mountain.name}" 
+                     class="w-full h-52 object-cover">
+                <div class="p-5">
+                    <h2 class="text-xl font-bold text-gray-800 mb-3 hover:text-[#4CAF50] transition duration-200">
+                        <a href="${detailUrl}">
+                            ${mountain.name}
+                        </a>
+                    </h2>
+                    <div class="space-y-2 mb-4">
+                        <p class="text-sm text-gray-600">
+                            <span class="font-semibold text-[#D2691E]">📏 ${mountain.height_mdpl} mdpl</span>
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            <span class="font-semibold text-[#2D5016]">📍 ${mountain.province}</span>
+                        </p>
+                    </div>
+                    <a href="${detailUrl}" 
+                       class="block w-full text-center bg-[#4CAF50] text-white py-2.5 px-4 rounded-lg text-sm font-semibold hover:bg-[#3d8b40] transform hover:-translate-y-0.5 transition duration-300 shadow-md mb-2">
+                        Lihat Detail
+                    </a>
+                    ${editButtons}
+                </div>
+            </div>
+        `;
+    }
+
+    function updateResultsCount(count) {
+        const countElement = document.querySelector('.text-gray-600.mt-2.text-base');
+        if (countElement) {
+            countElement.textContent = `Ditemukan ${count} gunung.`;
+        }
+    }
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function deleteMountain(mountainId, mountainName) {
+        if (!confirm(`Apakah Anda yakin ingin menghapus gunung ${mountainName}?`)) {
+            return;
+        }
+        
+        const csrftoken = getCookie('csrftoken');
+        
+        fetch(`/mountains/api/delete/${mountainId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrftoken,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alert(data.message);
+                applyFiltersAjax(); // Reload the list
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan saat menghapus gunung');
+        });
+    }
+</script>
 {% endblock %}
