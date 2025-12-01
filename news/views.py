@@ -9,6 +9,7 @@ from .models import News, ImageNews
 from .forms import NewsForm, ImageNewsFormSet
 from django.db.models import Q
 
+from django.views.decorators.csrf import csrf_exempt
 
 def show_main(request):
     """
@@ -78,7 +79,7 @@ def show_news(request, news_id):
     }
     return render(request, 'show_news.html', context)
 
-
+@csrf_exempt
 @staff_member_required(login_url='userprofile:login')
 @require_POST
 def delete_news(request, news_id):
@@ -88,7 +89,7 @@ def delete_news(request, news_id):
     news = get_object_or_404(News, id=news_id)
     news.delete()
     messages.success(request, 'Berita berhasil dihapus.')
-    return redirect('news:page_news')
+    return JsonResponse({'status': 'success'}, status=200)
 
 
 @staff_member_required(login_url='userprofile:login')
@@ -151,7 +152,40 @@ def search_news(request):
                'liked_news_ids': liked_news_ids,}
 
     return render(request, 'news_list_partial.html', context)
+from django.http import JsonResponse
+from .models import News
 
+
+
+def show_json(request):
+    news_list = News.objects.all().order_by('-published_date') # Tambahkan order_by biar rapi
+    
+    # 1. Siapkan set ID berita yang dilike user (agar efisien dan tidak query berulang)
+    liked_news_ids = set()
+    if request.user.is_authenticated:
+        liked_news_ids = set(request.user.news_likes.values_list('id', flat=True))
+
+    data = []
+    for news in news_list:
+        # 2. Cek status like
+        is_liked = news.id in liked_news_ids
+
+        data.append({
+            'id': str(news.id),
+            'title': news.title,
+            'content': news.content,
+            'published_date': news.published_date.isoformat() if news.published_date else None,
+            'news_views': news.news_views,
+            'pinned_thumbnail': news.pinned_thumbnail,
+            'user_id': news.user.id if news.user else None,
+            'username': news.user.username if news.user else "Anonymous",
+            'total_likes': news.total_likes(),
+            'is_liked': is_liked, # <--- FIELD BARU INI PENTING
+        })
+
+    return JsonResponse(data, safe=False)
+
+@csrf_exempt
 @login_required(login_url='userprofile:login')
 @require_POST
 def like_news(request, news_id):
