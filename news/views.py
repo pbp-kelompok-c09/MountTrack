@@ -11,6 +11,8 @@ from django.db.models import Q
 
 from django.views.decorators.csrf import csrf_exempt
 
+import json
+
 def show_main(request):
     """
     View utama yang menampilkan daftar berita terbaru.
@@ -158,17 +160,20 @@ from .models import News
 
 
 def show_json(request):
-    news_list = News.objects.all().order_by('-published_date') # Tambahkan order_by biar rapi
+    news_list = News.objects.all().order_by('-published_date')
     
-    # 1. Siapkan set ID berita yang dilike user (agar efisien dan tidak query berulang)
     liked_news_ids = set()
     if request.user.is_authenticated:
         liked_news_ids = set(request.user.news_likes.values_list('id', flat=True))
 
     data = []
     for news in news_list:
-        # 2. Cek status like
         is_liked = news.id in liked_news_ids
+
+        # --- [TAMBAHAN] Ambil Gambar Tambahan ---
+        # Mengasumsikan di models.py Anda, ImageNews punya related_name='images' ke News
+        # dan field-nya bernama 'image_url'
+        additional_images = list(news.images.values_list('image_url', flat=True))
 
         data.append({
             'id': str(news.id),
@@ -180,7 +185,8 @@ def show_json(request):
             'user_id': news.user.id if news.user else None,
             'username': news.user.username if news.user else "Anonymous",
             'total_likes': news.total_likes(),
-            'is_liked': is_liked, # <--- FIELD BARU INI PENTING
+            'is_liked': is_liked,
+            'additional_images': additional_images, # <--- FIELD BARU INI WAJIB ADA
         })
 
     return JsonResponse(data, safe=False)
@@ -205,3 +211,89 @@ def like_news(request, news_id):
         'is_liked': is_liked,
         'total_likes': news.total_likes()
     })
+
+
+@csrf_exempt
+@login_required # Sesuaikan jika pakai cookie auth
+def create_news_flutter(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            
+            # 1. Buat News Utama
+            new_news = News.objects.create(
+                user=request.user,
+                title=data['title'],
+                content=data['content'],
+                pinned_thumbnail=data['pinned_thumbnail']
+            )
+
+            # 2. Buat ImageNews tambahan (Looping array dari flutter)
+            additional_images = data.get('additional_images', [])
+            for img_url in additional_images:
+                if img_url: # Pastikan tidak kosong
+                    ImageNews.objects.create(
+                        news=new_news,
+                        image_url=img_url
+                    )
+
+            return JsonResponse({"status": "success"}, status=200)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+    
+    return JsonResponse({"status": "error", "message": "Method not allowed"}, status=405)
+
+def get_user_status(request):
+    """
+    Mengembalikan status pengguna: apakah sedang login dan apakah admin (is_staff).
+    """
+    is_authenticated = request.user.is_authenticated
+    is_admin = request.user.is_staff if is_authenticated else False
+    
+    return JsonResponse({
+        'is_authenticated': is_authenticated,
+        'is_admin': is_admin,
+        'username': request.user.username if is_authenticated else 'Guest',
+    })
+
+
+
+@csrf_exempt
+def edit_news_flutter(request, news_id):
+    if request.method == 'POST':
+        try:
+            # 1. Ambil objek berita yang mau diedit
+            news = News.objects.get(id=news_id)
+            
+            # (Opsional) Cek apakah user yang request adalah pemilik berita
+            # if news.user != request.user:
+            #     return JsonResponse({'status': 'error', 'message': 'Bukan pemilik berita'}, status=403)
+
+            data = json.loads(request.body)
+
+            # 2. Update field utama
+            news.title = data.get('title', news.title)
+            news.content = data.get('content', news.content)
+            news.pinned_thumbnail = data.get('pinned_thumbnail', news.pinned_thumbnail)
+            news.save()
+
+            # 3. Update Gambar Tambahan
+            # Strategi: Hapus semua gambar lama, lalu buat ulang sesuai list baru dari Flutter.
+            # Ini cara termudah untuk sinkronisasi edit (tambah/hapus gambar).
+            news.images.all().delete() # Hapus yang lama
+
+            additional_images = data.get('additional_images', [])
+            for img_url in additional_images:
+                if img_url:
+                    ImageNews.objects.create(
+                        news=news,
+                        image_url=img_url
+                    )
+
+            return JsonResponse({"status": "success"}, status=200)
+        except News.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Berita tidak ditemukan"}, status=404)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+    return JsonResponse({"status": "error", "message": "Invalid method"}, status=405)
