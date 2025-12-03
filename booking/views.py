@@ -7,9 +7,176 @@ from django.contrib.auth.decorators import login_required
 from userprofile.models import UserProfile
 from django.http import JsonResponse
 import logging
+import json
+from django.views.decorators.http import require_http_methods
+from django.http import JsonResponse, HttpResponseBadRequest, HttpResponseForbidden
+from django.core.exceptions import ObjectDoesNotExist
 
 
 # logger = logging.getLogger(__name__)
+
+@login_required
+@require_http_methods(["POST"])
+def booking_api_create(request):
+    """
+    Create booking from JSON payload:
+    {
+      "gunung_id": 123,        # optional if you accept 'gunung' name; prefer id
+      "pax": 2,
+      "anggota": [
+         {"name": "A", "age": 30, "gender": "M", "level": "beginner"},
+         ...
+      ],
+      "porter_hire": "yes"  # or "no"
+      "climbing_date": "2025-12-01"  # optional (ISO date)
+    }
+    Response JSON:
+    { "success": True, "booking_id": 42, "message": "Created" }
+    """
+    try:
+        payload = json.loads(request.body.decode('utf-8'))
+    except Exception:
+        return JsonResponse({'success': False, 'message': 'Invalid JSON'}, status=400)
+
+    pax = int(payload.get('pax', 1))
+    anggota = payload.get('anggota', [])
+    porter_hire = payload.get('porter_hire', 'no')
+    gunung_id = payload.get('gunung_id') or payload.get('gunung')
+
+    # find mountain if provided
+    gunung = None
+    if gunung_id:
+        try:
+            gunung = Mountain.objects.get(id=gunung_id)
+        except (Mountain.DoesNotExist, ValueError, TypeError):
+            gunung = None
+
+    # derive levels and porter logic
+    levels = [m.get('level') for m in anggota]
+    porter_needed = False
+    if levels and all(l == 'beginner' for l in levels):
+        porter_needed = True
+    elif any(l == 'beginner' for l in levels) and levels.count('intermediate') >= 2:
+        porter_needed = True
+
+    if porter_needed and porter_hire != 'yes':
+        return JsonResponse({'success': False, 'message': 'Booking requires porter_hire=yes'}, status=400)
+
+    # create booking
+    booking = Booking.objects.create(
+        user=request.user,
+        gunung=gunung,
+        pax=pax,
+        levels=levels,
+        porter_required=porter_needed,
+    )
+
+    # create members
+    for m in anggota:
+        BookingMember.objects.create(
+            booking=booking,
+            name=m.get('name') or '',
+            age=m.get('age') if m.get('age') not in [None, ''] else None,
+            gender=m.get('gender') or None,
+            level=m.get('level') or 'beginner',
+        )
+
+    return JsonResponse({'success': True, 'booking_id': booking.id, 'message': 'Booking created'}, status=201)
+
+
+@login_required
+@require_http_methods(["GET"])
+def booking_api_detail(request, booking_id):
+    """
+    Return booking detail (JSON) for given booking_id, only if owned by request.user.
+    """
+    try:
+        booking = Booking.objects.get(id=booking_id)
+    except Booking.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Booking not found'}, status=404)
+
+    if booking.user != request.user:
+        return JsonResponse({'success': False, 'message': 'Forbidden'}, status=403)
+
+    return JsonResponse({'success': True, 'booking': booking.summary()}, status=200)
+
+
+@login_required
+@require_http_methods(["PUT", "PATCH", "POST"])
+def booking_api_update(request, booking_id):
+    """
+    Update booking from JSON payload (replace pax, anggota, porter_hire, gunung).
+    For simplicity we delete existing members and recreate them from payload.
+    """
+    try:
+        booking = Booking.objects.get(id=booking_id)
+    except Booking.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Booking not found'}, status=404)
+
+    if booking.user != request.user:
+        return JsonResponse({'success': False, 'message': 'Forbidden'}, status=403)
+
+    try:
+        payload = json.loads(request.body.decode('utf-8'))
+    except Exception:
+        return JsonResponse({'success': False, 'message': 'Invalid JSON'}, status=400)
+
+    pax = int(payload.get('pax', booking.pax))
+    anggota = payload.get('anggota', None)
+    porter_hire = payload.get('porter_hire', 'no')
+    gunung_id = payload.get('gunung_id') or payload.get('gunung')
+
+    gunung = booking.gunung
+    if gunung_id:
+        try:
+            gunung = Mountain.objects.get(id=gunung_id)
+        except (Mountain.DoesNotExist, ValueError, TypeError):
+            gunung = booking.gunung  # fallback
+
+    # validate porter logic if anggota present
+    if anggota is not None:
+        levels = [m.get('level') for m in anggota]
+        porter_needed = False
+        if levels and all(l == 'beginner' for l in levels):
+            porter_needed = True
+        elif any(l == 'beginner' for l in levels) and levels.count('intermediate') >= 2:
+            porter_needed = True
+
+        if porter_needed and porter_hire != 'yes':
+            return JsonResponse({'success': False, 'message': 'Booking requires porter_hire=yes'}, status=400)
+
+    # apply updates
+    booking.gunung = gunung
+    booking.pax = pax
+    if anggota is not None:
+        booking.levels = [m.get('level') for m in anggota]
+        booking.porter_required = porter_needed
+        booking.save()
+        # recreate members
+        booking.members.all().delete()
+        for m in anggota:
+            BookingMember.objects.create(
+                booking=booking,
+                name=m.get('name') or '',
+                age=m.get('age') if m.get('age') not in [None, ''] else None,
+                gender=m.get('gender') or None,
+                level=m.get('level') or 'beginner',
+            )
+    else:
+        booking.save()
+
+    return JsonResponse({'success': True, 'booking_id': booking.id, 'message': 'Booking updated'}, status=200)
+
+
+@login_required
+@require_http_methods(["GET"])
+def booking_api_history(request):
+    """
+    Return list of Booking.summary() for the authenticated user.
+    """
+    bookings = Booking.objects.filter(user=request.user).order_by('-created_at')
+    data = [b.summary() for b in bookings]
+    return JsonResponse({'success': True, 'bookings': data}, status=200)
 
 def _build_anggota_fields(form, pax_value):
     anggota_fields = []
