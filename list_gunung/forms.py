@@ -4,7 +4,7 @@ from .models import Mountain
 class MountainForm(forms.ModelForm):
     class Meta:
         model = Mountain
-        fields = ['name', 'url', 'height_mdpl', 'province', 'image_url', 'description']
+        fields = ['name', 'url', 'height_mdpl', 'province', 'image_url', 'description', 'availability', 'min_book', 'experience_required']
         widgets = {
             'name': forms.TextInput(attrs={
                 'class': 'w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-green-600 focus:ring-2 focus:ring-green-200 transition duration-200',
@@ -32,6 +32,17 @@ class MountainForm(forms.ModelForm):
                 'placeholder': 'Deskripsi Gunung',
                 'rows': 5
             }),
+            'availability': forms.CheckboxInput(attrs={
+                'class': 'w-5 h-5 text-green-600 rounded focus:ring-green-500 focus:ring-2'
+            }),
+            'min_book': forms.NumberInput(attrs={
+                'class': 'w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-green-600 focus:ring-2 focus:ring-green-200 transition duration-200',
+                'placeholder': 'Jumlah minimum orang',
+                'min': '1'
+            }),
+            'experience_required': forms.Select(attrs={
+                'class': 'w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-green-600 focus:ring-2 focus:ring-green-200 transition duration-200'
+            }),
         }
         labels = {
             'name': 'Nama Gunung',
@@ -40,6 +51,9 @@ class MountainForm(forms.ModelForm):
             'province': 'Provinsi',
             'image_url': 'URL Gambar',
             'description': 'Deskripsi',
+            'availability': 'Tersedia untuk Booking',
+            'min_book': 'Minimum Booking (orang)',
+            'experience_required': 'Pengalaman yang Dibutuhkan',
         }
 
     def clean_height_mdpl(self):

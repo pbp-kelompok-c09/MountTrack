@@ -6,18 +6,18 @@
 {% block extra_css %}
 <style>
     body {
-        background: linear-gradient(135deg, #D4C4B0 0%, #E8DFD4 50%, #D4C4B0 100%);
+        /* Added !important to force the override of base.html styles */
+        background-color: #E5D7C4 !important;
         min-height: 100vh;
         position: relative;
     }
 
     .hero-section {
-        margin-top: 10rem;
+        margin-top: 6rem;
         padding-top: 2rem;
     }
 
     .hero-section h1 {
-        margin-top: 10rem;
         color: #2D5016;
         font-size: 3rem;
         font-weight: 700;
@@ -27,13 +27,14 @@
     }
 
     .filter-card {
-        background: white;
+        background: rgba(255, 255, 255, 0.7);
         border-radius: 16px;
         padding: 2rem;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
         max-width: 1200px;
         width: 100%;
         margin: 0 auto;
+        backdrop-filter: blur(10px);
     }
 
     .filter-input, .filter-select {
@@ -53,7 +54,7 @@
 
     .mountain-card {
         transition: all 0.3s ease;
-        background: white;
+        background: rgba(255, 255, 255, 0.8);
     }
 
     .mountain-card:hover {
@@ -64,11 +65,9 @@
     .results-section {
         position: relative;
         z-index: 1;
-        background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.5);
         border-radius: 20px;
         padding: 2.5rem;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
         margin-top: 2rem;
     }
 
@@ -89,7 +88,7 @@
     }
 
     .btn-secondary {
-        background: white;
+        background: rgba(255, 255, 255, 0.9);
         color: #374151;
         padding: 0.875rem 2rem;
         border-radius: 12px;
@@ -106,13 +105,13 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8" data-user-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}">   
-    <div class="hero-section mt-48">
+<div class="container mx-auto px-4 py-8" data-user-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}">    
+    <div class="hero-section mt-36">
         <div class="flex justify-between items-center mb-8">
-            <h1 class="text-5xl font-bold text-[#2D5016] mt-48 mb-8 text-center flex-grow">Jelajahi Gunung Indonesia</h1>
-            {% if user.is_authenticated %}
+            <h1 class="text-5xl font-bold text-[#2D5016] mb-8 text-center flex-grow">Jelajahi Gunung Indonesia</h1>
+            {% if user.is_staff %}
             <a href="{% url 'mountain_create' %}" 
-               class="bg-[#2D5016] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#1f3810] transition duration-300 shadow-md mt-48">
+               class="bg-[#2D5016] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#1f3810] transition duration-300 shadow-md">
                 + Tambah Gunung
             </a>
             {% endif %}
@@ -194,9 +193,22 @@
                 {% for mountain in mountains %}
                 <div class="mountain-card bg-white rounded-2xl shadow-lg overflow-hidden border-t-4 border-[#2D5016]">
                     
-                    <img src="{% if mountain.image_url %}{{ mountain.image_url }}{% else %}{% static 'images/default_mountain.jpg' %}{% endif %}" 
-                         alt="{{ mountain.name }}" 
-                         class="w-full h-52 object-cover">
+                    <div class="relative">
+                        <img src="{% if mountain.image_url %}{{ mountain.image_url }}{% else %}{% static 'images/default_mountain.jpg' %}{% endif %}" 
+                             alt="{{ mountain.name }}" 
+                             class="w-full h-52 object-cover">
+                        <div class="absolute top-3 right-3">
+                            {% if mountain.availability %}
+                                <span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                                    ✓ Available
+                                </span>
+                            {% else %}
+                                <span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                                    ✗ Closed
+                                </span>
+                            {% endif %}
+                        </div>
+                    </div>
 
                     <div class="p-5">
                         <h2 class="text-xl font-bold text-gray-800 mb-3 hover:text-[#4CAF50] transition duration-200">
@@ -212,15 +224,34 @@
                             <p class="text-sm text-gray-600">
                                 <span class="font-semibold text-[#2D5016]">📍 {{ mountain.province }}</span>
                             </p>
+                            <p class="text-sm text-gray-600">
+                                <span class="font-semibold text-purple-700">👥 Min: {{ mountain.min_book }} person(s)</span>
+                            </p>
+                            <p class="text-sm text-gray-600">
+                                <span class="font-semibold text-orange-700">⭐ {{ mountain.experience_required }}</span>
+                            </p>
                         </div>
                         
-                        <a href="{% url 'mountain_detail' name=mountain.name %}" 
-                           class="block w-full text-center bg-[#4CAF50] text-white py-2.5 px-4 rounded-lg text-sm font-semibold hover:bg-[#3d8b40] transform hover:-translate-y-0.5 transition duration-300 shadow-md mb-2">
-                            Lihat Detail
-                        </a>
+                        <div class="grid grid-cols-2 gap-2 mb-2">
+                            <a href="{% url 'mountain_detail' name=mountain.name %}" 
+                               class="block text-center bg-[#4CAF50] text-white py-2.5 px-4 rounded-lg text-sm font-semibold hover:bg-[#3d8b40] transform hover:-translate-y-0.5 transition duration-300 shadow-md">
+                                Lihat Detail
+                            </a>
+                            {% if mountain.availability %}
+                                <a href="{% if user.is_authenticated %}{% url 'booking:booking_view' %}?mountain_id={{ mountain.id }}{% else %}/accounts/login/?next={% url 'booking:booking_view' %}?mountain_id={{ mountain.id }}{% endif %}" 
+                                   class="block text-center bg-[#D2691E] text-white py-2.5 px-4 rounded-lg text-sm font-semibold hover:bg-[#a0521a] transform hover:-translate-y-0.5 transition duration-300 shadow-md">
+                                    Book
+                                </a>
+                            {% else %}
+                                <button disabled 
+                                        class="block text-center bg-gray-400 text-white py-2.5 px-4 rounded-lg text-sm font-semibold cursor-not-allowed shadow-md">
+                                    Closed
+                                </button>
+                            {% endif %}
+                        </div>
 
-                        {% if user.is_authenticated %}
-                        <div class="grid grid-cols-2 gap-2 mt-2">
+                        {% if user.is_staff %}
+                        <div class="grid grid-cols-2 gap-2">
                             <a href="{% url 'mountain_edit' mountain_id=mountain.id %}" 
                                class="block text-center bg-blue-500 text-white py-2 px-3 rounded-lg text-xs font-semibold hover:bg-blue-600 transition duration-300">
                                 Edit

@@ -75,6 +75,29 @@
                             <p class="text-lg font-bold text-amber-800">{{ mountain.province }}</p>
                             <p class="text-xs text-gray-500">Indonesia</p>
                         </div>
+
+                        <!-- Availability Card -->
+                        <div class="bg-white rounded-xl p-4 shadow-md border-l-4 {% if mountain.availability %}border-blue-600{% else %}border-red-600{% endif %}">
+                            <p class="text-xs text-gray-600 mb-1">Status</p>
+                            <p class="text-lg font-bold {% if mountain.availability %}text-blue-800{% else %}text-red-800{% endif %}">
+                                {% if mountain.availability %}Available{% else %}Closed{% endif %}
+                            </p>
+                            <p class="text-xs text-gray-500">Booking Status</p>
+                        </div>
+
+                        <!-- Min Booking Card -->
+                        <div class="bg-white rounded-xl p-4 shadow-md border-l-4 border-purple-600">
+                            <p class="text-xs text-gray-600 mb-1">Min. Participants</p>
+                            <p class="text-2xl font-bold text-purple-800">{{ mountain.min_book }}</p>
+                            <p class="text-xs text-gray-500">Person(s)</p>
+                        </div>
+
+                        <!-- Experience Card -->
+                        <div class="bg-white rounded-xl p-4 shadow-md border-l-4 border-orange-600 col-span-2">
+                            <p class="text-xs text-gray-600 mb-1">Experience Required</p>
+                            <p class="text-xl font-bold text-orange-800">{{ mountain.experience_required }}</p>
+                            <p class="text-xs text-gray-500">Recommended Level</p>
+                        </div>
                     </div>
 
                     <!-- Description Section -->
@@ -105,8 +128,8 @@
                         </a>
                     </div>
 
-                    {% if user.is_authenticated %}
-                    <!-- Admin Actions (Only for logged-in users) -->
+                    {% if user.is_staff %}
+                    <!-- Admin Actions (Only for admin/staff users) -->
                     <div class="grid grid-cols-2 gap-3">
                         <a href="{% url 'mountain_edit' mountain_id=mountain.id %}" 
                            class="bg-blue-500 text-white text-center py-3 px-4 rounded-xl font-semibold hover:bg-blue-600 transition duration-300 shadow-lg flex items-center justify-center gap-2">
@@ -128,7 +151,7 @@
                         </form>
                     </div>
 
-                    <!-- Extra Info for Logged-in Users -->
+                    <!-- Extra Info for Admin/Staff Users -->
                     <div class="bg-blue-50 border-2 border-blue-200 rounded-xl p-4">
                         <div class="flex items-center gap-2 mb-2">
                             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -143,13 +166,13 @@
                         </div>
                     </div>
                     {% else %}
-                    <!-- Message for non-logged-in users -->
+                    <!-- Message for non-admin users -->
                     <div class="bg-yellow-50 border-2 border-yellow-200 rounded-xl p-4 text-center">
                         <svg class="w-8 h-8 text-yellow-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                         </svg>
-                        <p class="text-sm text-yellow-800 font-semibold">Login untuk mengakses fitur lengkap</p>
-                        <p class="text-xs text-yellow-700 mt-1">Edit, hapus, dan lihat informasi tambahan</p>
+                        <p class="text-sm text-yellow-800 font-semibold">Admin access required</p>
+                        <p class="text-xs text-yellow-700 mt-1">Only admin users can edit, delete, and view additional information</p>
                     </div>
                     {% endif %}
 

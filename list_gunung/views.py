@@ -91,6 +91,9 @@ def mountain_list_json(request):
         'image_url': m.image_url or '',
         'description': m.description[:150] + '...' if len(m.description) > 150 else m.description,
         'slug': m.slug,
+        'availability': m.availability,
+        'min_book': m.min_book,
+        'experience_required': m.experience_required,
     } for m in mountains]
     
     return JsonResponse({'mountains': data, 'count': len(data)})
@@ -107,13 +110,20 @@ def mountain_detail_json(request, mountain_id):
         'image_url': mountain.image_url or '',
         'description': mountain.description,
         'slug': mountain.slug,
+        'availability': mountain.availability,
+        'min_book': mountain.min_book,
+        'experience_required': mountain.experience_required,
     }
     return JsonResponse(data)
 
 # Login-required views
 @login_required(login_url='/accounts/login')
 def mountain_create(request):
-    """Create a new mountain (login required)"""
+    """Create a new mountain (staff only)"""
+    if not request.user.is_staff:
+        messages.error(request, 'Anda tidak memiliki izin untuk menambah gunung.')
+        return redirect('mountain_list')
+    
     if request.method == 'POST':
         form = MountainForm(request.POST)
         if form.is_valid():
@@ -127,7 +137,11 @@ def mountain_create(request):
 
 @login_required(login_url='/accounts/login')
 def mountain_edit(request, mountain_id):
-    """Edit an existing mountain (login required)"""
+    """Edit an existing mountain (staff only)"""
+    if not request.user.is_staff:
+        messages.error(request, 'Anda tidak memiliki izin untuk mengedit gunung.')
+        return redirect('mountain_list')
+    
     mountain = get_object_or_404(Mountain, id=mountain_id)
     
     if request.method == 'POST':
@@ -148,7 +162,11 @@ def mountain_edit(request, mountain_id):
 @login_required(login_url='/accounts/login')
 @require_POST
 def mountain_delete(request, mountain_id):
-    """Delete a mountain (login required)"""
+    """Delete a mountain (staff only)"""
+    if not request.user.is_staff:
+        messages.error(request, 'Anda tidak memiliki izin untuk menghapus gunung.')
+        return redirect('mountain_list')
+    
     mountain = get_object_or_404(Mountain, id=mountain_id)
     mountain_name = mountain.name
     mountain.delete()
@@ -160,7 +178,13 @@ def mountain_delete(request, mountain_id):
 @csrf_exempt
 @require_POST
 def mountain_create_ajax(request):
-    """Create mountain via AJAX (login required)"""
+    """Create mountain via AJAX (staff only)"""
+    if not request.user.is_staff:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Anda tidak memiliki izin untuk menambah gunung.'
+        }, status=403)
+    
     try:
         data = json.loads(request.body)
         form = MountainForm(data)
@@ -195,7 +219,13 @@ def mountain_create_ajax(request):
 @csrf_exempt
 @require_POST
 def mountain_delete_ajax(request, mountain_id):
-    """Delete mountain via AJAX (login required)"""
+    """Delete mountain via AJAX (staff only)"""
+    if not request.user.is_staff:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Anda tidak memiliki izin untuk menghapus gunung.'
+        }, status=403)
+    
     try:
         mountain = get_object_or_404(Mountain, id=mountain_id)
         mountain_name = mountain.name

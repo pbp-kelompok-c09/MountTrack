@@ -2,6 +2,12 @@ from django.db import models
 from django.utils.text import slugify
 
 class Mountain(models.Model):
+    EXPERIENCE_CHOICES = [
+        ('Beginner', 'Beginner'),
+        ('Intermediate', 'Intermediate'),
+        ('Advanced', 'Advanced'),
+    ]
+    
     name = models.CharField(max_length=100)
     url = models.URLField(max_length=255)
     height_mdpl = models.PositiveIntegerField()
@@ -9,6 +15,16 @@ class Mountain(models.Model):
     image_url = models.URLField(max_length=255, blank=True, null=True)
     description = models.TextField()
     slug = models.SlugField(max_length=100, unique=True, blank=True)
+    
+    # New fields
+    availability = models.BooleanField(default=True, help_text="Apakah gunung tersedia untuk booking")
+    min_book = models.PositiveIntegerField(default=1, help_text="Jumlah minimum orang per booking")
+    experience_required = models.CharField(
+        max_length=20,
+        choices=EXPERIENCE_CHOICES,
+        default='Beginner',
+        help_text="Level pengalaman minimum yang dibutuhkan"
+    )
 
     def __str__(self):
         return self.name
