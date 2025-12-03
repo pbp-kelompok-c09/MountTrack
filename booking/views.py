@@ -31,20 +31,31 @@ def _build_anggota_fields(form, pax_value):
 def booking_view(request):
     # gunung = get_object_or_404(Mountain, slug=gunung_slug)
     user_profile = UserProfile.objects.filter(username=request.user.username).first()
-    pax_value = 1
+    
+    # Get mountain_id from URL parameter
+    mountain_id = request.GET.get('mountain_id') or request.POST.get('mountain_id')
+    pre_selected_mountain = None
+    if mountain_id:
+        try:
+            pre_selected_mountain = Mountain.objects.get(id=mountain_id)
+        except Mountain.DoesNotExist:
+            pass
+    
+    # pax_value now represents ADDITIONAL members (not including the user)
+    pax_value = 0
     if request.method == 'POST':
         try:
-            pax_value = int(request.POST.get('pax', 1))
+            pax_value = int(request.POST.get('pax', 0))
         except (TypeError, ValueError):
-            pax_value = 1
+            pax_value = 0
     else:
         try:
-            pax_value = int(request.GET.get('pax', 1))
+            pax_value = int(request.GET.get('pax', 0))
         except (TypeError, ValueError):
-            pax_value = 1
+            pax_value = 0
 
-    form = BookingForm(request.POST or None, pax=pax_value)
-    if request.method == 'POST' and not any(k.startswith('anggota_0_') for k in request.POST.keys()):
+    form = BookingForm(request.POST or None, pax=pax_value, initial={'gunung': pre_selected_mountain} if pre_selected_mountain else None)
+    if request.method == 'POST' and not any(k.startswith('anggota_0_') for k in request.POST.keys()) and pax_value > 0:
         anggota_fields = _build_anggota_fields(form, pax_value)
         return render(request, 'booking/booking_form.html', {
             'form': form,
@@ -52,6 +63,8 @@ def booking_view(request):
             # 'gunung': gunung,
             'pax': pax_value,
             'anggota_fields': anggota_fields,
+            'mountain_id': mountain_id,
+            'pre_selected_mountain': pre_selected_mountain,
         })
 
     # Final submission: semua field anggota ada
@@ -59,6 +72,19 @@ def booking_view(request):
         if form.is_valid():
             levels = []
             anggota_list = []
+            
+            # First, add the logged-in user as the first member
+            user_gender = user_profile.jenis_kelamin if user_profile.jenis_kelamin else 'M'
+            user_level = user_profile.category_experience if user_profile.category_experience else 'beginner'
+            levels.append(user_level)
+            anggota_list.append({
+                'name': user_profile.nama,
+                'age': user_profile.umur or 0,
+                'gender': user_gender,
+                'level': user_level
+            })
+            
+            # Then add additional members
             for i in range(pax_value):
                 name = form.cleaned_data.get(f'anggota_{i}_name')
                 age = form.cleaned_data.get(f'anggota_{i}_age')
@@ -83,17 +109,32 @@ def booking_view(request):
                     # 'gunung': gunung,
                     'pax': pax_value,
                     'anggota_fields': anggota_fields,
+                    'mountain_id': mountain_id,
+                    'pre_selected_mountain': pre_selected_mountain,
                 })
 
+            # Total pax = 1 (user) + additional members
+            total_pax = 1 + pax_value
+            
             booking = Booking.objects.create(
                 user=request.user,
                 # gunung=gunung,
                 gunung=form.cleaned_data['gunung'],
-                pax=pax_value,
+                pax=total_pax,
                 levels=levels,
                 porter_required=porter_needed
             )
 
+            # Save user as first member
+            BookingMember.objects.create(
+                booking=booking,
+                name=user_profile.nama,
+                age=user_profile.umur or 0,
+                gender=user_gender,
+                level=user_level
+            )
+            
+            # Save additional members
             for i in range(pax_value):
                 BookingMember.objects.create(
                     booking=booking,
@@ -125,6 +166,8 @@ def booking_view(request):
                 # 'gunung': gunung,
                 'pax': pax_value,
                 'anggota_fields': anggota_fields,
+                'mountain_id': mountain_id,
+                'pre_selected_mountain': pre_selected_mountain,
             })
 
     # GET: tampilkan form awal (dengan anggota sesuai pax_value)
@@ -135,6 +178,8 @@ def booking_view(request):
         # 'gunung': gunung,
         'pax': pax_value,
         'anggota_fields': anggota_fields,
+        'mountain_id': mountain_id,
+        'pre_selected_mountain': pre_selected_mountain,
     })
 
 @login_required
