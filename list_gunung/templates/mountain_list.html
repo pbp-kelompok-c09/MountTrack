@@ -105,7 +105,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8" data-user-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}">    
+<div class="container mx-auto px-4 py-8" data-user-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-user-staff="{% if user.is_staff %}true{% else %}false{% endif %}">    
     <div class="hero-section mt-36">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-5xl font-bold text-[#2D5016] mb-8 text-center flex-grow">Jelajahi Gunung Indonesia</h1>
@@ -354,9 +354,26 @@
     function createMountainCard(mountain) {
         const imageUrl = mountain.image_url || '/static/images/default_mountain.jpg';
         const detailUrl = `/mountains/${encodeURIComponent(mountain.name)}/`;
-        const isAuthenticated = document.querySelector('[data-user-authenticated]').dataset.userAuthenticated === 'true';
-        const editButtons = isAuthenticated ? `
-            <div class="grid grid-cols-2 gap-2 mt-2">
+        const isStaff = document.querySelector('[data-user-authenticated]')?.dataset.userStaff === 'true';
+        
+        // Availability badge
+        const availabilityBadge = mountain.availability 
+            ? '<span class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">✓ Available</span>'
+            : '<span class="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">✗ Closed</span>';
+        
+        // Book button
+        const bookButton = mountain.availability
+            ? `<a href="/booking/book/?mountain_id=${mountain.id}" 
+                   class="block text-center bg-[#D2691E] text-white py-2.5 px-4 rounded-lg text-sm font-semibold hover:bg-[#a0521a] transform hover:-translate-y-0.5 transition duration-300 shadow-md">
+                    Book
+                </a>`
+            : `<button disabled 
+                        class="block text-center bg-gray-400 text-white py-2.5 px-4 rounded-lg text-sm font-semibold cursor-not-allowed shadow-md w-full">
+                    Closed
+                </button>`;
+        
+        const editButtons = isStaff ? `
+            <div class="grid grid-cols-2 gap-2">
                 <a href="/mountains/edit/${mountain.id}/" 
                    class="block text-center bg-blue-500 text-white py-2 px-3 rounded-lg text-xs font-semibold hover:bg-blue-600 transition duration-300">
                     Edit
@@ -369,9 +386,14 @@
         
         return `
             <div class="mountain-card bg-white rounded-2xl shadow-lg overflow-hidden border-t-4 border-[#2D5016]">
-                <img src="${imageUrl}" 
-                     alt="${mountain.name}" 
-                     class="w-full h-52 object-cover">
+                <div class="relative">
+                    <img src="${imageUrl}" 
+                         alt="${mountain.name}" 
+                         class="w-full h-52 object-cover">
+                    <div class="absolute top-3 right-3">
+                        ${availabilityBadge}
+                    </div>
+                </div>
                 <div class="p-5">
                     <h2 class="text-xl font-bold text-gray-800 mb-3 hover:text-[#4CAF50] transition duration-200">
                         <a href="${detailUrl}">
@@ -385,11 +407,20 @@
                         <p class="text-sm text-gray-600">
                             <span class="font-semibold text-[#2D5016]">📍 ${mountain.province}</span>
                         </p>
+                        <p class="text-sm text-gray-600">
+                            <span class="font-semibold text-purple-700">👥 Min: ${mountain.min_book} person(s)</span>
+                        </p>
+                        <p class="text-sm text-gray-600">
+                            <span class="font-semibold text-orange-700">⭐ ${mountain.experience_required}</span>
+                        </p>
                     </div>
-                    <a href="${detailUrl}" 
-                       class="block w-full text-center bg-[#4CAF50] text-white py-2.5 px-4 rounded-lg text-sm font-semibold hover:bg-[#3d8b40] transform hover:-translate-y-0.5 transition duration-300 shadow-md mb-2">
-                        Lihat Detail
-                    </a>
+                    <div class="grid grid-cols-2 gap-2 mb-2">
+                        <a href="${detailUrl}" 
+                           class="block text-center bg-[#4CAF50] text-white py-2.5 px-4 rounded-lg text-sm font-semibold hover:bg-[#3d8b40] transform hover:-translate-y-0.5 transition duration-300 shadow-md">
+                            Lihat Detail
+                        </a>
+                        ${bookButton}
+                    </div>
                     ${editButtons}
                 </div>
             </div>
@@ -432,7 +463,15 @@
                 'Content-Type': 'application/json'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 403) {
+                    throw new Error('Anda tidak memiliki izin untuk menghapus gunung. Hanya admin yang bisa melakukan ini.');
+                }
+                throw new Error(`Server error: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.status === 'success') {
                 alert(data.message);
@@ -443,7 +482,7 @@
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('Terjadi kesalahan saat menghapus gunung');
+            alert(error.message || 'Terjadi kesalahan saat menghapus gunung');
         });
     }
 </script>
