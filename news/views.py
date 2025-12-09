@@ -219,13 +219,16 @@ def create_news_flutter(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
+            thumbnail_val = data.get('pinned_thumbnail', '')
+            if not thumbnail_val: 
+                thumbnail_val = None
             
             # 1. Buat News Utama
             new_news = News.objects.create(
                 user=request.user,
                 title=data['title'],
                 content=data['content'],
-                pinned_thumbnail=data['pinned_thumbnail']
+                pinned_thumbnail=thumbnail_val
             )
 
             # 2. Buat ImageNews tambahan (Looping array dari flutter)
@@ -270,11 +273,13 @@ def edit_news_flutter(request, news_id):
             #     return JsonResponse({'status': 'error', 'message': 'Bukan pemilik berita'}, status=403)
 
             data = json.loads(request.body)
-
+            thumbnail_val = data.get('pinned_thumbnail', '')
+            if not thumbnail_val: 
+                thumbnail_val = None
             # 2. Update field utama
             news.title = data.get('title', news.title)
             news.content = data.get('content', news.content)
-            news.pinned_thumbnail = data.get('pinned_thumbnail', news.pinned_thumbnail)
+            news.pinned_thumbnail = thumbnail_val
             news.save()
 
             # 3. Update Gambar Tambahan
@@ -297,3 +302,20 @@ def edit_news_flutter(request, news_id):
             return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
     return JsonResponse({"status": "error", "message": "Invalid method"}, status=405)
+
+
+@csrf_exempt
+def increment_view_flutter(request, news_id):
+    if request.method == 'POST':
+        try:
+            news = News.objects.get(id=news_id)
+            news.increment_views() # Asumsi method ini otomatis melakukan .save()
+            
+            return JsonResponse({
+                "status": "success", 
+                "news_views": news.news_views
+            }, status=200)
+        except News.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Berita tidak ditemukan"}, status=404)
+            
+    return JsonResponse({"status": "error", "message": "Method not allowed"}, status=405)

@@ -213,60 +213,68 @@
     </div>
   </div>
 
-  <form method="POST" id="booking-form" class="bt-form">
-    {% csrf_token %}
-    <div class="user-info-grid" style="margin-bottom: 12px;">
-      <div class="field">
-        <label>Pilih Gunung</label>
-        {{ form.gunung }}  <!-- Dropdown untuk memilih gunung -->
-      </div>
+ {# --- mulai: ganti form lama dengan block ini --- #}
+<form method="POST" id="booking-form" class="bt-form">
+  {% csrf_token %}
+
+  <div class="user-info-grid" style="margin-bottom: 12px;">
+    <div class="field">
+      <label>Pilih Gunung</label>
+      {{ form.gunung }}
     </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px;">
-      <div>
-        <label style="display: block; font-size: 0.9rem; color: #2a6a4a; margin-bottom: 6px;">Jumlah Anggota</label>
-        <div class="group-size">
-          <button type="button" id="dec" class="qty-btn">−</button>
-          {{ form.pax }}
-          <button type="button" id="inc" class="qty-btn">+</button>
-          <button type="button" id="generate-anggota" class="qty-btn" style="margin-left: 8px;">Terapkan</button>
-        </div>
-      </div>
+    <div class="field">
+      <label>Tanggal Pendakian</label>
+      {# climbing_date tidak ada di BookingForm => name langsung supaya dikirim lewat POST #}
+      <input type="date" id="id_climbing_date" name="climbing_date" value="{{ booking.climbing_date|default:'' }}">
+    </div>
+  </div>
 
-      <div style="min-width: 220px;">
-        <label style="display: block; font-size: 0.9rem; color: #2a6a4a; margin-bottom: 6px;">Sewa Porter</label>
-        {{ form.porter_hire }}
+  <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px;">
+    <div>
+      <label style="display: block; font-size: 0.9rem; color: #2a6a4a; margin-bottom: 6px;">Jumlah Anggota Tambahan</label>
+      <div class="group-size">
+        <button type="button" id="dec" class="qty-btn">−</button>
+        {{ form.pax }} <!-- booking view expects pax = additional members -->
+        <button type="button" id="inc" class="qty-btn">+</button>
+        <button type="button" id="generate-anggota" class="qty-btn" style="margin-left: 8px;">Terapkan</button>
       </div>
+      <small style="color:#294122; display:block; margin-top:6px;">Peserta utama otomatis diisi dari profil Anda.</small>
     </div>
 
-    <h3 style="margin-top: 20px; color: #16663f;">Detail Anggota</h3>
-    <div id="anggota-container">
-      {% if anggota_fields %}
-        {% for anggota in anggota_fields %}
-          <div class="anggota">
-            <h4>Anggota {{ forloop.counter }}</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-              {% if anggota.name %}<div class="field">{{ anggota.name.label_tag }} {{ anggota.name }}</div>{% endif %}
-              {% if anggota.age %}<div class="field">{{ anggota.age.label_tag }} {{ anggota.age }}</div>{% endif %}
-              {% if anggota.gender %}<div class="field">{{ anggota.gender.label_tag }} {{ anggota.gender }}</div>{% endif %}
-              {% if anggota.level %}<div class="field">{{ anggota.level.label_tag }} {{ anggota.level }}</div>{% endif %}
-            </div>
+    <div style="min-width: 220px;">
+      <label style="display: block; font-size: 0.9rem; color: #2a6a4a; margin-bottom: 6px;">Sewa Porter</label>
+      {{ form.porter_hire }}
+    </div>
+  </div>
+
+  <h3 style="margin-top: 20px; color: #16663f;">Detail Anggota Tambahan</h3>
+  <div id="anggota-container">
+    {# Jika server sudah mengirim anggota_fields (dari POST validation), render mereka.
+       But client-side generator will handle dynamic creation otherwise. #}
+    {% if anggota_fields %}
+      {% for anggota in anggota_fields %}
+        <div class="anggota">
+          <h4>Anggota {{ forloop.counter }}</h4>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            {% if anggota.name %}<div class="field">{{ anggota.name.label_tag }} {{ anggota.name }}</div>{% endif %}
+            {% if anggota.age %}<div class="field">{{ anggota.age.label_tag }} {{ anggota.age }}</div>{% endif %}
+            {% if anggota.gender %}<div class="field">{{ anggota.gender.label_tag }} {{ anggota.gender }}</div>{% endif %}
+            {% if anggota.level %}<div class="field">{{ anggota.level.label_tag }} {{ anggota.level }}</div>{% endif %}
           </div>
-        {% endfor %}
-      {% endif %}
-    </div>
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 10px;">
-      <div style="color: #4C3019; font-size: 0.9rem;">Pastikan data anggota lengkap sebelum submit.</div>
-      <button type="submit" class="submit-btn">Submit Booking</button>
-    </div>
-  </form>
-</div>
-</div>
+  <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 10px;">
+    <div style="color: #4C3019; font-size: 0.9rem;">Pastikan data anggota lengkap sebelum submit.</div>
+    <button type="submit" class="submit-btn">Submit Booking</button>
+  </div>
+</form>
 
-<!-- store server-side porter error in data-attribute to avoid template tags inside JS -->
-<div id="bt-toast"
-     data-porter-error="{% if form.errors.porter_hire %}{{ form.errors.porter_hire.0|escapejs }}{% endif %}"
+{# helper toast root #}
+<div id="bt-toast" data-porter-error="{% if form.errors.porter_hire %}{{ form.errors.porter_hire.0|escapejs }}{% endif %}"
      style="position: fixed; right: 18px; bottom: 18px; z-index: 9999; pointer-events: none;"></div>
 
 <script>
@@ -277,7 +285,9 @@
   const paxInput = document.getElementById('id_pax');
   const container = document.getElementById('anggota-container');
   const formEl = document.getElementById('booking-form');
+  const profilesEndpoint = '/booking/api/profiles/';
 
+  // small util
   function mkLabel(text, forId) {
     const lab = document.createElement('label');
     if (forId) lab.htmlFor = forId;
@@ -286,63 +296,114 @@
     lab.style.color = '#2a6a4a';
     return lab;
   }
-
   function mkInput(name, type='text', id=null) {
     const inp = document.createElement('input');
     inp.name = name;
     inp.type = type;
     if (id) inp.id = id;
-    inp.required = true;
     inp.style.padding = '10px';
     inp.style.borderRadius = '8px';
     inp.style.border = '1px solid #dfeee6';
     inp.style.width = '100%';
     return inp;
   }
-
   function mkSelect(name, choices, id=null) {
     const sel = document.createElement('select');
     sel.name = name;
     if (id) sel.id = id;
-    sel.required = true;
     sel.style.padding = '10px';
     sel.style.borderRadius = '8px';
     sel.style.border = '1px solid #dfeee6';
     sel.style.width = '100%';
+    const empty = document.createElement('option');
+    empty.value = '';
+    empty.textContent = '-- Pilih Profil (opsional) --';
+    sel.appendChild(empty);
     choices.forEach(c => {
       const opt = document.createElement('option');
-      opt.value = c[0];
-      opt.textContent = c[1];
+      opt.value = c.profile_id;        // profile_id is string UUID
+      opt.textContent = c.name + (c.username ? ' ('+c.username+')' : '');
       sel.appendChild(opt);
     });
     return sel;
   }
 
+  // fetch profiles once (returns array), fallback to single current user.
+  let profilesCache = [];
+  async function loadProfiles() {
+    try {
+      const resp = await fetch(profilesEndpoint, { credentials: 'same-origin' });
+      if (!resp.ok) return [];
+      const j = await resp.json();
+      if (j && j.success && Array.isArray(j.profiles)) {
+        profilesCache = j.profiles;
+      }
+    } catch(e) { /* ignore */ }
+  }
+
+  // create member inputs for n additional members (n = pax value)
   function generate(n) {
     container.innerHTML = '';
-    n = Math.max(1, Math.floor(n) || 1);
+    n = Math.max(0, Math.floor(n) || 0); // allow zero additional members
+    if (n === 0) {
+      const info = document.createElement('div');
+      info.style.padding = '10px';
+      info.style.color = '#294122';
+      info.textContent = 'Tidak ada anggota tambahan. Peserta utama adalah akun Anda.';
+      container.appendChild(info);
+      return;
+    }
+
     for (let i = 0; i < n; i++) {
       const wrap = document.createElement('div');
       wrap.className = 'anggota';
       wrap.style.marginBottom = '12px';
 
       const h = document.createElement('h4');
-      h.textContent = 'Anggota ' + (i+1);
+      h.textContent = 'Anggota Tambahan ' + (i+1);
       h.style.marginTop = '0';
       wrap.appendChild(h);
+
+      // profile select (optional)
+      const profileWrap = document.createElement('div');
+      profileWrap.style.marginBottom = '8px';
+      const pLabel = mkLabel('Pilih Profil Terdaftar (opsional)', null);
+      profileWrap.appendChild(pLabel);
+      const sel = mkSelect('anggota_'+i+'_profile', profilesCache);
+      // when select changes, fill the other inputs
+      sel.addEventListener('change', function(e){
+        const pid = e.target.value;
+        const selected = profilesCache.find(p => p.profile_id === pid);
+        if (!selected) return;
+        // fill inputs if exist
+        const nameInput = wrap.querySelector('input[name="anggota_'+i+'_name"]');
+        const ageInput = wrap.querySelector('input[name="anggota_'+i+'_age"]');
+        const genderSel = wrap.querySelector('select[name="anggota_'+i+'_gender"]');
+        const levelSel = wrap.querySelector('select[name="anggota_'+i+'_level"]');
+        if (nameInput) nameInput.value = selected.name || '';
+        if (ageInput && selected.age != null) ageInput.value = selected.age;
+        if (genderSel && selected.gender) genderSel.value = selected.gender;
+        if (levelSel && selected.level) levelSel.value = selected.level;
+      });
+      profileWrap.appendChild(sel);
+      wrap.appendChild(profileWrap);
 
       const grid = document.createElement('div');
       grid.style.display = 'grid';
       grid.style.gridTemplateColumns = '1fr 1fr';
       grid.style.gap = '10px';
 
+      // name
       const nameWrap = document.createElement('div');
+      nameWrap.className = 'field';
       const nameLabel = mkLabel('Nama', 'id_anggota_'+i+'_name');
       nameWrap.appendChild(nameLabel);
       nameWrap.appendChild(mkInput('anggota_'+i+'_name', 'text', 'id_anggota_'+i+'_name'));
       grid.appendChild(nameWrap);
 
+      // age
       const ageWrap = document.createElement('div');
+      ageWrap.className = 'field';
       const ageLabel = mkLabel('Usia', 'id_anggota_'+i+'_age');
       ageWrap.appendChild(ageLabel);
       const ageInput = mkInput('anggota_'+i+'_age', 'number', 'id_anggota_'+i+'_age');
@@ -350,16 +411,28 @@
       ageWrap.appendChild(ageInput);
       grid.appendChild(ageWrap);
 
+      // gender
       const genderWrap = document.createElement('div');
+      genderWrap.className = 'field';
       const genderLabel = mkLabel('Jenis Kelamin', 'id_anggota_'+i+'_gender');
       genderWrap.appendChild(genderLabel);
-      genderWrap.appendChild(mkSelect('anggota_'+i+'_gender', [['M','Laki-laki'],['F','Perempuan']], 'id_anggota_'+i+'_gender'));
+      const genderSel = document.createElement('select');
+      genderSel.name = 'anggota_'+i+'_gender';
+      genderSel.innerHTML = '<option value="">-- Pilih --</option><option value="M">Laki-laki</option><option value="F">Perempuan</option><option value="O">Other</option>';
+      genderSel.style = 'padding:10px;border-radius:8px;border:1px solid #dfeee6;width:100%';
+      genderWrap.appendChild(genderSel);
       grid.appendChild(genderWrap);
 
+      // level
       const levelWrap = document.createElement('div');
+      levelWrap.className = 'field';
       const levelLabel = mkLabel('Level', 'id_anggota_'+i+'_level');
       levelWrap.appendChild(levelLabel);
-      levelWrap.appendChild(mkSelect('anggota_'+i+'_level', [['beginner','Beginner'],['intermediate','Intermediate'],['advanced','Advanced']], 'id_anggota_'+i+'_level'));
+      const levelSel = document.createElement('select');
+      levelSel.name = 'anggota_'+i+'_level';
+      levelSel.innerHTML = '<option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option>';
+      levelSel.style = 'padding:10px;border-radius:8px;border:1px solid #dfeee6;width:100%';
+      levelWrap.appendChild(levelSel);
       grid.appendChild(levelWrap);
 
       wrap.appendChild(grid);
@@ -367,13 +440,13 @@
     }
   }
 
-  // toast helper
+  // toast helper reused
   function showToast(message, opts = {}) {
     const toastRoot = document.getElementById('bt-toast');
     if (!toastRoot) return;
     const t = document.createElement('div');
     t.textContent = message;
-    t.style.background = opts.bg || '#ff6b6b';
+    t.style.background = opts.bg || '#f97373';
     t.style.color = '#fff';
     t.style.padding = '10px 14px';
     t.style.marginTop = '8px';
@@ -394,33 +467,42 @@
 
   // inc/dec handlers
   if (inc) inc.addEventListener('click', () => {
-    let v = parseInt(paxInput.value) || 1; v = Math.min(10, v+1); paxInput.value = v;
+    let v = parseInt(paxInput.value) || 0; v = Math.min(10, v+1); paxInput.value = v;
   });
   if (dec) dec.addEventListener('click', () => {
-    let v = parseInt(paxInput.value) || 1; v = Math.max(1, v-1); paxInput.value = v;
+    let v = parseInt(paxInput.value) || 0; v = Math.max(0, v-1); paxInput.value = v;
   });
 
-  // initial render from server pax
-  try {
-    const initialPax = parseInt('{{ pax|default:1 }}');
-    if (!isNaN(initialPax) && container && (!container.children.length || container.children.length === 0)) {
+  // load profiles then maybe generate initial container
+  document.addEventListener('DOMContentLoaded', async function(){
+    await loadProfiles();
+    // initialPax comes from server context 'pax' (which is additional members)
+    const initialPax = parseInt('{{ pax|default:0 }}') || 0;
+    // if server already provided anggota_fields (from form validation), don't overwrite them
+    const alreadyRendered = container && container.children.length > 0 && !container.querySelector('div') ? false : (container.children.length > 0 && !container.children[0].classList.contains('anggota') ? false : container.children.length > 0);
+    if (!alreadyRendered) {
       generate(initialPax);
     }
-  } catch(e){ /* ignore */ }
+    // show server-side porter error if any
+    const porterErr = document.getElementById('bt-toast') && document.getElementById('bt-toast').dataset ? document.getElementById('bt-toast').dataset.porterError : '';
+    if (porterErr) showToast(porterErr, { bg: '#f86b6b' });
+  });
 
   if (btn) btn.addEventListener('click', function(e){
-    const val = parseInt(paxInput.value) || 1;
+    const val = parseInt(paxInput.value) || 0;
     generate(val);
     setTimeout(()=>{ container.scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
   });
 
-  // submit guard: kalau semua anggota beginner, wajib pilih porter_hire == 'yes'
+  // submit guard: jika semua level = beginner (termasuk user utama), minta porter_hire == 'yes'
   if (formEl) {
     formEl.addEventListener('submit', function(e){
-      const selects = Array.from(document.querySelectorAll('select[name$="_level"]'));
-      const levels = selects.map(s => s.value).filter(v => v !== null && v !== '');
-      if (levels.length === 0) return; // tidak ada anggota, biarkan server validation
-      const allBeginner = levels.every(l => l === 'beginner');
+      // collect all level selects (additional members)
+      const additionalLevels = Array.from(document.querySelectorAll('select[name$="_level"]')).map(s => s.value).filter(v => v);
+      // include user level from server-side (we rendered it readonly); try to read from template variable
+      const userLevel = '{{ user_profile.category_experience|default:"beginner" }}';
+      const allLevels = [userLevel].concat(additionalLevels);
+      const allBeginner = allLevels.length > 0 && allLevels.every(l => l === 'beginner');
       const porterSelect = document.getElementById('id_porter_hire') || document.querySelector('select[name="porter_hire"], input[name="porter_hire"]');
       const porterVal = porterSelect ? porterSelect.value : '';
       if (allBeginner && porterVal !== 'yes') {
@@ -429,17 +511,16 @@
         if (porterSelect) porterSelect.scrollIntoView({behavior:'smooth', block:'center'});
         return false;
       }
+      // ensure paxInput number is integer -> name "pax" is already managed by form field but ensure it's numeric
+      const p = parseInt(paxInput.value);
+      if (isNaN(p) || p < 0) {
+        e.preventDefault();
+        showToast('Nilai jumlah anggota tidak valid.', {});
+        return false;
+      }
+      // no other client blocking; let server validate members completeness
     });
   }
-
-  // show server-side porter error (read from data attribute)
-  document.addEventListener('DOMContentLoaded', function () {
-    const toastRoot = document.getElementById('bt-toast');
-    const porterErr = toastRoot && toastRoot.dataset ? toastRoot.dataset.porterError : '';
-    if (porterErr) {
-      setTimeout(()=> showToast(porterErr, { bg: '#f86b6b' }), 80);
-    }
-  });
 
 })();
 </script>
