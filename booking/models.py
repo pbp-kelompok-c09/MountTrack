@@ -15,7 +15,10 @@ class Booking(models.Model):
     levels = models.JSONField(default=list, blank=True)
     porter_required = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
-    climbing_date = models.DateField(null=True, blank=True) 
+    climbing_date = models.DateField(null=True, blank=True)
+    climbing_end_date = models.DateField(null=True, blank=True)  # Tambahkan field ini
+    duration = models.IntegerField(default=1, null=True, blank=True)
+     
 
     class Meta:
         ordering = ['-created_at']

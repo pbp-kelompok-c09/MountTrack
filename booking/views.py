@@ -1,4 +1,3 @@
-
 from django.forms import ValidationError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
@@ -19,6 +18,10 @@ import uuid
 from list_gunung.models import Mountain
 from django.utils.dateparse import parse_date
 from decimal import Decimal
+from datetime import timedelta
+from django.forms import ValidationError
+from django.views.decorators.csrf import csrf_exempt
+import logging
 
 try:
     from list_gunung.models import Mountain
@@ -634,12 +637,17 @@ def booking_summary(request, booking_id):
             'gender': member.get_gender_display(),
             'level': member.get_level_display(),
         })
+    
+    climbing_end_date = None
+    if booking.climbing_date:
+        duration = booking.duration or 1
+        climbing_end_date = booking.climbing_date + timedelta(days=duration - 1)
+
 
     summary = {
         
         'gunung': getattr(booking.gunung, 'nama', getattr(booking.gunung, 'name', 'N/A') if booking.gunung else 'N/A'),
         'pax': booking.pax,
-        'levels': booking.levels,
         'total_cost': total_cost,
         'porter_required': 'Ya' if booking.porter_required else 'Tidak',
         'anggota_data': anggota_data,  # Mengirim data anggota
@@ -647,6 +655,7 @@ def booking_summary(request, booking_id):
         'porter_fee': porter_fee,
         'pax_cost': pax_cost,
         'climbing_date': booking.climbing_date.isoformat() if booking.climbing_date else None,
+        'climbing_end_date': climbing_end_date,
     }
 
     return render(request, 'booking/booking_summary.html', {
@@ -662,7 +671,7 @@ def home(request):
 def edit_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id)
     if booking.user != request.user:
-        return redirect('booking:booking_view')  # or return 403
+        return redirect('booking:booking_view')
 
     member_data = list(booking.members.all())
     # pax in model is total pax
@@ -685,11 +694,16 @@ def edit_booking(request, booking_id):
         if key_level in form.fields:
             form.fields[key_level].initial = member.level
 
+    # Populate climbing_date and duration from booking
+    if form.fields.get('climbing_date'):
+        form.fields['climbing_date'].initial = booking.climbing_date
+    if form.fields.get('duration'):
+        form.fields['duration'].initial = booking.duration
+
     if request.method == 'POST' and form.is_valid():
-        # We won't call form.save() to avoid unexpected model changes; handle updates explicitly
-        # Build anggota from form cleaned_data
         pax_val = int(request.POST.get('pax', booking.pax))
         anggota_list = []
+        
         # keep first member as user (do not overwrite)
         try:
             user_profile = UserProfile.objects.get(username=request.user.username)
@@ -721,26 +735,19 @@ def edit_booking(request, booking_id):
         if porter_needed and porter_hire != 'yes':
             form.add_error('porter_hire', 'Booking ini membutuhkan penyewaan porter. Pilih "Ya" untuk melanjutkan.')
             return render(request, 'booking/edit_booking.html', {'form': form, 'booking': booking})
-        
 
-        climbing_date = None
-        if 'climbing_date' in form.cleaned_data:
-            climbing_date = form.cleaned_data.get('climbing_date')
-        else:
-            raw_date = request.POST.get('climbing_date')
-            if raw_date:
-                parsed = parse_date(raw_date)
-                if parsed:
-                    climbing_date = parsed
+        climbing_date = form.cleaned_data.get('climbing_date') or booking.climbing_date
+        duration = form.cleaned_data.get('duration') or booking.duration or 1
 
         booking.pax = max(1, len(anggota_list))
         booking.levels = [m.get('level') for m in anggota_list]
         booking.porter_required = porter_needed
-        booking.climbing_date = climbing_date if climbing_date is not None else booking.climbing_date
+        booking.climbing_date = climbing_date
+        booking.duration = duration
         booking.gunung = form.cleaned_data.get('gunung') or booking.gunung
         booking.save()
 
-        # recreate members (first member is the user)
+        # recreate members
         booking.members.all().delete()
         for m in anggota_list:
             BookingMember.objects.create(
@@ -752,7 +759,23 @@ def edit_booking(request, booking_id):
             )
         return redirect('booking:booking_summary', booking_id=booking.id)
 
-    return render(request, 'booking/edit_booking.html', {'form': form, 'booking': booking})
+    user_profile = UserProfile.objects.filter(username=request.user.username).first()
+    anggota_fields = []
+    for i in range(pax_additional):
+        anggota_fields.append({
+            'name': form[f'anggota_{i}_name'] if f'anggota_{i}_name' in form.fields else None,
+            'age': form[f'anggota_{i}_age'] if f'anggota_{i}_age' in form.fields else None,
+            'gender': form[f'anggota_{i}_gender'] if f'anggota_{i}_gender' in form.fields else None,
+            'level': form[f'anggota_{i}_level'] if f'anggota_{i}_level' in form.fields else None,
+        })
+
+    return render(request, 'booking/edit_booking.html', {
+        'form': form,
+        'booking': booking,
+        'user_profile': user_profile,
+        'pax': pax_additional,
+        'anggota_fields': anggota_fields,
+    })
 
 @login_required
 def all_bookings(request):
@@ -767,3 +790,53 @@ def booking_history_list_plain(request):
     # return list (safe=False) so client gets a plain JSON Array
     return JsonResponse(data, safe=False, status=200)
 
+@login_required
+def payment_view(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id)
+    if booking.user != request.user:
+        return redirect('booking:booking_view')
+
+    # Cek apakah sudah ada payment yang berhasil
+    payment = booking.payments.filter(status='paid').first()
+    payment_success = payment is not None
+
+    pax_cost = booking.pax * 500000
+    porter_fee = 250000 if booking.porter_required else 0
+    total_cost = pax_cost + porter_fee
+
+    return render(request, 'booking/payment.html', {
+        'booking': booking,
+        'total_cost': total_cost,
+        'payment_success': payment_success,
+    })
+
+
+logger = logging.getLogger(__name__)
+
+@csrf_exempt  # Temporarily allow for debugging
+@login_required
+@require_http_methods(["POST"])
+def booking_api_delete(request, booking_id):
+    """
+    Delete a booking
+    """
+    logger.info(f"Delete booking {booking_id} requested by {request.user}")
+    
+    try:
+        booking = Booking.objects.get(id=booking_id)
+    except Booking.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Booking tidak ditemukan'}, status=404)
+    
+    # Check ownership
+    if booking.user != request.user:
+        logger.warning(f"User {request.user} tried to delete booking {booking_id} owned by {booking.user}")
+        return JsonResponse({'success': False, 'message': 'Forbidden'}, status=403)
+    
+    try:
+        booking_id_deleted = booking.id
+        booking.delete()
+        logger.info(f"Booking {booking_id_deleted} deleted successfully")
+        return JsonResponse({'success': True, 'message': 'Booking berhasil dihapus', 'deleted_id': booking_id_deleted}, status=200)
+    except Exception as e:
+        logger.error(f"Error deleting booking {booking_id}: {str(e)}")
+        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
