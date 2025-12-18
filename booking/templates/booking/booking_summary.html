@@ -17,45 +17,33 @@
     --bone: #E5D7C4;
     --sacramento: #102114;
     --pine: #294122;
-    --salmon: #FFBBA6;
+    --chiffon: #FFFEE2;
     --tangerine: #EB3D00;
-    --chiffon: #FFEED2;
     --bg-color: var(--bone);  /* Background utama */
-    --card-bg: var(--tan);    /* Card dengan warna Tan untuk kontras */
+    --card-bg: #FFFEE2;    /* Card dengan warna chiffon */
     --header-grad-start: var(--kombu-green);
     --header-grad-end: var(--moss-green);
-    --primary-text: #1F2937;
-    --secondary-text: #6B7280;
-    --green-accent: #22C55E;
-    --green-accent-dark: #16A34A;
-    --green-icon-bg: #E0F2F1;
-    --green-icon-fg: #26A69A;
-    --help-card-bg: #2F9C74;
-    --blue-btn: #2563EB;
-    --dark-gray-btn: #4B5563;
-    --border-color: #E5E7EB;
+    --primary-text: #4C3019;
+    --secondary-text: #294122;
+    --green-accent: #889063;
+    --green-accent-dark: #294122;
+    --icon-bg: #E5D7C4;
+    --icon-fg: #889063;
+    --border-color: #CFBB99;
 }
 
 .card {
-    position: relative;  /* Agar pseudo-element bisa ditambahkan */
-    background-color: #fff; /* Background luar card putih */
+    position: relative;
+    background-color: var(--card-bg); /* Card background = chiffon */
     padding: 1.5rem;
     border-radius: 1rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     margin-bottom: 1.5rem;
-    border: 1px solid var(--border-color); /* Border untuk pemisah */
+    border: 1.5px solid var(--border-color);
 }
 
 .card::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--bg-color); /* Background dalam */
-    z-index: -1;  /* Memastikan pseudo-element berada di belakang konten */
-    border-radius: 1rem;  /* Sesuaikan dengan radius card */
+    display: none;
 }
 
 * {
@@ -146,15 +134,15 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--green-icon-bg);
-    color: var(--green-icon-fg);
+    background-color: var(--icon-bg);
+    color: var(--icon-fg);
     font-size: 1.1rem;
 }
 
 .card-title {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--kombu-green); /* Highlight the title color */
+    color: #4C3019;
 }
 
 .confirmation-card {
@@ -162,13 +150,13 @@ main {
     align-items: center;
     gap: 1rem;
     padding: 1.25rem 1.5rem;
-    border: 1px solid var(--green-icon-bg);  /* Border berwarna hijau untuk pembeda */
-    background-color: #F6FFFB; /* Warna latar belakang lebih cerah */
+    border: 1.5px solid var(--moss-green);
+    background-color: var(--card-bg);
     border-radius: 10px; 
 }
 
 .confirmation-card .icon-circle {
-    background-color: var(--green-accent);
+    background-color: var(--moss-green);
     color: white;
     flex-shrink: 0;
 }
@@ -176,12 +164,12 @@ main {
 .confirmation-card h2 {
     font-size: 1.125rem;
     font-weight: 600;
-    color: var(--primary-text);
+    color: #4C3019;
 }
 
 .confirmation-card p {
     font-size: 0.875rem;
-    color: var(--secondary-text);
+    color: #294122;
 }
 
 .grid-container {
@@ -228,21 +216,21 @@ main {
 
 .detail-item .label {
     font-size: 0.875rem;
-    color: #16A34A;
+    color: #889063;
     margin-bottom: 0.25rem;
 }
 
 .detail-item .value {
     font-size: 1rem;
     font-weight: 500;
-    color: var(--primary-text);
+    color: #4C3019;
 }
 
 .porter-service {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    color: var(--green-accent-dark);
+    color: #889063;
 }
 
 .porter-service .fa-circle-check {
@@ -250,18 +238,19 @@ main {
 }
 
 .member-card {
-    border: 1px solid var(--border-color);
+    border: 1.5px solid #CFBB99;
     border-radius: 0.75rem;
     padding: 1rem;
     display: flex;
     align-items: flex-start;
     gap: 1rem;
+    background-color: #FFFEE2;
 }
 
 .member-number {
     width: 24px;
     height: 24px;
-    background-color: var(--green-icon-fg);
+    background-color: #889063;
     color: white;
     border-radius: 50%;
     display: flex;
@@ -318,7 +307,7 @@ main {
 }
 
 .cost-summary .total .price {
-    color: var(--green-accent-dark);
+    color: #4C3019;
     font-size: 1.25rem;
 }
 
@@ -349,15 +338,15 @@ main {
 }
 
 .btn-primary {
-    background-color: var(--green-accent-dark);
+    background-color: #4C3019;
 }
 
 .btn-secondary {
-    background-color: var(--green-accent);
+    background-color: #889063;
 }
 
 .btn-tertiary {
-    background-color: var(--green-accent-dark);
+    background-color: #4C3019;
 }
 
 .help-card {
@@ -488,6 +477,18 @@ main {
                                 <div class="value">{{ booking.created_at|date:"d/m/Y" }}</div>
                             </div>
                             <div class="detail-item">
+                                <div class="label">Tanggal Mulai</div>
+                                <div class="value">{{ booking.climbing_date|date:"d/m/Y" }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Tanggal Berakhir</div>
+                                <div class="value">{{ booking_summary.climbing_end_date|date:"d/m/Y" }}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="label">Durasi Pendakian</div>
+                                <div class="value">{{ booking.duration|default:"1" }} Hari</div>
+                            </div>
+                            <div class="detail-item">
                                 <div class="label">Total Anggota</div>
                                 <div class="value">{{ booking.pax }} orang</div>
                             </div>
@@ -581,6 +582,54 @@ main {
                         </div>
                     </section>
                 </div>
+            </div>
+
+            <div style="margin-top: clamp(24px, 4vw, 32px); display: flex; flex-direction: column; gap: clamp(12px, 2vw, 16px);">
+              <a href="{% url 'booking:payment' booking.id %}" style="
+                background: #889063;
+                color: #E5D7C4;
+                padding: clamp(12px, 2vw, 16px) clamp(16px, 4vw, 24px);
+                border-radius: clamp(6px, 2vw, 10px);
+                font-size: clamp(0.9rem, 2vw, 1.05rem);
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-align: center;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                width: 100%;
+                min-height: 50px;
+                box-sizing: border-box;
+                box-shadow: 0 4px 12px rgba(136, 144, 99, 0.25);
+              " onmouseover="this.style.background='#354024'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(53, 64, 36, 0.35)';" onmouseout="this.style.background='#889063'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(136, 144, 99, 0.25)';">
+                Lanjut Pembayaran
+              </a>
+              <a href="{% url 'booking:all_bookings' %}" style="
+                background: transparent;
+                color: #4C3019;
+                border: 2px solid #4C3019;
+                padding: clamp(12px, 2vw, 16px) clamp(16px, 4vw, 24px);
+                border-radius: clamp(6px, 2vw, 10px);
+                font-size: clamp(0.9rem, 2vw, 1.05rem);
+                font-weight: 700;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                text-align: center;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                width: 100%;
+                min-height: 50px;
+                box-sizing: border-box;
+                box-shadow: 0 2px 8px rgba(76, 48, 25, 0.1);
+              " onmouseover="this.style.background='#4C3019'; this.style.color='#E5D7C4'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(76, 48, 25, 0.25)';" onmouseout="this.style.background='transparent'; this.style.color='#4C3019'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(76, 48, 25, 0.1)';">
+                Kembali ke Daftar Booking
+              </a>
             </div>
         </main>
     </div>

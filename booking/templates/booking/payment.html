@@ -1,0 +1,444 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+:root {
+  --cafe-noir: #4C3019;
+  --kombu-green: #354024;
+  --moss-green: #889063;
+  --tan: #CFBB99;
+  --bone: #E5D7C4;
+  --sacramento: #102114;
+  --pine: #294122;
+  --salmon: #FFBBA6;
+  --tangerine: #EB3D00;
+  --chiffon: #FFFEE2;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  background: var(--bone) !important;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.container {
+  background: var(--bone);
+  padding: max(1rem, min(5vw, 24px));
+  margin: 0 auto;
+  width: 100%;
+  max-width: 900px;
+}
+
+.payment-header {
+  background: linear-gradient(135deg, var(--kombu-green) 0%, var(--pine) 100%);
+  color: var(--bone);
+  border-radius: clamp(8px, 3vw, 16px);
+  padding: clamp(20px, 4vw, 24px);
+  margin-bottom: clamp(20px, 4vw, 24px);
+}
+
+.payment-header h2 {
+  margin: 0 0 clamp(12px, 2vw, 16px) 0;
+  font-size: clamp(1.3rem, 5vw, 1.8rem);
+}
+
+.payment-header .amount {
+  font-size: clamp(1.8rem, 6vw, 2.4rem);
+  font-weight: 700;
+  margin: clamp(12px, 2vw, 16px) 0;
+}
+
+.payment-header .booking-id {
+  font-size: clamp(0.8rem, 2vw, 0.95rem);
+  opacity: 0.9;
+}
+
+.payment-card {
+  background: var(--chiffon);
+  border: 2px solid var(--tan);
+  border-radius: clamp(8px, 2vw, 12px);
+  padding: clamp(16px, 3vw, 20px);
+  margin-bottom: clamp(16px, 3vw, 24px);
+}
+
+.qris-section h3 {
+  color: var(--cafe-noir);
+  font-size: clamp(0.95rem, 2vw, 1.1rem);
+  margin: 0 0 clamp(12px, 2vw, 16px) 0;
+  font-weight: 700;
+}
+
+.qris-code {
+  background: white;
+  border-radius: clamp(6px, 2vw, 8px);
+  padding: clamp(12px, 2vw, 16px);
+  margin-bottom: clamp(12px, 2vw, 16px);
+}
+
+.qris-placeholder {
+  width: 200px;
+  height: 200px;
+  border: 3px solid var(--moss-green);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto clamp(8px, 2vw, 12px);
+  background: #fafafa;
+}
+
+.qris-placeholder svg {
+  width: 80px;
+  height: 80px;
+  opacity: 0.5;
+  color: var(--moss-green);
+}
+
+.qris-placeholder-text {
+  font-size: clamp(0.75rem, 1.5vw, 0.85rem);
+  color: var(--moss-green);
+  opacity: 0.7;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.qris-instruction {
+  text-align: center;
+  color: var(--cafe-noir);
+  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+  opacity: 0.7;
+}
+
+.payment-details {
+  background: var(--bone);
+  border-radius: clamp(6px, 2vw, 8px);
+  padding: clamp(12px, 2vw, 16px);
+  margin-top: clamp(12px, 2vw, 16px);
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(8px, 1.5vw, 12px) 0;
+  font-size: clamp(0.8rem, 1.5vw, 0.95rem);
+  border-bottom: 1px solid var(--tan);
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: var(--cafe-noir);
+}
+
+.detail-value {
+  font-weight: 600;
+  color: var(--cafe-noir);
+}
+
+.status-badge {
+  display: inline-block;
+  background: rgba(235, 61, 0, 0.2);
+  color: var(--tangerine);
+  padding: clamp(4px, 1vw, 6px) clamp(8px, 2vw, 10px);
+  border-radius: 4px;
+  font-size: clamp(0.75rem, 1.5vw, 0.85rem);
+  font-weight: 600;
+}
+
+.info-box {
+  background: var(--chiffon);
+  border: 1px solid var(--tan);
+  border-radius: clamp(6px, 2vw, 8px);
+  padding: clamp(12px, 2vw, 16px);
+  margin-bottom: clamp(16px, 3vw, 24px);
+}
+
+.info-box h4 {
+  color: var(--cafe-noir);
+  margin: 0 0 clamp(8px, 1.5vw, 12px) 0;
+  font-size: clamp(0.9rem, 2vw, 1rem);
+}
+
+.info-box p {
+  color: rgba(76, 48, 25, 0.8);
+  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+  margin: 0;
+  line-height: 1.6;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 2vw, 16px);
+  margin-top: clamp(24px, 4vw, 32px);
+}
+
+.btn {
+  padding: clamp(12px, 2vw, 16px) clamp(16px, 4vw, 24px);
+  border: none;
+  border-radius: clamp(6px, 2vw, 10px);
+  font-size: clamp(0.9rem, 2vw, 1.05rem);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 50px;
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  background: var(--moss-green);
+  color: var(--bone);
+  box-shadow: 0 4px 12px rgba(136, 144, 99, 0.25);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--kombu-green);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(53, 64, 36, 0.35);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(53, 64, 36, 0.2);
+}
+
+.btn-primary:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--cafe-noir);
+  border: 2px solid var(--cafe-noir);
+  box-shadow: 0 2px 8px rgba(76, 48, 25, 0.1);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: var(--cafe-noir);
+  color: var(--bone);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(76, 48, 25, 0.25);
+}
+
+.btn-secondary:active:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(76, 48, 25, 0.15);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(229, 215, 196, 0.35);
+  border-top-color: var(--bone);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.success-container {
+  text-align: center;
+}
+
+.success-icon {
+  width: 100px;
+  height: 100px;
+  background: var(--moss-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto clamp(20px, 4vw, 24px);
+}
+
+.success-icon svg {
+  width: 60px;
+  height: 60px;
+  color: var(--bone);
+}
+
+.success-title {
+  font-size: clamp(1.3rem, 4vw, 1.8rem);
+  font-weight: 700;
+  color: var(--cafe-noir);
+  margin-bottom: clamp(8px, 2vw, 12px);
+}
+
+.success-message {
+  font-size: clamp(0.85rem, 2vw, 0.95rem);
+  color: rgba(76, 48, 25, 0.7);
+  margin-bottom: clamp(20px, 4vw, 24px);
+}
+
+.success-card {
+  background: var(--chiffon);
+  border: 2px solid var(--tan);
+  border-radius: clamp(8px, 2vw, 12px);
+  padding: clamp(16px, 3vw, 20px);
+  margin-bottom: clamp(24px, 4vw, 32px);
+  text-align: left;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .qris-placeholder {
+    width: 150px;
+    height: 150px;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+}
+</style>
+
+<div class="container">
+  {% if payment_success %}
+    <div class="success-container">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </div>
+      
+      <h2 class="success-title">Pembayaran Berhasil!</h2>
+      <p class="success-message">Booking Anda telah dikonfirmasi. Silakan tunggu konfirmasi lebih lanjut.</p>
+      
+      <div class="success-card">
+        <div class="detail-row">
+          <span class="detail-label">Booking ID:</span>
+          <span class="detail-value">{{ booking.id }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Total Pembayaran:</span>
+          <span class="detail-value">Rp {{ total_cost|floatformat:0 }}</span>
+        </div>
+      </div>
+      
+      <div class="button-group">
+        <a href="{% url 'booking:booking_summary' booking.id %}" class="btn btn-primary">Lihat Detail Booking</a>
+        <a href="{% url 'booking:all_bookings' %}" class="btn btn-secondary">Lihat Riwayat Booking</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="payment-header">
+      <h2>Total Pembayaran</h2>
+      <div class="amount">Rp {{ total_cost|floatformat:0 }}</div>
+      <div class="booking-id">Booking ID: {{ booking.id }}</div>
+    </div>
+
+    <div class="payment-card qris-section">
+      <h3>QRIS Payment</h3>
+      
+      <div class="qris-code">
+        <div class="qris-placeholder">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="3" width="18" height="18" rx="2"></rect>
+            <rect x="7" y="7" width="3" height="3"></rect>
+            <rect x="14" y="7" width="3" height="3"></rect>
+            <rect x="7" y="14" width="3" height="3"></rect>
+            <rect x="14" y="14" width="3" height="3"></rect>
+          </svg>
+          <div class="qris-placeholder-text">QRIS Code<br>(Dummy)</div>
+        </div>
+        <p class="qris-instruction">Scan kode QRIS di atas menggunakan aplikasi pembayaran Anda</p>
+      </div>
+
+      <div class="payment-details">
+        <div class="detail-row">
+          <span class="detail-label">Booking ID:</span>
+          <span class="detail-value">{{ booking.id }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Metode:</span>
+          <span class="detail-value">QRIS</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Status:</span>
+          <span class="status-badge">Menunggu Pembayaran</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <h4>💡 Tips Pembayaran</h4>
+      <p>1. Pastikan saldo cukup sebelum melakukan pembayaran<br>
+      2. Jangan refresh halaman selama proses pembayaran<br>
+      3. Pembayaran akan dikonfirmasi secara otomatis</p>
+    </div>
+
+    <div class="button-group">
+      <button type="button" id="confirm-payment-btn" class="btn btn-primary" onclick="confirmPayment()">
+        Konfirmasi Pembayaran
+      </button>
+      <a href="{% url 'booking:booking_summary' booking.id %}" class="btn btn-secondary">Kembali ke Booking</a>
+    </div>
+  {% endif %}
+</div>
+
+<script>
+function confirmPayment() {
+  const btn = document.getElementById('confirm-payment-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner"></div> Memproses...';
+
+  setTimeout(function() {
+    const formData = new FormData();
+    fetch('{% url "booking:booking_api_pay" booking.id %}', {
+      method: 'POST',
+      headers: {
+        'X-CSRFToken': '{{ csrf_token }}'
+      }
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        location.reload();
+      } else {
+        alert('Pembayaran gagal: ' + data.message);
+        btn.disabled = false;
+        btn.innerHTML = 'Konfirmasi Pembayaran';
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Terjadi kesalahan');
+      btn.disabled = false;
+      btn.innerHTML = 'Konfirmasi Pembayaran';
+    });
+  }, 2000);
+}
+</script>
+{% endblock %}
