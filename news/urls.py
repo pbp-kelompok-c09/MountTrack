@@ -16,6 +16,8 @@ urlpatterns = [
     path('user-status/', views.get_user_status, name='get_user_status'),
     path('edit-flutter/<uuid:news_id>/', views.edit_news_flutter, name='edit_news_flutter'),
     path('increment-view/<uuid:news_id>/', views.increment_view_flutter, name='increment_view_flutter'),
+    path('delete_flutter/<uuid:news_id>/', views.delete_news_flutter, name='delete_news_flutter'),
+
 
     
     
