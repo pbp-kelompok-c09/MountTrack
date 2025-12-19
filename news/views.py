@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required 
 from django.views.decorators.http import require_POST
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 
 from .models import News, ImageNews
 from .forms import NewsForm, ImageNewsFormSet
@@ -85,6 +85,21 @@ def show_news(request, news_id):
 @staff_member_required(login_url='userprofile:login')
 @require_POST
 def delete_news(request, news_id):
+    """
+    View untuk menghapus satu artikel berita.
+    """
+    news = get_object_or_404(News, id=news_id)
+    news.delete()
+    
+
+    # Jika akses dari Web (Browser), lakukan Redirect ke halaman utama berita
+    messages.success(request, 'Berita berhasil dihapus.')
+    return HttpResponseRedirect(reverse('news:page_news'))
+
+@csrf_exempt
+@staff_member_required(login_url='userprofile:login')
+@require_POST
+def delete_news_flutter(request, news_id):
     """
     View untuk menghapus satu artikel berita.
     """
