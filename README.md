@@ -16,7 +16,7 @@ Tak hanya sebagai sumber informasi, MountTrack juga menyediakan fitur booking pe
 - **Homepage**: Halaman utama yang menampilkan fitur-fitur unggulan website. (Muhammad Hamiz Ghani Ayusha)
 - **About**: Menyajikan informasi mengenai website. (Muhammad Hamiz Ghani Ayusha)
 - **Booking Pendakian**: Pengguna dapat menjadwalkan sesi pendakian mereka sesuai dengan ketersediaan gunung. (Nimaisya Gina Herapati)
-- **News**: Menyajikan berita terkini seputar gunung, kebijakan pendakian, kondisi jalur, hingga informasi menarik lainnya yang relevan bagi pendaki. (Ryan Gibran Purwcakra Sihaloho)
+- **News**: Menyajikan berita terkini seputar gunung, kebijakan pendakian, kondisi jalur, hingga informasi menarik lainnya yang relevan bagi pendaki. (Ryan Gibran Purwacakra Sihaloho)
 - **Community**: Informasi mengenai event pendaki gunung seperti melakukan pendakian bersama (open trip). (Dibrienna Rauseuky Ramadhan)
 
 # Initial Dataset
@@ -28,7 +28,7 @@ Kemudian dari data gunung di atas, akan kami ambil informasi nama gunung, keting
 
 # Role Pengguna
 - **Belum Login**: Dapat melihat halaman homepage, berita, dan profile page dengan data yang terbatas.
-- **Login sebagai User**: Dapat membuat booking pendakian, membuat post komunitas baru, melengkapi profil, melihat profil orang lain, melihat berita, dan melihat list informasi gunung.
+- **Login sebagai User**: Dapat membuat booking pendakian, membuat post komunitas baru, melengkapi profil, melihat profil orang lain, melihat/meyukai berita, dan melihat list informasi gunung.
 - **Login sebagai Admin**: Dapat merubah status kesediaan gunung, membuat berita baru, dan akses admin portal.
 
 # Link PWS
