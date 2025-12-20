@@ -1,0 +1,93 @@
+:root {
+  --cafe-noir: #4C3019;
+  --kombu-green: #354024;
+  --moss-green: #889063;
+  --tan: #CFBB99;
+  --bone: #E5D7C4;
+  --chiffon: #FFEED2;
+}
+
+
+body {
+  background-color: var(--bone);
+  color: var(--cafe-noir);
+}
+
+/* ===== INPUT & DROPDOWN (TextFormField clone) ===== */
+.bt-field {
+  width: 100%;
+  padding: 12px 12px;
+  font-size: 15px;
+
+  background-color: var(--chiffon) !important;
+  color: var(--cafe-noir);
+
+  border: 1px solid var(--moss-green);
+  border-radius: 10px;
+
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.bt-field:focus {
+  background-color: var(--chiffon) !important;
+  border: 1.4px solid var(--kombu-green);
+  box-shadow: 0 0 0 2px rgba(53, 64, 36, 0.15);
+}
+
+/* dropdown dark-mode fix */
+.bt-field option {
+  background-color: var(--bone);
+  color: var(--cafe-noir);
+}
+
+/* number input fix (anti background hitam) */
+.bt-field[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.bt-field[type="number"]::-webkit-inner-spin-button,
+.bt-field[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ===== FORM GROUP ===== */
+.form-group {
+  margin-bottom: 14px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--cafe-noir);
+}
+
+/* ===== MEMBER CARD (mirip Flutter Container) ===== */
+.member-card {
+  padding: 14px;
+  margin-bottom: 16px;
+  background-color: var(--bone);
+  border-radius: 12px;
+  border: 1px solid rgba(136, 144, 99, 0.25);
+}
+
+/* ===== BUTTON ===== */
+.bt-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: var(--cafe-noir);
+  color: var(--bone);
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.bt-btn:hover {
+  opacity: 0.95;
+}

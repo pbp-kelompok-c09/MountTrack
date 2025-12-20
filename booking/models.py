@@ -12,10 +12,13 @@ class Booking(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     gunung = models.ForeignKey(Mountain, on_delete=models.SET_NULL, null=True, blank=True)
     pax = models.PositiveIntegerField(default=1)
-    # levels per anggota (optional redundan), simpan juga detail anggota di BookingMember
     levels = models.JSONField(default=list, blank=True)
     porter_required = models.BooleanField(default=False)
     created_at = models.DateTimeField(default=timezone.now)
+    climbing_date = models.DateField(null=True, blank=True)
+    climbing_end_date = models.DateField(null=True, blank=True)  # Tambahkan field ini
+    duration = models.IntegerField(default=1, null=True, blank=True)
+     
 
     class Meta:
         ordering = ['-created_at']
@@ -36,6 +39,7 @@ class Booking(models.Model):
             'levels': self.levels,
             'porter_required': self.porter_required,
             'created_at': self.created_at.isoformat(),
+            'climbing_date': self.climbing_date.isoformat() if self.climbing_date else None,
         }
 
 class BookingMember(models.Model):
@@ -66,3 +70,14 @@ class BookingMember(models.Model):
             'gender': self.gender,
             'level': self.level,
         }
+    
+class Payment(models.Model):
+   
+    booking = models.ForeignKey(Booking, related_name='payments', on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=30, default='pending')  # pending / paid / failed
+    qris_payload = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f'Payment #{self.id} for Booking #{self.booking.id}'

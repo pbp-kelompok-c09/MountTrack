@@ -34,7 +34,8 @@ DEBUG = True
 ALLOWED_HOSTS = ["localhost", "127.0.0.1", "farrel-arrayyan-mount-track.pbp.cs.ui.ac.id", "10.0.2.2"]
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://farrel-arrayyan-mount-track.pbp.cs.ui.ac.id"
+    "https://farrel-arrayyan-mount-track.pbp.cs.ui.ac.id",
+    
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True

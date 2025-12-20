@@ -2,250 +2,291 @@
 
 {% block content %}
 <style>
-
-  html, body {
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #CFBB99; 
-  }
-
-  .container {
-    width: 100%;
-    max-width: 1200px; /* Maksimal lebar konten */
-    padding-left: 30px;
-    padding-right: 30px;
-    margin: 0 auto;  /* Menjaga agar konten berada di tengah */
-    box-sizing: border-box;
-  }
-
-
-  .bt-hero {
-    margin-top: 120px; /* Jarak antara navbar dan konten */
-    padding-top: 18px;
-    background: #E5D7C4;  /* Pastikan background sesuai */
-    color: #4C3019;  /* Pastikan warna teks tetap terang */
-  }
-  
-  /* Menambahkan padding kiri-kanan pada .bt-card */
-  .bt-card {
-    background: #E5D7C4;
-    border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(13, 37, 23, 0.06);
-    padding: 20px 30px; /* Padding kiri-kanan */
-    margin: 18px 0;
-  }
-
-  .anggota {
-    border: 1px dashed #889063;
-    padding: 12px;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    background: #CFBB99;
-  }
-  .anggota h4 {
-    margin: 0 0 8px 0;
-    color: #102114;
-    font-size: 0.98rem;
-  }
-
-  /* Menghilangkan bagian abu-abu pada bagian atas form */
-  .bt-hero {
-    background: linear-gradient(90deg, #354024 0%, #889063 100%);
-    color: #fff;
-    padding: 18px 22px;
-    border-radius: 12px;
-    margin-bottom: 18px;
-  }
-
-  .bt-section-title {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 12px;
-  }
-  .bt-section-title h3 {
-    margin: 0;
-    font-size: 1.05rem;
-    color: #294122;
-  }
-
+* {
+  box-sizing: border-box;
+}
+html, body {
+  background: #E5D7C4 !important;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.container {
+  background: #E5D7C4;
+  padding: max(1rem, min(5vw, 24px));
+  margin: 0 auto;
+  width: 100%;
+  max-width: 900px;
+}
+.bt-hero {
+  background: #354024;
+  color: #FFFEE2;
+  border-radius: clamp(8px, 3vw, 14px);
+  padding: clamp(12px, 3vw, 20px);
+  margin-bottom: clamp(12px, 3vw, 18px);
+}
+.bt-hero h2 {
+  font-size: clamp(1.3rem, 5vw, 1.8rem);
+  margin: 0 0 0.5rem 0;
+}
+.bt-hero > div:last-child {
+  font-size: clamp(0.8rem, 2vw, 1rem);
+}
+.bt-card, .anggota {
+  background: #F6EFD9;
+  border-radius: clamp(6px, 2vw, 10px);
+  padding: clamp(12px, 3vw, 16px);
+  margin-bottom: clamp(12px, 3vw, 18px);
+  border: 1.5px solid #CFBB99;
+}
+.field label {
+  font-size: clamp(0.85rem, 2vw, 1rem);
+  color: #4C3019;
+  font-weight: 600;
+  margin-bottom: clamp(2px, 1vw, 4px);
+  display: block;
+}
+.field input, .field select, .field textarea {
+  background: #FFFEE2;
+  color: #294122;
+  border: 2px solid #889063;
+  border-radius: 8px;
+  padding: clamp(8px, 1vw, 12px);
+  font-size: clamp(0.9rem, 2vw, 1rem);
+  margin-bottom: clamp(6px, 1.5vw, 8px);
+  outline: none;
+  box-shadow: none;
+  transition: border 0.2s;
+  width: 100%;
+}
+.field input:focus, .field select:focus, .field textarea:focus {
+  border: 2px solid #354024;
+}
+select {
+  background-color: #FFFEE2 !important;
+  color: #294122 !important;
+}
+select option {
+  background-color: #FFFEE2 !important;
+  color: #294122 !important;
+}
+input[type="checkbox"] {
+  accent-color: #889063 !important;
+  width: 18px !important;
+  height: 18px !important;
+  cursor: pointer !important;
+}
+#id_pax, #id_porter_hire {
+  background-color: #FFFEE2 !important;
+  color: #294122 !important;
+  border: 2px solid #889063 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  padding: clamp(8px, 1vw, 12px) !important;
+  font-size: clamp(0.9rem, 2vw, 1rem) !important;
+  font-family: inherit !important;
+}
+#id_pax:focus, #id_porter_hire:focus {
+  border: 2px solid #354024 !important;
+  outline: none !important;
+}
+#id_porter_hire option, #id_pax option {
+  background-color: #FFFEE2 !important;
+  color: #294122 !important;
+}
+input[type="date"], input[type="date"]::-webkit-calendar-picker-indicator {
+  background-color: #FFFEE2 !important;
+  color: #294122 !important;
+  cursor: pointer !important;
+}
+input[type="date"] {
+  padding: clamp(8px, 1vw, 12px) !important;
+  font-size: clamp(0.9rem, 2vw, 1rem) !important;
+  border: 2px solid #889063 !important;
+  border-radius: 8px !important;
+  background: #FFFEE2 !important;
+  color: #294122 !important;
+}
+input[type="date"]:focus {
+  border-color: #354024 !important;
+  outline: none !important;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.3) sepia(0.8) saturate(2) hue-rotate(75deg);
+  cursor: pointer;
+}
+.qty-btn {
+  background: #CFBB99;
+  border: 2px solid #889063;
+  color: #294122;
+  padding: clamp(6px, 1.5vw, 14px);
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  margin: clamp(0px, 1vw, 2px);
+  transition: background 0.2s;
+  cursor: pointer;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.qty-btn:hover {
+  background: #889063;
+  color: #FFFEE2;
+}
+.submit-btn {
+  background: #4C3019;
+  color: #FFFEE2;
+  padding: clamp(10px, 2vw, 14px) 0;
+  border-radius: 10px;
+  border: none;
+  font-weight: 700;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+  width: 100%;
+  transition: background 0.2s;
+  cursor: pointer;
+}
+.submit-btn:hover {
+  background: #294122;
+}
+.user-info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(8px, 2vw, 12px);
+}
+.group-size {
+  display: flex;
+  gap: clamp(4px, 1vw, 8px);
+  flex-wrap: wrap;
+  align-items: center;
+}
+.group-size > * {
+  flex-shrink: 0;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: clamp(8px, 2vw, 12px);
+}
+@media (max-width: 480px) {
   .user-info-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    grid-template-columns: 1fr;
   }
-
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-bottom: 6px;
+  .form-row {
+    grid-template-columns: 1fr;
   }
-
-  #id_pax, #id_porter_hire {
-    background: #ffffff !important;
-    color: #4C3019;
-    border: 1px solid #889063;
-  }
-
-  .anggota input, .anggota select, .anggota textarea {
-    background: #ffffff !important;
-    color: #4C3019;
-    border: 1px solid #889063;
-  }
-
-  .field label {
-    font-size: 0.85rem;
-    color: #102114;
-  }
-
-  .field input, .field select, .field textarea {
-    border: 1px solid #889063;
-    padding: 10px 12px;
-    border-radius: 8px;
-    background: #ffffff;
-    font-size: 0.95rem;
-    outline: none;
-  }
-
-  .field input:focus, .field select:focus, .field textarea:focus {
-    box-shadow: 0 0 0 3px rgba(37, 154, 100, 0.08);
-    border-color: #354024;
-  }
-
-  .group-size {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-
   .qty-btn {
-    background: #FFEED2;
-    border: 1px solid #dfeee6;
-    color: #889063;
     padding: 6px 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 700;
+    font-size: 1rem;
   }
-
-  .submit-btn {
-    background: #889063;
-    color: white;
-    padding: 12px 18px;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-weight: 700;
-    box-shadow: 0 6px 16px rgba(31, 160, 106, 0.18);
+  .group-size {
+    flex-direction: column;
+    align-items: stretch;
   }
-
-  .anggota {
-    border: 1px dashed #889063;
-    padding: 12px;
-    border-radius: 10px;
-    margin-bottom: 12px;
-    background: #CFBB99;
+  .group-size > * {
+    flex: 1;
   }
-
-  .anggota h4 {
-    margin: 0 0 8px 0;
-    color: #16663f;
-    font-size: 0.98rem;
+}
+@media (min-width: 768px) {
+  .user-info-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
-
-  /* Responsive design for smaller screens */
-   @media (max-width: 700px) {
-    .user-info-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .container {
-      padding-left: 15px; /* Kurangi padding di layar kecil */
-      padding-right: 15px;
-    }
-
-    .bt-hero {
-      margin-top: 140px; /* Jarak lebih besar untuk navbar di perangkat kecil */
-    }
+  .form-row {
+    grid-template-columns: repeat(2, 1fr);
   }
+}
 </style>
 
 <div class="container">
-<div class="bt-hero">
-  <h2 style="margin: 0; font-weight: 700;">
-    Booking Pendakian 
-    {% if gunung %}
-      {{ gunung.nama }}
-    {% else %}
-      -
-    {% endif %}
-  </h2>
-  <div style="opacity: 0.95; margin-top: 6px;">Isi identitas grup dan anggota untuk melanjutkan pemesanan</div>
-</div>
-
-<div class="bt-card">
-  <div class="bt-section-title">
-    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="10" fill="#e9f8ef"/>
-    </svg>
-    <h3>Informasi Anda</h3>
+  <div class="bt-hero">
+    <h2 style="margin: 0; font-weight: 700;">
+      Rencanakan Pendakianmu
+      {% if gunung %}
+        {{ gunung.nama }}
+      {% else %}
+        -
+      {% endif %}
+    </h2>
+    <div style="opacity: 0.95; margin-top: 6px;">Pilih gunung favorit, tentukan jumlah peserta, dan kami akan membantu mengatur perjalanan Anda dengan sempurna.</div>
   </div>
 
-  <div class="user-info-grid" style="margin-bottom: 12px;">
-    <div class="field">
-      <label>Nama</label>
-      <input type="text" value="{{ user_profile.nama }}" readonly>
+  <div class="bt-card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <circle cx="12" cy="12" r="10" fill="#e9f8ef"/>
+      </svg>
+      <h3 style="margin:0;font-size:1.05rem;color:#294122;">Informasi Anda</h3>
     </div>
-    <div class="field">
-      <label>Umur</label>
-      <input type="text" value="{{ user_profile.umur }}" readonly>
-    </div>
-    <div class="field">
-      <label>Jenis Kelamin</label>
-      <input type="text" value="{{ user_profile.get_jenis_kelamin_display }}" readonly>
-    </div>
-    <div class="field">
-      <label>Pengalaman</label>
-      <input type="text" value="{{ user_profile.get_category_experience_display }}" readonly>
+    <div class="user-info-grid" style="margin-bottom: 12px;">
+      <div class="field">
+        <label>Nama</label>
+        <input type="text" value="{{ user_profile.nama }}" readonly>
+      </div>
+      <div class="field">
+        <label>Umur</label>
+        <input type="text" value="{{ user_profile.umur }}" readonly>
+      </div>
+      <div class="field">
+        <label>Jenis Kelamin</label>
+        <input type="text" value="{{ user_profile.get_jenis_kelamin_display }}" readonly>
+      </div>
+      <div class="field">
+        <label>Pengalaman</label>
+        <input type="text" value="{{ user_profile.get_category_experience_display }}" readonly>
+      </div>
     </div>
   </div>
 
   <form method="POST" id="booking-form" class="bt-form">
     {% csrf_token %}
-    <div class="user-info-grid" style="margin-bottom: 12px;">
+    <div class="form-row" style="margin-bottom: clamp(12px, 3vw, 18px);">
       <div class="field">
         <label>Pilih Gunung</label>
-        {{ form.gunung }}  <!-- Dropdown untuk memilih gunung -->
+        {{ form.gunung }}
+      </div>
+      <div class="field">
+        <label>Durasi Pendakian</label>
+        <select id="id_duration" name="duration" style="width: 100%;">
+          <option value="">-- Pilih Durasi --</option>
+          <option value="1">1 Hari</option>
+          <option value="2">2 Hari</option>
+          <option value="3">3 Hari</option>
+        </select>
       </div>
     </div>
-
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 12px;">
+    <div id="date-section" class="form-row" style="display: none; margin-bottom: clamp(12px, 3vw, 18px);">
+      <div class="field">
+        <label>Tanggal Mulai Pendakian</label>
+        <input type="date" id="id_climbing_date" name="climbing_date" value="{{ booking.climbing_date|default:'' }}">
+      </div>
+      <div class="field">
+        <label>Tanggal Berakhir Pendakian</label>
+        <input type="date" id="id_climbing_end_date" name="climbing_end_date" value="{{ booking.climbing_end_date|default:'' }}" readonly style="background: #E5D7C4 !important; cursor: not-allowed !important;">
+      </div>
+    </div>
+    <div class="form-row" style="margin-bottom: clamp(12px, 3vw, 18px);">
       <div>
-        <label style="display: block; font-size: 0.9rem; color: #2a6a4a; margin-bottom: 6px;">Jumlah Anggota</label>
+        <label style="display: block; font-size: clamp(0.85rem, 2vw, 0.9rem); color: #2a6a4a; margin-bottom: clamp(6px, 1.5vw, 8px);">Jumlah Anggota Tambahan</label>
         <div class="group-size">
           <button type="button" id="dec" class="qty-btn">−</button>
           {{ form.pax }}
           <button type="button" id="inc" class="qty-btn">+</button>
-          <button type="button" id="generate-anggota" class="qty-btn" style="margin-left: 8px;">Terapkan</button>
+          <button type="button" id="generate-anggota" class="qty-btn">Terapkan</button>
         </div>
+        <small style="color:#294122; display:block; margin-top:clamp(4px, 1vw, 6px); font-size: clamp(0.75rem, 1.5vw, 0.85rem);">Peserta utama otomatis diisi dari profil Anda.</small>
       </div>
-
-      <div style="min-width: 220px;">
-        <label style="display: block; font-size: 0.9rem; color: #2a6a4a; margin-bottom: 6px;">Sewa Porter</label>
+      <div>
+        <label style="display: block; font-size: clamp(0.85rem, 2vw, 0.9rem); color: #2a6a4a; margin-bottom: clamp(6px, 1.5vw, 8px);">Sewa Porter</label>
         {{ form.porter_hire }}
       </div>
     </div>
-
-    <h3 style="margin-top: 20px; color: #16663f;">Detail Anggota</h3>
+    <h3 style="margin-top: clamp(12px, 3vw, 20px); color: #16663f; font-size: clamp(1rem, 3vw, 1.3rem);">Detail Anggota Tambahan</h3>
     <div id="anggota-container">
       {% if anggota_fields %}
         {% for anggota in anggota_fields %}
           <div class="anggota">
             <h4>Anggota {{ forloop.counter }}</h4>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div class="form-row">
               {% if anggota.name %}<div class="field">{{ anggota.name.label_tag }} {{ anggota.name }}</div>{% endif %}
               {% if anggota.age %}<div class="field">{{ anggota.age.label_tag }} {{ anggota.age }}</div>{% endif %}
               {% if anggota.gender %}<div class="field">{{ anggota.gender.label_tag }} {{ anggota.gender }}</div>{% endif %}
@@ -256,17 +297,53 @@
       {% endif %}
     </div>
 
-    <div style="display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 10px;">
-      <div style="color: #4C3019; font-size: 0.9rem;">Pastikan data anggota lengkap sebelum submit.</div>
-      <button type="submit" class="submit-btn">Submit Booking</button>
+    <!-- Porter Warning Section -->
+    <div id="porter-warning-section" style="display: none; margin-top: clamp(16px, 3vw, 24px); padding: clamp(12px, 2vw, 16px); border-radius: clamp(8px, 2vw, 12px); border: 2px solid #EB3D00; background: rgba(235, 61, 0, 0.08);">
+      <div style="display: flex; gap: 12px; align-items: flex-start;">
+        <div style="flex-shrink: 0;">⚠️</div>
+        <div style="flex: 1;">
+          <p style="margin: 0 0 8px 0; color: #4C3019; font-weight: 600; font-size: clamp(0.9rem, 2vw, 1rem);">Penyewaan Porter Diperlukan</p>
+          <p style="margin: 0 0 12px 0; color: #294122; font-size: clamp(0.85rem, 1.5vw, 0.95rem);">Semua peserta adalah pemula. Booking ini mewajibkan penyewaan porter untuk keselamatan.</p>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="porter-warning-checkbox" style="width: 18px !important; height: 18px !important; cursor: pointer !important; accent-color: #889063 !important; appearance: checkbox;">
+            <label for="porter-warning-checkbox" style="color: #294122; font-size: clamp(0.85rem, 1.5vw, 0.95rem); cursor: pointer; margin: 0;">Sewa Porter (Rp 250.000)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div style="margin-top: clamp(16px, 3vw, 24px); padding: clamp(12px, 2vw, 16px); border-radius: clamp(8px, 2vw, 12px); background: #F6EFD9; border: 1.5px solid #CFBB99;">
+      <h4 style="margin: 0 0 12px 0; color: #4C3019; font-size: clamp(0.95rem, 2vw, 1.1rem);">Ringkasan Biaya</h4>
+      <div style="display: grid; grid-template-columns: 1fr auto; gap: clamp(8px, 2vw, 12px); margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1.5px solid #CFBB99;">
+        <div style="color: #294122; font-size: clamp(0.85rem, 1.5vw, 0.95rem);">
+          <span id="summary-pax-text">Peserta × Rp 500.000</span>
+        </div>
+        <div style="color: #4C3019; font-weight: 600; font-size: clamp(0.85rem, 1.5vw, 0.95rem);" id="summary-pax-price">Rp 0</div>
+      </div>
+      <div id="summary-porter-row" style="display: none; grid-template-columns: 1fr auto; gap: clamp(8px, 2vw, 12px); margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1.5px solid #CFBB99;">
+        <div style="color: #294122; font-size: clamp(0.85rem, 1.5vw, 0.95rem);">Porter × Rp 250.000</div>
+        <div style="color: #4C3019; font-weight: 600; font-size: clamp(0.85rem, 1.5vw, 0.95rem);">Rp 250.000</div>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr auto; gap: clamp(8px, 2vw, 12px);">
+        <div style="color: #4C3019; font-weight: 700; font-size: clamp(0.95rem, 2vw, 1.1rem);">Total</div>
+        <div style="color: #889063; font-weight: 700; font-size: clamp(0.95rem, 2vw, 1.1rem);" id="summary-total">Rp 0</div>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: clamp(8px, 2vw, 12px); margin-top: clamp(16px, 3vw, 24px);">
+      <div style="color: #4C3019; font-size: clamp(0.85rem, 2vw, 0.9rem);">Pastikan data anggota lengkap sebelum submit.</div>
+      <button type="submit" class="submit-btn">Selesai Booking</button>
     </div>
   </form>
-</div>
+
+  <div id="bt-toast" data-porter-error="{% if form.errors.porter_hire %}{{ form.errors.porter_hire.0|escapejs }}{% endif %}"
+       style="position: fixed; right: 18px; bottom: 18px; z-index: 9999; pointer-events: none;"></div>
 </div>
 
-<!-- store server-side porter error in data-attribute to avoid template tags inside JS -->
-<div id="bt-toast"
-     data-porter-error="{% if form.errors.porter_hire %}{{ form.errors.porter_hire.0|escapejs }}{% endif %}"
+
+{# helper toast root #}
+<div id="bt-toast" data-porter-error="{% if form.errors.porter_hire %}{{ form.errors.porter_hire.0|escapejs }}{% endif %}"
      style="position: fixed; right: 18px; bottom: 18px; z-index: 9999; pointer-events: none;"></div>
 
 <script>
@@ -277,7 +354,46 @@
   const paxInput = document.getElementById('id_pax');
   const container = document.getElementById('anggota-container');
   const formEl = document.getElementById('booking-form');
+  const profilesEndpoint = '/booking/api/profiles/';
+  const durationSelect = document.getElementById('id_duration');
+  const climbingDateInput = document.getElementById('id_climbing_date');
+  const climbingEndDateInput = document.getElementById('id_climbing_end_date');
+  const dateSection = document.getElementById('date-section');
 
+  // handler untuk durasi dan tanggal otomatis
+  function updateEndDate() {
+    const startDate = climbingDateInput.value;
+    const duration = parseInt(durationSelect.value) || 0;
+    
+    if (!startDate || duration === 0) {
+      climbingEndDateInput.value = '';
+      return;
+    }
+    
+    const start = new Date(startDate);
+    const end = new Date(start);
+    end.setDate(end.getDate() + (duration - 1)); // duration-1 karena hari pertama sudah termasuk
+    
+    // format YYYY-MM-DD
+    const year = end.getFullYear();
+    const month = String(end.getMonth() + 1).padStart(2, '0');
+    const day = String(end.getDate()).padStart(2, '0');
+    climbingEndDateInput.value = `${year}-${month}-${day}`;
+  }
+
+  // handler untuk menampilkan/menyembunyikan date section
+  function toggleDateSection() {
+    const duration = parseInt(durationSelect.value) || 0;
+    if (duration > 0) {
+      dateSection.style.display = 'grid';
+    } else {
+      dateSection.style.display = 'none';
+      climbingDateInput.value = '';
+      climbingEndDateInput.value = '';
+    }
+  }
+
+  // small util
   function mkLabel(text, forId) {
     const lab = document.createElement('label');
     if (forId) lab.htmlFor = forId;
@@ -286,63 +402,114 @@
     lab.style.color = '#2a6a4a';
     return lab;
   }
-
   function mkInput(name, type='text', id=null) {
-    const inp = document.createElement('input');
-    inp.name = name;
-    inp.type = type;
-    if (id) inp.id = id;
-    inp.required = true;
-    inp.style.padding = '10px';
-    inp.style.borderRadius = '8px';
-    inp.style.border = '1px solid #dfeee6';
-    inp.style.width = '100%';
-    return inp;
-  }
-
+  const inp = document.createElement('input');
+  inp.name = name;
+  inp.type = type;
+  if (id) inp.id = id;
+  inp.className = 'field-input'; // class dummy, styling via CSS selector
+  return inp;
+}
   function mkSelect(name, choices, id=null) {
     const sel = document.createElement('select');
     sel.name = name;
     if (id) sel.id = id;
-    sel.required = true;
     sel.style.padding = '10px';
     sel.style.borderRadius = '8px';
     sel.style.border = '1px solid #dfeee6';
     sel.style.width = '100%';
+    sel.style.background = '#E5D7C4';
+    sel.style.color = '#4C3019';
+    const empty = document.createElement('option');
+    empty.value = '';
+    empty.textContent = '-- Pilih Profil (opsional) --';
+    sel.appendChild(empty);
     choices.forEach(c => {
       const opt = document.createElement('option');
-      opt.value = c[0];
-      opt.textContent = c[1];
+      opt.value = c.profile_id;        // profile_id is string UUID
+      opt.textContent = c.name + (c.username ? ' ('+c.username+')' : '');
       sel.appendChild(opt);
     });
     return sel;
   }
 
+  // fetch profiles once (returns array), fallback to single current user.
+  let profilesCache = [];
+  async function loadProfiles() {
+    try {
+      const resp = await fetch(profilesEndpoint, { credentials: 'same-origin' });
+      if (!resp.ok) return [];
+      const j = await resp.json();
+      if (j && j.success && Array.isArray(j.profiles)) {
+        profilesCache = j.profiles;
+      }
+    } catch(e) { /* ignore */ }
+  }
+
+  // create member inputs for n additional members (n = pax value)
   function generate(n) {
     container.innerHTML = '';
-    n = Math.max(1, Math.floor(n) || 1);
+    n = Math.max(0, Math.floor(n) || 0); // allow zero additional members
+    if (n === 0) {
+      const info = document.createElement('div');
+      info.style.padding = '10px';
+      info.style.color = '#294122';
+      info.textContent = 'Tidak ada anggota tambahan. Peserta utama adalah akun Anda.';
+      container.appendChild(info);
+      return;
+    }
+
     for (let i = 0; i < n; i++) {
       const wrap = document.createElement('div');
       wrap.className = 'anggota';
       wrap.style.marginBottom = '12px';
 
       const h = document.createElement('h4');
-      h.textContent = 'Anggota ' + (i+1);
+      h.textContent = 'Anggota Tambahan ' + (i+1);
+      h.style.color = '#4C3019';
       h.style.marginTop = '0';
       wrap.appendChild(h);
+
+      // profile select (optional)
+      const profileWrap = document.createElement('div');
+      profileWrap.style.marginBottom = '8px';
+      const pLabel = mkLabel('Pilih Profil Terdaftar (opsional)', null);
+      profileWrap.appendChild(pLabel);
+      const sel = mkSelect('anggota_'+i+'_profile', profilesCache);
+      // when select changes, fill the other inputs
+      sel.addEventListener('change', function(e){
+        const pid = e.target.value;
+        const selected = profilesCache.find(p => p.profile_id === pid);
+        if (!selected) return;
+        // fill inputs if exist
+        const nameInput = wrap.querySelector('input[name="anggota_'+i+'_name"]');
+        const ageInput = wrap.querySelector('input[name="anggota_'+i+'_age"]');
+        const genderSel = wrap.querySelector('select[name="anggota_'+i+'_gender"]');
+        const levelSel = wrap.querySelector('select[name="anggota_'+i+'_level"]');
+        if (nameInput) nameInput.value = selected.name || '';
+        if (ageInput && selected.age != null) ageInput.value = selected.age;
+        if (genderSel && selected.gender) genderSel.value = selected.gender;
+        if (levelSel && selected.level) levelSel.value = selected.level;
+      });
+      profileWrap.appendChild(sel);
+      wrap.appendChild(profileWrap);
 
       const grid = document.createElement('div');
       grid.style.display = 'grid';
       grid.style.gridTemplateColumns = '1fr 1fr';
       grid.style.gap = '10px';
 
+      // name
       const nameWrap = document.createElement('div');
+      nameWrap.className = 'field';
       const nameLabel = mkLabel('Nama', 'id_anggota_'+i+'_name');
       nameWrap.appendChild(nameLabel);
       nameWrap.appendChild(mkInput('anggota_'+i+'_name', 'text', 'id_anggota_'+i+'_name'));
       grid.appendChild(nameWrap);
 
+      // age
       const ageWrap = document.createElement('div');
+      ageWrap.className = 'field';
       const ageLabel = mkLabel('Usia', 'id_anggota_'+i+'_age');
       ageWrap.appendChild(ageLabel);
       const ageInput = mkInput('anggota_'+i+'_age', 'number', 'id_anggota_'+i+'_age');
@@ -350,16 +517,28 @@
       ageWrap.appendChild(ageInput);
       grid.appendChild(ageWrap);
 
+      // gender
       const genderWrap = document.createElement('div');
+      genderWrap.className = 'field';
       const genderLabel = mkLabel('Jenis Kelamin', 'id_anggota_'+i+'_gender');
       genderWrap.appendChild(genderLabel);
-      genderWrap.appendChild(mkSelect('anggota_'+i+'_gender', [['M','Laki-laki'],['F','Perempuan']], 'id_anggota_'+i+'_gender'));
+      const genderSel = document.createElement('select');
+      genderSel.name = 'anggota_'+i+'_gender';
+      genderSel.innerHTML = '<option value="">-- Pilih --</option><option value="M">Laki-laki</option><option value="F">Perempuan</option><option value="O">Other</option>';
+      genderSel.className = 'field-input';
+      genderWrap.appendChild(genderSel);
       grid.appendChild(genderWrap);
 
+      // level
       const levelWrap = document.createElement('div');
+      levelWrap.className = 'field';
       const levelLabel = mkLabel('Level', 'id_anggota_'+i+'_level');
       levelWrap.appendChild(levelLabel);
-      levelWrap.appendChild(mkSelect('anggota_'+i+'_level', [['beginner','Beginner'],['intermediate','Intermediate'],['advanced','Advanced']], 'id_anggota_'+i+'_level'));
+      const levelSel = document.createElement('select');
+      levelSel.name = 'anggota_'+i+'_level';
+      levelSel.innerHTML = '<option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option>';
+      levelSel.style = 'padding:10px;border-radius:8px;border:1px solid #dfeee6;width:100%';
+      levelWrap.appendChild(levelSel);
       grid.appendChild(levelWrap);
 
       wrap.appendChild(grid);
@@ -367,13 +546,13 @@
     }
   }
 
-  // toast helper
+  // toast helper reused
   function showToast(message, opts = {}) {
     const toastRoot = document.getElementById('bt-toast');
     if (!toastRoot) return;
     const t = document.createElement('div');
     t.textContent = message;
-    t.style.background = opts.bg || '#ff6b6b';
+    t.style.background = opts.bg || '#f97373';
     t.style.color = '#fff';
     t.style.padding = '10px 14px';
     t.style.marginTop = '8px';
@@ -394,33 +573,148 @@
 
   // inc/dec handlers
   if (inc) inc.addEventListener('click', () => {
-    let v = parseInt(paxInput.value) || 1; v = Math.min(10, v+1); paxInput.value = v;
+    let v = parseInt(paxInput.value) || 0; v = Math.min(10, v+1); paxInput.value = v;
+    updateSummary();
   });
   if (dec) dec.addEventListener('click', () => {
-    let v = parseInt(paxInput.value) || 1; v = Math.max(1, v-1); paxInput.value = v;
+    let v = parseInt(paxInput.value) || 0; v = Math.max(0, v-1); paxInput.value = v;
+    updateSummary();
   });
 
-  // initial render from server pax
-  try {
-    const initialPax = parseInt('{{ pax|default:1 }}');
-    if (!isNaN(initialPax) && container && (!container.children.length || container.children.length === 0)) {
+  // update summary & porter warning
+  function updateSummary() {
+    const additionalPax = parseInt(paxInput.value) || 0;
+    const totalPax = 1 + additionalPax;
+    
+    const porterVal = porterSelect ? porterSelect.value : '';
+    
+    // check if all members are beginner
+    const additionalLevels = Array.from(document.querySelectorAll('select[name$="_level"]')).map(s => s.value).filter(v => v);
+    const userLevel = '{{ user_profile.category_experience|default:"beginner" }}';
+    const allLevels = [userLevel].concat(additionalLevels);
+    const allBeginner = allLevels.length > 0 && allLevels.every(l => l === 'beginner');
+    
+    const porterWarning = document.getElementById('porter-warning-section');
+    if (allBeginner) {
+      porterWarning.style.display = 'block';
+    } else {
+      porterWarning.style.display = 'none';
+    }
+    
+    // sync checkbox dengan select
+    const porterCheckbox = document.getElementById('porter-warning-checkbox');
+    if (porterCheckbox) {
+      if (allBeginner && porterVal === 'yes') {
+        porterCheckbox.checked = true;
+      } else if (!allBeginner && porterVal === 'no') {
+        porterCheckbox.checked = false;
+      }
+    }
+    
+    // update price summary
+    const paxPrice = totalPax * 500000;
+    // Hanya tambah biaya porter jika dipilih 'yes'
+    const porterPrice = (porterVal === 'yes') ? 250000 : 0;
+    const total = paxPrice + porterPrice;
+    
+    const summaryPaxText = document.getElementById('summary-pax-text');
+    const summaryPaxPrice = document.getElementById('summary-pax-price');
+    const summaryPorterRow = document.getElementById('summary-porter-row');
+    const summaryTotal = document.getElementById('summary-total');
+    
+    if (summaryPaxText) summaryPaxText.textContent = `Peserta (${totalPax}x) × Rp 500.000`;
+    if (summaryPaxPrice) summaryPaxPrice.textContent = `Rp ${paxPrice.toLocaleString('id-ID')}`;
+    
+    // Hanya tampilkan porter row jika dipilih 'yes'
+    if (summaryPorterRow) {
+      if (porterVal === 'yes') {
+        summaryPorterRow.style.display = 'grid';
+      } else {
+        summaryPorterRow.style.display = 'none';
+      }
+    }
+    
+    if (summaryTotal) summaryTotal.textContent = `Rp ${total.toLocaleString('id-ID')}`;
+  }
+
+  // load profiles then maybe generate initial container
+  document.addEventListener('DOMContentLoaded', async function(){
+    await loadProfiles();
+    // initialPax comes from server context 'pax' (which is additional members)
+    const initialPax = parseInt('{{ pax|default:0 }}') || 0;
+    // if server already provided anggota_fields (from form validation), don't overwrite them
+    const alreadyRendered = container && container.children.length > 0 && !container.querySelector('div') ? false : (container.children.length > 0 && !container.children[0].classList.contains('anggota') ? false : container.children.length > 0);
+    if (!alreadyRendered) {
       generate(initialPax);
     }
-  } catch(e){ /* ignore */ }
+    // show server-side porter error if any
+    const porterErr = document.getElementById('bt-toast') && document.getElementById('bt-toast').dataset ? document.getElementById('bt-toast').dataset.porterError : '';
+    if (porterErr) showToast(porterErr, { bg: '#f86b6b' });
+    
+    // initial summary update
+    updateSummary();
+    
+    // attach event listeners untuk durasi dan tanggal
+    if (durationSelect) {
+      durationSelect.addEventListener('change', function() {
+        toggleDateSection();
+        updateEndDate();
+      });
+    }
+    if (climbingDateInput) {
+      climbingDateInput.addEventListener('change', updateEndDate);
+    }
+  });
 
   if (btn) btn.addEventListener('click', function(e){
-    const val = parseInt(paxInput.value) || 1;
+    const val = parseInt(paxInput.value) || 0;
     generate(val);
     setTimeout(()=>{ container.scrollIntoView({behavior:'smooth', block:'start'}); }, 80);
   });
 
-  // submit guard: kalau semua anggota beginner, wajib pilih porter_hire == 'yes'
+  // listen to porter_hire change
+  const porterSelect = document.getElementById('id_porter_hire');
+  if (porterSelect) {
+    porterSelect.addEventListener('change', updateSummary);
+  }
+
+  // listen to porter warning checkbox
+  const porterWarningCheckbox = document.getElementById('porter-warning-checkbox');
+  if (porterWarningCheckbox) {
+    porterWarningCheckbox.addEventListener('change', function() {
+      if (porterSelect) {
+        porterSelect.value = this.checked ? 'yes' : 'no';
+        updateSummary();
+      }
+    });
+  }
+
+  // listen to level changes in dynamically generated selects
+  function attachLevelChangeListener() {
+    const levelSelects = document.querySelectorAll('select[name$="_level"]');
+    levelSelects.forEach(sel => {
+      sel.removeEventListener('change', updateSummary);
+      sel.addEventListener('change', updateSummary);
+    });
+  }
+
+  // override generate to attach listeners after generating
+  const originalGenerate = generate;
+  generate = function(n) {
+    originalGenerate(n);
+    attachLevelChangeListener();
+    updateSummary();
+  };
+
+  // submit guard: jika semua level = beginner (termasuk user utama), minta porter_hire == 'yes'
   if (formEl) {
     formEl.addEventListener('submit', function(e){
-      const selects = Array.from(document.querySelectorAll('select[name$="_level"]'));
-      const levels = selects.map(s => s.value).filter(v => v !== null && v !== '');
-      if (levels.length === 0) return; // tidak ada anggota, biarkan server validation
-      const allBeginner = levels.every(l => l === 'beginner');
+      // collect all level selects (additional members)
+      const additionalLevels = Array.from(document.querySelectorAll('select[name$="_level"]')).map(s => s.value).filter(v => v);
+      // include user level from server-side (we rendered it readonly); try to read from template variable
+      const userLevel = '{{ user_profile.category_experience|default:"beginner" }}';
+      const allLevels = [userLevel].concat(additionalLevels);
+      const allBeginner = allLevels.length > 0 && allLevels.every(l => l === 'beginner');
       const porterSelect = document.getElementById('id_porter_hire') || document.querySelector('select[name="porter_hire"], input[name="porter_hire"]');
       const porterVal = porterSelect ? porterSelect.value : '';
       if (allBeginner && porterVal !== 'yes') {
@@ -429,17 +723,16 @@
         if (porterSelect) porterSelect.scrollIntoView({behavior:'smooth', block:'center'});
         return false;
       }
+      // ensure paxInput number is integer -> name "pax" is already managed by form field but ensure it's numeric
+      const p = parseInt(paxInput.value);
+      if (isNaN(p) || p < 0) {
+        e.preventDefault();
+        showToast('Nilai jumlah anggota tidak valid.', {});
+        return false;
+      }
+      // no other client blocking; let server validate members completeness
     });
   }
-
-  // show server-side porter error (read from data attribute)
-  document.addEventListener('DOMContentLoaded', function () {
-    const toastRoot = document.getElementById('bt-toast');
-    const porterErr = toastRoot && toastRoot.dataset ? toastRoot.dataset.porterError : '';
-    if (porterErr) {
-      setTimeout(()=> showToast(porterErr, { bg: '#f86b6b' }), 80);
-    }
-  });
 
 })();
 </script>

@@ -16,6 +16,16 @@ class RegisterForm(UserCreationForm):
             'password1',
             'password2',
         ]
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        required_fields = [
+            'nama', 'umur', 'nomor_telepon', 'email',
+            'category_experience', 'jenis_kelamin'
+        ]
+        for f in required_fields:
+            self.fields[f].required = True
 
     def clean_umur(self):
         umur = self.cleaned_data.get('umur')
@@ -33,6 +43,28 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         fields = ['nama', 'umur', 'nomor_telepon', 'email', 'category_experience', 'jenis_kelamin']
+        labels = {
+            'nama': 'Nama Lengkap',
+            'umur': 'Umur',
+            'nomor_telepon': 'Nomor Telepon',
+            'email' : 'Email',
+            'category_experience': 'Kategori Pengalaman',
+            'jenis_kelamin': 'Jenis Kelamin',
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # ubah teks yang tampil di dropdown my profile
+        self.fields['jenis_kelamin'].choices = [
+            ('M', 'Laki-laki'),
+            ('F', 'Perempuan'),
+            ('O', 'Lainnya'),
+        ]
+        self.fields['category_experience'].choices = [
+            ('beginner', 'Pemula (Beginner)'),
+            ('intermediate', 'Menengah (Intermediate)'),
+            ('advanced', 'Berpengalaman (Advanced)'),
+        ]
 
     def clean_umur(self):
         umur = self.cleaned_data.get('umur')
