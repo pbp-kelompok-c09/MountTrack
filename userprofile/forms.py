@@ -16,6 +16,16 @@ class RegisterForm(UserCreationForm):
             'password1',
             'password2',
         ]
+        
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        required_fields = [
+            'nama', 'umur', 'nomor_telepon', 'email',
+            'category_experience', 'jenis_kelamin'
+        ]
+        for f in required_fields:
+            self.fields[f].required = True
 
     def clean_umur(self):
         umur = self.cleaned_data.get('umur')
