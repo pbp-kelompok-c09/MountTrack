@@ -5,13 +5,6 @@
 
 {% block extra_css %}
 <style>
-    body {
-        /* Added !important to force the override of base.html styles */
-        background-color: #E5D7C4 !important;
-        min-height: 100vh;
-        position: relative;
-    }
-
     .hero-section {
         margin-top: 6rem;
         padding-top: 2rem;
@@ -105,15 +98,16 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-8" data-user-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}" data-user-staff="{% if user.is_staff %}true{% else %}false{% endif %}">    
+<div class="min-h-screen px-4 py-8" style="background-color: #E5D7C4;">
+    <div class="container mx-auto" data-user-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}">    
     <div class="hero-section mt-36">
         <div class="flex justify-between items-center mb-8">
             <h1 class="text-5xl font-bold text-[#2D5016] mb-8 text-center flex-grow">Jelajahi Gunung Indonesia</h1>
             {% if user.is_staff %}
-            <a href="{% url 'mountain_create' %}" 
+            <button onclick="openAddModal()" 
                class="bg-[#2D5016] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#1f3810] transition duration-300 shadow-md">
                 + Tambah Gunung
-            </a>
+            </button>
             {% endif %}
         </div>
 
@@ -252,10 +246,10 @@
 
                         {% if user.is_staff %}
                         <div class="grid grid-cols-2 gap-2">
-                            <a href="{% url 'mountain_edit' mountain_id=mountain.id %}" 
+                            <button onclick="openEditModal({{ mountain.id }})" 
                                class="block text-center bg-blue-500 text-white py-2 px-3 rounded-lg text-xs font-semibold hover:bg-blue-600 transition duration-300">
                                 Edit
-                            </a>
+                            </button>
                             <button data-id="{{ mountain.id }}" data-name="{{ mountain.name|escape }}" onclick="deleteMountain(this.dataset.id, this.dataset.name)" 
                                     class="bg-red-500 text-white py-2 px-3 rounded-lg text-xs font-semibold hover:bg-red-600 transition duration-300">
                                 Hapus
@@ -485,5 +479,403 @@
             alert(error.message || 'Terjadi kesalahan saat menghapus gunung');
         });
     }
+
+    // Edit Modal Functions
+    let currentEditMountainId = null;
+
+    function openAddModal() {
+        // Clear form
+        document.getElementById('add_name').value = '';
+        document.getElementById('add_url').value = '';
+        document.getElementById('add_height_mdpl').value = '';
+        document.getElementById('add_province').value = '';
+        document.getElementById('add_image_url').value = '';
+        document.getElementById('add_description').value = '';
+        document.getElementById('add_min_book').value = '1';
+        document.getElementById('add_experience_required').value = 'Beginner';
+        document.getElementById('add_availability').checked = true;
+        
+        // Show modal
+        document.getElementById('addModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeAddModal() {
+        document.getElementById('addModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    async function openEditModal(mountainId) {
+        currentEditMountainId = mountainId;
+        
+        // Fetch mountain data
+        try {
+            const response = await fetch(`/mountains/api/mountains/${mountainId}/`);
+            const mountain = await response.json();
+            
+            // Populate form
+            document.getElementById('edit_name').value = mountain.name;
+            document.getElementById('edit_url').value = mountain.url;
+            document.getElementById('edit_height_mdpl').value = mountain.height_mdpl;
+            document.getElementById('edit_province').value = mountain.province;
+            document.getElementById('edit_image_url').value = mountain.image_url || '';
+            document.getElementById('edit_description').value = mountain.description;
+            document.getElementById('edit_min_book').value = mountain.min_book;
+            document.getElementById('edit_experience_required').value = mountain.experience_required;
+            document.getElementById('edit_availability').checked = mountain.availability;
+            
+            // Show modal
+            document.getElementById('editModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        } catch (error) {
+            alert('Error loading mountain data: ' + error.message);
+        }
+    }
+
+    function closeEditModal() {
+        document.getElementById('editModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        currentEditMountainId = null;
+    }
+
+    // Wait for DOM to be fully loaded before attaching event listeners
+    document.addEventListener('DOMContentLoaded', function() {
+        // Close modals when clicking outside
+        const editModal = document.getElementById('editModal');
+        if (editModal) {
+            editModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeEditModal();
+                }
+            });
+        }
+
+        const addModal = document.getElementById('addModal');
+        if (addModal) {
+            addModal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeAddModal();
+                }
+            });
+        }
+
+        // Handle add form submission
+        const addForm = document.getElementById('addForm');
+        if (addForm) {
+            addForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    name: document.getElementById('add_name').value,
+                    url: document.getElementById('add_url').value,
+                    height_mdpl: parseInt(document.getElementById('add_height_mdpl').value),
+                    province: document.getElementById('add_province').value,
+                    image_url: document.getElementById('add_image_url').value,
+                    description: document.getElementById('add_description').value,
+                    min_book: parseInt(document.getElementById('add_min_book').value),
+                    experience_required: document.getElementById('add_experience_required').value,
+                    availability: document.getElementById('add_availability').checked
+                };
+
+                console.log('Submitting add form data:', formData);
+
+                try {
+                    const csrftoken = getCookie('csrftoken');
+                    const url = '/mountains/api/create/';
+                    console.log('Posting to URL:', url);
+                    
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRFToken': csrftoken
+                        },
+                        body: JSON.stringify(formData)
+                    });
+
+                    console.log('Response status:', response.status);
+                    const data = await response.json();
+                    console.log('Response data:', data);
+
+                    if (data.status === 'success') {
+                        alert(data.message);
+                        closeAddModal();
+                        window.location.reload();
+                    } else {
+                        console.error('Error response:', data);
+                        alert('Error: ' + (data.message || 'Terjadi kesalahan') + '\n' + JSON.stringify(data.errors || {}));
+                    }
+                } catch (error) {
+                    console.error('Caught error:', error);
+                    alert('Error: ' + error.message);
+                }
+            });
+        }
+
+        // Handle edit form submission
+        const editForm = document.getElementById('editForm');
+        if (editForm) {
+            editForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = {
+            name: document.getElementById('edit_name').value,
+            url: document.getElementById('edit_url').value,
+            height_mdpl: parseInt(document.getElementById('edit_height_mdpl').value),
+            province: document.getElementById('edit_province').value,
+            image_url: document.getElementById('edit_image_url').value,
+            description: document.getElementById('edit_description').value,
+            min_book: parseInt(document.getElementById('edit_min_book').value),
+            experience_required: document.getElementById('edit_experience_required').value,
+            availability: document.getElementById('edit_availability').checked
+        };
+
+        console.log('Submitting form data:', formData);
+        console.log('Mountain ID:', currentEditMountainId);
+
+        try {
+            const csrftoken = getCookie('csrftoken');
+            const url = `/mountains/api/edit/${currentEditMountainId}/`;
+            console.log('Posting to URL:', url);
+            
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify(formData)
+            });
+
+            console.log('Response status:', response.status);
+            const data = await response.json();
+            console.log('Response data:', data);
+
+            if (data.status === 'success') {
+                alert(data.message);
+                closeEditModal();
+                window.location.reload(); // Reload the entire page
+            } else {
+                console.error('Error response:', data);
+                alert('Error: ' + (data.message || 'Terjadi kesalahan') + '\n' + JSON.stringify(data.errors || {}));
+            }
+        } catch (error) {
+            console.error('Caught error:', error);
+            alert('Error: ' + error.message);
+        }
+            });
+        }
+    });
 </script>
+
+<!-- Add Modal -->
+<div id="addModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <!-- Modal Header -->
+        <div class="sticky top-0 bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center">
+            <h2 class="text-2xl font-bold flex items-center gap-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Tambah Gunung Baru
+            </h2>
+            <button onclick="closeAddModal()" class="hover:bg-white/20 rounded-full p-2 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <form id="addForm" class="p-6 space-y-4">
+            {% csrf_token %}
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Gunung</label>
+                <input type="text" id="add_name" name="name" required
+                       class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-green-600 focus:ring-2 focus:ring-green-200 transition duration-200"
+                       placeholder="Contoh: Gunung Semeru">
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">URL Referensi</label>
+                <input type="url" id="add_url" name="url" required
+                       class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-green-600 focus:ring-2 focus:ring-green-200 transition duration-200"
+                       placeholder="https://...">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ketinggian (mdpl)</label>
+                    <input type="number" id="add_height_mdpl" name="height_mdpl" required min="0"
+                           class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-green-600 focus:ring-2 focus:ring-green-200 transition duration-200"
+                           placeholder="3676">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Provinsi</label>
+                    <input type="text" id="add_province" name="province" required
+                           class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-green-600 focus:ring-2 focus:ring-green-200 transition duration-200"
+                           placeholder="Jawa Timur">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">URL Gambar (opsional)</label>
+                <input type="url" id="add_image_url" name="image_url"
+                       class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-green-600 focus:ring-2 focus:ring-green-200 transition duration-200"
+                       placeholder="https://...">
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Deskripsi</label>
+                <textarea id="add_description" name="description" rows="5" required
+                          class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-green-600 focus:ring-2 focus:ring-green-200 transition duration-200"
+                          placeholder="Deskripsi tentang gunung..."></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Minimum Peserta</label>
+                    <input type="number" id="add_min_book" name="min_book" value="1" required min="1"
+                           class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-green-600 focus:ring-2 focus:ring-green-200 transition duration-200">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Pengalaman Diperlukan</label>
+                    <select id="add_experience_required" name="experience_required" required
+                            class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-green-600 focus:ring-2 focus:ring-green-200 transition duration-200">
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <input type="checkbox" id="add_availability" name="availability" checked
+                       class="w-5 h-5 text-green-600 rounded focus:ring-green-500 focus:ring-2">
+                <label for="add_availability" class="text-sm font-semibold text-gray-700">Gunung Tersedia untuk Booking</label>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex gap-3 pt-4 border-t">
+                <button type="button" onclick="closeAddModal()" 
+                        class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-xl font-semibold hover:bg-gray-300 transition duration-300">
+                    Batal
+                </button>
+                <button type="submit" 
+                        class="flex-1 bg-green-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-green-700 transition duration-300 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Tambah Gunung
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <!-- Modal Header -->
+        <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center">
+            <h2 class="text-2xl font-bold flex items-center gap-2">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+                Edit Gunung
+            </h2>
+            <button onclick="closeEditModal()" class="hover:bg-white/20 rounded-full p-2 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <form id="editForm" class="p-6 space-y-4">
+            {% csrf_token %}
+            
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Gunung</label>
+                <input type="text" id="edit_name" name="name" required
+                       class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">URL Referensi</label>
+                <input type="url" id="edit_url" name="url" required
+                       class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Ketinggian (mdpl)</label>
+                    <input type="number" id="edit_height_mdpl" name="height_mdpl" required min="0"
+                           class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Provinsi</label>
+                    <input type="text" id="edit_province" name="province" required
+                           class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">URL Gambar</label>
+                <input type="url" id="edit_image_url" name="image_url"
+                       class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">Deskripsi</label>
+                <textarea id="edit_description" name="description" rows="5" required
+                          class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Minimum Peserta</label>
+                    <input type="number" id="edit_min_book" name="min_book" required min="1"
+                           class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Pengalaman Diperlukan</label>
+                    <select id="edit_experience_required" name="experience_required" required
+                            class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+                        <option value="Beginner">Beginner</option>
+                        <option value="Intermediate">Intermediate</option>
+                        <option value="Advanced">Advanced</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <input type="checkbox" id="edit_availability" name="availability"
+                       class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 focus:ring-2">
+                <label for="edit_availability" class="text-sm font-semibold text-gray-700">Gunung Tersedia untuk Booking</label>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex gap-3 pt-4 border-t">
+                <button type="button" onclick="closeEditModal()" 
+                        class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-xl font-semibold hover:bg-gray-300 transition duration-300">
+                    Batal
+                </button>
+                <button type="submit" 
+                        class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-blue-700 transition duration-300 flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Simpan Perubahan
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {% endblock %}
