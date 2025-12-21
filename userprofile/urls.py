@@ -17,6 +17,7 @@ urlpatterns = [
     path('loginapp/', views.loginapp, name='loginapp'),
     path('registerapp/', views.registerapp, name='registerapp'),
     path('logoutapp/', views.logoutapp, name='logoutapp'),
+    path('check-auth/', views.check_auth, name='check_auth'),
     path('profileapp/', views.profileapp, name='profileapp'),
     path("manage_user_app/", views.manage_user_app, name="manage_user_app"),
 ]

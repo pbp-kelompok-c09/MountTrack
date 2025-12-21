@@ -270,6 +270,23 @@ def logoutapp(request):
             "status": False,
             "message": "Logout gagal."
         }, status=401)
+
+
+@csrf_exempt
+def check_auth(request):
+    """Check if user is authenticated - for debugging Flutter session issues"""
+    if request.user.is_authenticated:
+        return JsonResponse({
+            "authenticated": True,
+            "username": request.user.username,
+            "nama": request.user.nama,
+            "is_staff": request.user.is_staff,
+        }, status=200)
+    else:
+        return JsonResponse({
+            "authenticated": False,
+            "message": "Not authenticated"
+        }, status=401)
     
 @csrf_exempt
 def profileapp(request):

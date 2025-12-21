@@ -186,7 +186,14 @@ def mountain_create_ajax(request):
         }, status=403)
     
     try:
-        data = json.loads(request.body)
+        # Try to parse as JSON first
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+        else:
+            # If not JSON, try to parse the body as JSON string from form data
+            body_str = request.POST.get('data') or request.body.decode('utf-8')
+            data = json.loads(body_str)
+        
         form = MountainForm(data)
         
         if form.is_valid():
@@ -209,6 +216,11 @@ def mountain_create_ajax(request):
                 'message': 'Data tidak valid',
                 'errors': form.errors
             }, status=400)
+    except json.JSONDecodeError as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Invalid JSON format: {str(e)}'
+        }, status=400)
     except Exception as e:
         return JsonResponse({
             'status': 'error',
@@ -228,7 +240,15 @@ def mountain_edit_ajax(request, mountain_id):
     
     try:
         mountain = get_object_or_404(Mountain, id=mountain_id)
-        data = json.loads(request.body)
+        
+        # Try to parse as JSON first
+        if request.content_type == 'application/json':
+            data = json.loads(request.body)
+        else:
+            # If not JSON, try to parse the body as JSON string from form data
+            body_str = request.POST.get('data') or request.body.decode('utf-8')
+            data = json.loads(body_str)
+        
         form = MountainForm(data, instance=mountain)
         
         if form.is_valid():
@@ -256,6 +276,11 @@ def mountain_edit_ajax(request, mountain_id):
                 'message': 'Data tidak valid',
                 'errors': form.errors
             }, status=400)
+    except json.JSONDecodeError as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': f'Invalid JSON format: {str(e)}'
+        }, status=400)
     except Exception as e:
         return JsonResponse({
             'status': 'error',
