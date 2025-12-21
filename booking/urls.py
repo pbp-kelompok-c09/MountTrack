@@ -21,4 +21,10 @@ urlpatterns = [
     path('api/profiles/', views.profiles_api_list, name='booking_profiles'),
     path('history/', views.booking_history_list_plain, name='booking_history_plain'),
     path('api/delete/<int:booking_id>/', views.booking_api_delete, name='booking_api_delete'),
+    path('api/payment/<int:booking_id>/', views.booking_api_payment, name='booking_api_payment'),
+    path('bookings/', views.all_bookings, name='all_bookings'),
+    path('landing/', views.booking_landing, name='booking_landing'),
+    path('form/', views.booking_view, name='booking_view'),
+   
+    
 ]

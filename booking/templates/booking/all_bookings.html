@@ -1,81 +1,500 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container">
-    <header>
-        <h1>All Bookings</h1>
-        <p>Here is a list of all your bookings</p>
-    </header>
+<style>
+:root {
+  --cafe-noir: #4C3019;
+  --kombu-green: #354024;
+  --moss-green: #889063;
+  --tan: #CFBB99;
+  --bone: #E5D7C4;
+  --sacramento: #102114;
+  --pine: #294122;
+  --salmon: #FFBBA6;
+  --tangerine: #EB3D00;
+  --chiffon: #FFFEE2;
+}
 
-    <main>
-        <div class="card">
-            <h3>Your Bookings</h3>
-            <ul>
-                {% for booking in bookings %}
-                    <li>
-                        <a href="{% url 'booking:booking_summary' booking.id %}">
-                            Booking for {{ booking.gunung.nama }} - {{ booking.created_at }}
-                        </a>
-                    </li>
-                {% endfor %}
-            </ul>
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  background: var(--bone) !important;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.container {
+  background: var(--bone);
+  padding: 12px;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 900px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  margin-bottom: 20px;
+}
+
+.header h1 {
+  color: var(--sacramento);
+  font-size: 24px;
+  margin: 0;
+  padding: 20px 0;
+  font-weight: 700;
+}
+
+.bookings-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+  flex: 1;
+}
+
+.booking-card {
+  display: flex;
+  background: var(--chiffon);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(76, 48, 25, 0.15);
+  height: 140px;
+  transition: transform 0.2s ease;
+}
+
+.booking-card:hover {
+  transform: translateY(-2px);
+}
+
+.booking-image {
+  width: 140px;
+  height: 140px;
+  background: var(--tan);
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--moss-green);
+  font-size: 40px;
+}
+
+.booking-image.empty {
+  background: rgba(207, 187, 153, 0.3);
+}
+
+.booking-info {
+  flex: 1;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.booking-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.booking-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--sacramento);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.booking-date {
+  font-size: 13px;
+  color: rgba(76, 48, 25, 0.7);
+  margin: 0;
+}
+
+.booking-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.booking-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.booking-pax {
+  font-size: 12px;
+  color: var(--moss-green);
+  font-weight: 600;
+}
+
+.booking-status {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid;
+}
+
+.booking-status.paid {
+  background: rgba(136, 144, 99, 0.15);
+  color: var(--moss-green);
+  border-color: var(--moss-green);
+}
+
+.booking-status.unpaid {
+  background: rgba(235, 61, 0, 0.15);
+  color: var(--tangerine);
+  border-color: var(--tangerine);
+}
+
+.booking-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.btn-see {
+  background: var(--kombu-green);
+  color: var(--bone);
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-see:hover {
+  background: var(--sacramento);
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  color: var(--tangerine);
+  cursor: pointer;
+  font-size: 20px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  transition: color 0.2s;
+}
+
+.btn-delete:hover {
+  color: #d63000;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  flex: 1;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  color: rgba(136, 144, 99, 0.5);
+  margin-bottom: 16px;
+}
+
+.empty-state-text {
+  color: var(--cafe-noir);
+  font-size: 16px;
+  margin-bottom: 12px;
+  font-weight: 500;
+}
+
+.btn-primary {
+  background: var(--kombu-green);
+  color: var(--bone);
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-primary:hover {
+  background: var(--sacramento);
+}
+
+.btn-home {
+  width: 100%;
+  background: var(--kombu-green);
+  color: var(--bone);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 12px;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.btn-home:hover {
+  background: var(--sacramento);
+}
+
+.modal-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--chiffon);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--sacramento);
+  margin: 0 0 12px 0;
+}
+
+.modal-text {
+  font-size: 14px;
+  color: var(--cafe-noir);
+  margin: 0 0 20px 0;
+  line-height: 1.6;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.modal-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-btn-cancel {
+  background: transparent;
+  color: var(--moss-green);
+  border: 1px solid var(--moss-green);
+}
+
+.modal-btn-cancel:hover {
+  background: var(--moss-green);
+  color: var(--bone);
+}
+
+.modal-btn-delete {
+  background: var(--tangerine);
+  color: var(--bone);
+}
+
+.modal-btn-delete:hover {
+  background: #d63000;
+}
+
+@media (max-width: 640px) {
+  .container {
+    padding: 8px;
+  }
+  
+  .booking-card {
+    height: 120px;
+  }
+  
+  .booking-image {
+    width: 100px;
+    height: 120px;
+  }
+}
+</style>
+
+<div class="container">
+  <div class="header">
+    <h1>Riwayat Booking</h1>
+  </div>
+
+  {% if bookings %}
+  
+    <div class="bookings-list" id="bookings-list">
+      {% for booking in bookings %}
+        <div class="booking-card" data-booking-id="{{ booking.id }}" data-mountain-name="{{ booking.gunung.name|default:'Booking' }}">
+          <!-- Image Section -->
+          <div class="booking-image {% if not booking.gunung or not booking.gunung.image_url %}empty{% endif %}" 
+               {% if booking.gunung and booking.gunung.image_url %}style="background-image: url('{{ booking.gunung.image_url }}')"{% endif %}>
+            {% if not booking.gunung or not booking.gunung.image_url %}<span>🏔️</span>{% endif %}
+          </div>
+          
+          <!-- Info Section -->
+          <div class="booking-info">
+            <div class="booking-header">
+              <p class="booking-name">{{ booking.gunung.name|default:"N/A" }}</p>
+              <p class="booking-date">
+                {% if booking.climbing_date %}
+                  {{ booking.climbing_date|date:"d M Y" }}
+                {% else %}
+                  {{ booking.created_at|date:"d M Y" }}
+                {% endif %}
+              </p>
+            </div>
+            
+            <div class="booking-footer">
+              <div class="booking-details">
+                <span class="booking-pax">Peserta: {{ booking.pax }}</span>
+                <span class="booking-status {% if booking.is_paid %}paid{% else %}unpaid{% endif %}">
+                  {% if booking.is_paid %}✓ Sudah Terbayar{% else %}⏱ Belum Terbayar{% endif %}
+                </span>
+              </div>
+              
+              <div class="booking-actions">
+                <a href="{% url 'booking:booking_summary' booking.id %}" class="btn-see">Lihat</a>
+                <button class="btn-delete" type="button" onclick="showDeleteConfirm(this)">🗑️</button>
+              </div>
+            </div>
+          </div>
         </div>
-    </main>
+      {% endfor %}
+    </div>
+
+    <a href="{% url 'booking:booking_landing' %}" class="btn-home">
+      🏠 Kembali ke Home
+    </a>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-state-icon">📭</div>
+      <p class="empty-state-text">Belum ada riwayat booking.</p>
+      <a href="{% url 'booking:booking_landing' %}" class="btn-primary">Kembali</a>
+    </div>
+  {% endif %}
 </div>
 
-<!-- CSS Styling -->
-<style>
-    .container {
-        padding: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal-content">
+    <h3 class="modal-title">Hapus Riwayat</h3>
+    <p class="modal-text">Yakin ingin menghapus riwayat booking untuk <strong id="mountain-name"></strong>?</p>
+    <div class="modal-buttons">
+      <button type="button" class="modal-btn modal-btn-cancel" onclick="cancelDelete()">Batal</button>
+      <button type="button" class="modal-btn modal-btn-delete" onclick="confirmDelete()">Hapus</button>
+    </div>
+  </div>
+</div>
 
-    header {
-        text-align: center;
-        margin-bottom: 20px;
-    }
+<script>
+let deleteBookingId = null;
 
-    h1 {
-        font-size: 2rem;
-        color: #2a6a4a;
-    }
+function showDeleteConfirm(buttonElement) {
+  const card = buttonElement.closest('.booking-card');
+  const bookingId = card.getAttribute('data-booking-id');
+  const mountainName = card.getAttribute('data-mountain-name');
+  
+  deleteBookingId = bookingId;
+  document.getElementById('mountain-name').textContent = mountainName;
+  document.getElementById('delete-modal').classList.add('active');
+}
 
-    p {
-        color: #6b7280;
-        font-size: 1rem;
-    }
+function cancelDelete() {
+  deleteBookingId = null;
+  document.getElementById('delete-modal').classList.remove('active');
+}
 
-    .card {
-        background-color: #ffffff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+function confirmDelete() {
+  if (!deleteBookingId) return;
 
-    .card h3 {
-        font-size: 1.5rem;
-        color: #1f2937;
-        margin-bottom: 10px;
-    }
+  const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value || 
+                    document.cookie.split('; ').find(row => row.startsWith('csrftoken='))?.split('=')[1] || '';
 
-    .card ul {
-        list-style: none;
-        padding: 0;
+  fetch(`/booking/api/delete/${deleteBookingId}/`, {
+    method: 'POST',
+    headers: {
+      'X-CSRFToken': csrfToken,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({})
+  })
+  .then(response => response.json())
+  .then(data => {
+    cancelDelete();
+    if (data.success) {
+      // Hapus card dari DOM langsung
+      const card = document.querySelector(`[data-booking-id="${deleteBookingId}"]`);
+      if (card) {
+        card.style.opacity = '0';
+        card.style.transition = 'opacity 0.3s ease';
+        setTimeout(() => {
+          card.remove();
+          
+          // Cek apakah list kosong
+          const list = document.getElementById('bookings-list');
+          const remainingCards = list ? list.querySelectorAll('.booking-card').length : 0;
+          
+          if (remainingCards === 0) {
+            // Reload jika semua booking sudah dihapus
+            location.reload();
+          }
+        }, 300);
+      }
+    } else {
+      alert('Gagal menghapus: ' + (data.message || 'Terjadi kesalahan'));
     }
+  })
+  .catch(error => {
+    cancelDelete();
+    console.error('Error:', error);
+    alert('Error: ' + error.message);
+  });
+}
 
-    .card ul li {
-        margin: 10px 0;
-    }
-
-    .card a {
-        text-decoration: none;
-        color: #2563eb;
-        font-weight: bold;
-    }
-
-    .card a:hover {
-        color: #1d4ed8;
-    }
-</style>
+document.getElementById('delete-modal').addEventListener('click', function(e) {
+  if (e.target === this) cancelDelete();
+});
+</script>
 {% endblock %}
