@@ -1,354 +1,331 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Riwayat Pesanan | MountTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            padding-top: 0 !important;
+            margin-top: 0 !important;
+        }
 
-{% block content %}
-<style>
-* {
-  box-sizing: border-box;
-}
+        .container {
+            background: #E5D7C4;
+            padding: max(1rem, min(5vw, 24px));
+            margin: 0 auto;
+            width: 100%;
+            max-width: 900px;
+        }
 
-html, body {
-  background: #E5D7C4 !important;
-  min-height: 100vh;
-  margin: 0;
-  padding: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
+        .page-header {
+            background: #354024;
+            color: #FFFEE2;
+            border-radius: clamp(8px, 3vw, 14px);
+            padding: clamp(12px, 3vw, 20px);
+            margin-bottom: clamp(12px, 3vw, 18px);
+        }
 
-.container {
-  background: #E5D7C4;
-  padding: max(1rem, min(5vw, 24px));
-  margin: 0 auto;
-  width: 100%;
-  max-width: 900px;
-}
+        .page-header h2 {
+            font-size: clamp(1.3rem, 5vw, 1.8rem);
+            margin: 0 0 0.5rem 0;
+            font-weight: 700;
+        }
 
-.page-header {
-  background: #354024;
-  color: #FFFEE2;
-  border-radius: clamp(8px, 3vw, 14px);
-  padding: clamp(12px, 3vw, 20px);
-  margin-bottom: clamp(12px, 3vw, 18px);
-}
+        .page-header > div:last-child {
+            font-size: clamp(0.8rem, 2vw, 1rem);
+            opacity: 0.95;
+        }
 
-.page-header h2 {
-  font-size: clamp(1.3rem, 5vw, 1.8rem);
-  margin: 0 0 0.5rem 0;
-  font-weight: 700;
-}
+        .empty-state {
+            text-align: center;
+            padding: clamp(40px, 8vw, 60px) clamp(20px, 4vw, 40px);
+        }
 
-.page-header > div:last-child {
-  font-size: clamp(0.8rem, 2vw, 1rem);
-  opacity: 0.95;
-}
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto clamp(16px, 3vw, 20px);
+            opacity: 0.3;
+        }
 
-.empty-state {
-  text-align: center;
-  padding: clamp(40px, 8vw, 60px) clamp(20px, 4vw, 40px);
-}
+        .empty-state-title {
+            font-size: clamp(1.1rem, 3vw, 1.4rem);
+            color: #4C3019;
+            font-weight: 600;
+            margin-bottom: clamp(8px, 2vw, 12px);
+        }
 
-.empty-state-icon {
-  width: 80px;
-  height: 80px;
-  margin: 0 auto clamp(16px, 3vw, 20px);
-  opacity: 0.3;
-}
+        .empty-state-text {
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
+            color: #294122;
+            opacity: 0.8;
+            margin-bottom: clamp(20px, 3vw, 24px);
+        }
 
-.empty-state-title {
-  font-size: clamp(1.1rem, 3vw, 1.4rem);
-  color: #4C3019;
-  font-weight: 600;
-  margin-bottom: clamp(8px, 2vw, 12px);
-}
+        .error-box {
+            background: rgba(235, 61, 0, 0.1);
+            border: 2px solid #EB3D00;
+            border-radius: clamp(8px, 2vw, 12px);
+            padding: clamp(16px, 3vw, 20px);
+            margin-bottom: clamp(16px, 3vw, 20px);
+            text-align: center;
+        }
 
-.empty-state-text {
-  font-size: clamp(0.85rem, 2vw, 0.95rem);
-  color: #294122;
-  opacity: 0.8;
-  margin-bottom: clamp(20px, 3vw, 24px);
-}
+        .error-message {
+            color: #EB3D00;
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
+            margin-bottom: clamp(12px, 2vw, 16px);
+        }
 
-.error-box {
-  background: rgba(235, 61, 0, 0.1);
-  border: 2px solid #EB3D00;
-  border-radius: clamp(8px, 2vw, 12px);
-  padding: clamp(16px, 3vw, 20px);
-  margin-bottom: clamp(16px, 3vw, 20px);
-  text-align: center;
-}
+        .booking-list {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(12px, 2vw, 16px);
+        }
 
-.error-message {
-  color: #EB3D00;
-  font-size: clamp(0.85rem, 2vw, 0.95rem);
-  margin-bottom: clamp(12px, 2vw, 16px);
-}
+        .booking-card {
+            background: #F6EFD9;
+            border: 1.5px solid #CFBB99;
+            border-radius: clamp(8px, 2vw, 12px);
+            overflow: hidden;
+            display: flex;
+            flex-direction: row;
+            height: auto;
+            min-height: 120px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.2s ease;
+        }
 
-.booking-list {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(12px, 2vw, 16px);
-}
+        .booking-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
 
-.booking-card {
-  background: #F6EFD9;
-  border: 1.5px solid #CFBB99;
-  border-radius: clamp(8px, 2vw, 12px);
-  overflow: hidden;
-  display: flex;
-  flex-direction: row;
-  height: auto;
-  min-height: 120px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  transition: all 0.2s ease;
-}
+        .booking-image {
+            width: clamp(120px, 25vw, 160px);
+            height: 100%;
+            min-height: 120px;
+            object-fit: cover;
+            background: #E5D7C4;
+            flex-shrink: 0;
+        }
 
-.booking-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-}
+        .booking-content {
+            flex: 1;
+            padding: clamp(12px, 2vw, 16px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
 
-.booking-image {
-  width: clamp(120px, 25vw, 160px);
-  height: 100%;
-  min-height: 120px;
-  object-fit: cover;
-  background: #E5D7C4;
-  flex-shrink: 0;
-}
+        .booking-title {
+            font-size: clamp(0.95rem, 2vw, 1.1rem);
+            font-weight: 700;
+            color: #4C3019;
+            margin: 0 0 clamp(4px, 1vw, 8px) 0;
+        }
 
-.booking-content {
-  flex: 1;
-  padding: clamp(12px, 2vw, 16px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
+        .booking-meta {
+            display: flex;
+            flex-direction: column;
+            gap: clamp(4px, 1vw, 6px);
+            margin-bottom: clamp(8px, 1.5vw, 12px);
+        }
 
-.booking-title {
-  font-size: clamp(0.95rem, 2vw, 1.1rem);
-  font-weight: 700;
-  color: #4C3019;
-  margin: 0 0 clamp(4px, 1vw, 8px) 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-}
+        .booking-date {
+            font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+            color: #294122;
+            opacity: 0.8;
+        }
 
-.booking-meta {
-  display: flex;
-  flex-direction: column;
-  gap: clamp(4px, 1vw, 6px);
-  margin-bottom: clamp(8px, 1.5vw, 12px);
-}
+        .booking-pax {
+            font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+            color: #889063;
+            font-weight: 600;
+        }
 
-.booking-date {
-  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
-  color: #294122;
-  opacity: 0.8;
-}
+        .booking-actions {
+            display: flex;
+            gap: clamp(8px, 1.5vw, 12px);
+        }
 
-.booking-pax {
-  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
-  color: #889063;
-  font-weight: 600;
-}
+        .btn {
+            padding: clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 16px);
+            border: none;
+            border-radius: 6px;
+            font-size: clamp(0.8rem, 1.5vw, 0.9rem);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
 
-.booking-actions {
-  display: flex;
-  gap: clamp(8px, 1.5vw, 12px);
-}
+        .btn-view {
+            background: #889063;
+            color: #FFFEE2;
+        }
 
-.btn {
-  padding: clamp(8px, 1.5vw, 10px) clamp(12px, 2vw, 16px);
-  border: none;
-  border-radius: 6px;
-  font-size: clamp(0.8rem, 1.5vw, 0.9rem);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  white-space: nowrap;
-}
+        .btn-view:hover {
+            background: #354024;
+            transform: translateY(-1px);
+        }
 
-.btn-view {
-  background: #889063;
-  color: #FFFEE2;
-}
+        .btn-view:active {
+            transform: translateY(0);
+        }
 
-.btn-view:hover {
-  background: #354024;
-  transform: translateY(-1px);
-}
+        .btn-secondary {
+            background: transparent;
+            color: #4C3019;
+            border: 2px solid #4C3019;
+        }
 
-.btn-view:active {
-  transform: translateY(0);
-}
+        .btn-secondary:hover {
+            background: #4C3019;
+            color: #FFFEE2;
+            transform: translateY(-1px);
+        }
 
-.btn-secondary {
-  background: transparent;
-  color: #4C3019;
-  border: 2px solid #4C3019;
-}
+        .btn-secondary:active {
+            transform: translateY(0);
+        }
 
-.btn-secondary:hover {
-  background: #4C3019;
-  color: #FFFEE2;
-  transform: translateY(-1px);
-}
+        .back-button {
+            margin-top: clamp(20px, 4vw, 24px);
+            display: flex;
+            gap: clamp(8px, 2vw, 12px);
+        }
 
-.btn-secondary:active {
-  transform: translateY(0);
-}
+        @media (max-width: 640px) {
+            .container {
+                padding: clamp(8px, 3vw, 16px);
+            }
 
-.loading-spinner {
-  text-align: center;
-  padding: clamp(40px, 8vw, 60px) clamp(20px, 4vw, 40px);
-}
+            .booking-card {
+                flex-direction: column;
+                min-height: auto;
+            }
 
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 4px solid rgba(136, 144, 99, 0.3);
-  border-top-color: #889063;
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-  margin: 0 auto;
-}
+            .booking-image {
+                width: 100%;
+                height: 200px;
+            }
 
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
+            .booking-actions {
+                flex-direction: column;
+            }
 
-.back-button {
-  margin-top: clamp(20px, 4vw, 24px);
-  display: flex;
-  gap: clamp(8px, 2vw, 12px);
-}
+            .btn {
+                width: 100%;
+            }
+        }
 
-@media (max-width: 640px) {
-  .container {
-    padding: clamp(8px, 3vw, 16px);
-  }
+        @media (min-width: 768px) {
+            .booking-list {
+                display: grid;
+                grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            }
 
-  .booking-card {
-    flex-direction: column;
-    min-height: auto;
-  }
+            .booking-card {
+                flex-direction: column;
+                height: auto;
+            }
 
-  .booking-image {
-    width: 100%;
-    height: 200px;
-  }
-
-  .booking-actions {
-    flex-direction: column;
-  }
-
-  .btn {
-    width: 100%;
-  }
-}
-
-@media (min-width: 768px) {
-  .booking-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-  }
-
-  .booking-card {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .booking-image {
-    width: 100%;
-    height: 200px;
-  }
-}
-</style>
-
-<div class="container">
-  <div class="page-header">
-    <h2>Riwayat Pesanan</h2>
-    <div>Daftar pesanan gunung Anda</div>
-  </div>
-
-  {% if messages %}
-    {% for message in messages %}
-      <div class="error-box">
-        <div class="error-message">{{ message }}</div>
-      </div>
-    {% endfor %}
-  {% endif %}
-
-  {% if bookings %}
-    <div class="booking-list">
-      {% for booking in bookings %}
-        <div class="booking-card">
-          <img 
-            src="{% if booking.gunung.image_url %}{{ booking.gunung.image_url }}{% else %}https://picsum.photos/seed/mountain{{ booking.id }}/400/400{% endif %}" 
-            alt="{{ booking.gunung.nama }}" 
-            class="booking-image"
-            onerror="this.src='https://picsum.photos/seed/mountain_fallback/400/400'"
-          >
-          <div class="booking-content">
-            <div>
-              <h3 class="booking-title">{{ booking.gunung.nama }}</h3>
-              <div class="booking-meta">
-                <div class="booking-date">
-                  📅 {{ booking.climbing_date|date:"d M Y" }}
-                </div>
-                <div class="booking-pax">
-                  👥 {{ booking.pax }} Peserta
-                </div>
-              </div>
-            </div>
-            <div class="booking-actions">
-              <a href="{% url 'booking:booking_summary' booking.id %}" class="btn btn-view">
-                Lihat Detail
-              </a>
-            </div>
-          </div>
+            .booking-image {
+                width: 100%;
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="page-header">
+            <h2>Riwayat Pesanan</h2>
+            <div>Daftar pesanan gunung Anda</div>
         </div>
-      {% endfor %}
-    </div>
-  {% else %}
-    <div class="empty-state">
-      <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-        <polyline points="9 22 9 12 15 12 15 22"></polyline>
-      </svg>
-      <h3 class="empty-state-title">Belum ada riwayat peserta</h3>
-      <p class="empty-state-text">Mulai petualangan Anda dengan membuat pesanan gunung baru</p>
-      <a href="{% url 'booking:booking_view' %}" class="btn btn-view" style="display: inline-flex;">
-        Buat Pesanan Baru
-      </a>
-    </div>
-  {% endif %}
 
-  <div class="back-button">
-    <a href="/" class="btn btn-secondary" style="flex: 1;">
-      Kembali ke Beranda Pemesanan
-    </a>
-  </div>
-</div>
+        {% if messages %}
+            {% for message in messages %}
+                <div class="error-box">
+                    <div class="error-message">{{ message }}</div>
+                </div>
+            {% endfor %}
+        {% endif %}
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  const cards = document.querySelectorAll('.booking-card');
-  cards.forEach(card => {
-    card.addEventListener('click', function(e) {
-      if (!e.target.closest('.btn')) {
-        const link = this.querySelector('.btn-view');
-        if (link) link.click();
-      }
-    });
-  });
-});
-</script>
-{% endblock %}
+        {% if bookings %}
+            <div class="booking-list">
+                {% for booking in bookings %}
+                    <div class="booking-card">
+                        <img 
+                            src="{% if booking.gunung.image_url %}{{ booking.gunung.image_url }}{% else %}https://picsum.photos/seed/mountain{{ booking.id }}/400/400{% endif %}" 
+                            alt="{{ booking.gunung.nama }}" 
+                            class="booking-image"
+                            onerror="this.src='https://picsum.photos/seed/mountain_fallback/400/400'"
+                        >
+                        <div class="booking-content">
+                            <div>
+                                <h3 class="booking-title">{{ booking.gunung.nama }}</h3>
+                                <div class="booking-meta">
+                                    <div class="booking-date">
+                                        📅 {{ booking.climbing_date|date:"d M Y" }}
+                                    </div>
+                                    <div class="booking-pax">
+                                        👥 {{ booking.pax }} Peserta
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="booking-actions">
+                                <a href="{% url 'booking:booking_summary' booking.id %}" class="btn btn-view">
+                                    Lihat Detail
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <svg class="empty-state-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+                <h3 class="empty-state-title">Belum ada riwayat peserta</h3>
+                <p class="empty-state-text">Mulai petualangan Anda dengan membuat pesanan gunung baru</p>
+                <a href="{% url 'booking:booking_view' %}" class="btn btn-view" style="display: inline-flex;">
+                    Buat Pesanan Baru
+                </a>
+            </div>
+        {% endif %}
+
+        <div class="back-button">
+            <a href="/" class="btn btn-secondary" style="flex: 1;">
+                Kembali ke Beranda Pemesanan
+            </a>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.booking-card');
+            cards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (!e.target.closest('.btn')) {
+                        const link = this.querySelector('.btn-view');
+                        if (link) link.click();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
