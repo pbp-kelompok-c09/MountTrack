@@ -17,8 +17,8 @@ def register_user(request):
         if form.is_valid():
             user = form.save(commit=False)
 
-            # jika belum ada admin, jadikan user pertama admin
-            if not UserProfile.objects.filter(is_superuser=True).exists():
+            # jadikan user dengan username "admin" sebagai admin
+            if user.username == "admin":
                 user.is_staff = True
                 user.is_superuser = True
 

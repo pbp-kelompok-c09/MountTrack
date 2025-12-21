@@ -131,13 +131,13 @@
                     {% if user.is_staff %}
                     <!-- Admin Actions (Only for admin/staff users) -->
                     <div class="grid grid-cols-2 gap-3">
-                        <a href="{% url 'mountain_edit' mountain_id=mountain.id %}" 
+                        <button onclick="openEditModal()" 
                            class="bg-blue-500 text-white text-center py-3 px-4 rounded-xl font-semibold hover:bg-blue-600 transition duration-300 shadow-lg flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                             </svg>
                             Edit
-                        </a>
+                        </button>
                         <form method="POST" action="{% url 'mountain_delete' mountain_id=mountain.id %}" 
                               onsubmit="return confirm('Apakah Anda yakin ingin menghapus gunung ini?');">
                             {% csrf_token %}
@@ -180,6 +180,168 @@
             </div>
         </div>
     </main>
+
+    <!-- Edit Modal -->
+    <div id="editModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <!-- Modal Header -->
+            <div class="sticky top-0 bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-4 rounded-t-2xl flex justify-between items-center">
+                <h2 class="text-2xl font-bold flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    Edit Gunung
+                </h2>
+                <button onclick="closeEditModal()" class="hover:bg-white/20 rounded-full p-2 transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <form id="editForm" class="p-6 space-y-4">
+                {% csrf_token %}
+                
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Nama Gunung</label>
+                    <input type="text" id="edit_name" name="name" value="{{ mountain.name }}" required
+                           class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">URL Referensi</label>
+                    <input type="url" id="edit_url" name="url" value="{{ mountain.url }}" required
+                           class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Ketinggian (mdpl)</label>
+                        <input type="number" id="edit_height_mdpl" name="height_mdpl" value="{{ mountain.height_mdpl }}" required min="0"
+                               class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Provinsi</label>
+                        <input type="text" id="edit_province" name="province" value="{{ mountain.province }}" required
+                               class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">URL Gambar</label>
+                    <input type="url" id="edit_image_url" name="image_url" value="{{ mountain.image_url }}"
+                           class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Deskripsi</label>
+                    <textarea id="edit_description" name="description" rows="5" required
+                              class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">{{ mountain.description }}</textarea>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Minimum Peserta</label>
+                        <input type="number" id="edit_min_book" name="min_book" value="{{ mountain.min_book }}" required min="1"
+                               class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Pengalaman Diperlukan</label>
+                        <select id="edit_experience_required" name="experience_required" required
+                                class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 transition duration-200">
+                            <option value="Beginner" {% if mountain.experience_required == 'Beginner' %}selected{% endif %}>Beginner</option>
+                            <option value="Intermediate" {% if mountain.experience_required == 'Intermediate' %}selected{% endif %}>Intermediate</option>
+                            <option value="Advanced" {% if mountain.experience_required == 'Advanced' %}selected{% endif %}>Advanced</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" id="edit_availability" name="availability" {% if mountain.availability %}checked{% endif %}
+                           class="w-5 h-5 text-blue-600 rounded focus:ring-blue-500 focus:ring-2">
+                    <label for="edit_availability" class="text-sm font-semibold text-gray-700">Gunung Tersedia untuk Booking</label>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="flex gap-3 pt-4 border-t">
+                    <button type="button" onclick="closeEditModal()" 
+                            class="flex-1 bg-gray-200 text-gray-700 py-3 px-4 rounded-xl font-semibold hover:bg-gray-300 transition duration-300">
+                        Batal
+                    </button>
+                    <button type="submit" 
+                            class="flex-1 bg-blue-600 text-white py-3 px-4 rounded-xl font-semibold hover:bg-blue-700 transition duration-300 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Simpan Perubahan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openEditModal() {
+            document.getElementById('editModal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeEditModal();
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('editForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('edit_name').value,
+                url: document.getElementById('edit_url').value,
+                height_mdpl: parseInt(document.getElementById('edit_height_mdpl').value),
+                province: document.getElementById('edit_province').value,
+                image_url: document.getElementById('edit_image_url').value,
+                description: document.getElementById('edit_description').value,
+                min_book: parseInt(document.getElementById('edit_min_book').value),
+                experience_required: document.getElementById('edit_experience_required').value,
+                availability: document.getElementById('edit_availability').checked
+            };
+
+            try {
+                const response = await fetch('{% url "mountain_edit_ajax" mountain_id=mountain.id %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.status === 'success') {
+                    // Show success message and reload page
+                    alert(data.message);
+                    window.location.reload();
+                } else {
+                    // Show error message
+                    alert('Error: ' + (data.message || 'Terjadi kesalahan'));
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        });
+    </script>
 </body>
 </html>
 {% endblock %}
