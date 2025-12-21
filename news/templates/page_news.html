@@ -40,27 +40,76 @@
 document.addEventListener('DOMContentLoaded', function() {
     const searchInput = document.getElementById('search-input');
     const newsListContainer = document.getElementById('news-list-container');
-    const searchUrl = "{% url 'news:search_news' %}"; // URL Django untuk pencarian
+    const searchUrl = "{% url 'news:search_news' %}"; 
 
-    searchInput.addEventListener('keyup', function() {
-        const searchTerm = searchInput.value;
-        
-        // Buat URL 
-        const url = `${searchUrl}?q=${encodeURIComponent(searchTerm)}`;
+    // --- Logic Pencarian ---
+    if (searchInput) {
+        searchInput.addEventListener('keyup', function() {
+            const searchTerm = searchInput.value;
+            const url = `${searchUrl}?q=${encodeURIComponent(searchTerm)}`;
 
-        // Kirim request ke server
-        fetch(url)
-            .then(response => response.text()) // Ambil response as HTML
-            .then(html => {
-                // Ganti isi container berita dengan hasil pencarian
-                newsListContainer.innerHTML = html;
-            })
-            .catch(error => {
-                console.error('Error fetching search results:', error);
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    if (newsListContainer) {
+                        newsListContainer.innerHTML = html;
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching search results:', error);
+                    if (newsListContainer) {
+                        newsListContainer.innerHTML = '<p class="text-red-600">Terjadi error saat mencari berita.</p>';
+                    }
+                });
+        });
+    }
+
+    // --- Logic Like Berita (Event Delegation) ---
+    if (newsListContainer) {
+        newsListContainer.addEventListener('click', function(e) {
+            
+            const btn = e.target.closest('.like-button');
+            
+            if (btn) {
+                e.preventDefault(); 
                 
-                newsListContainer.innerHTML = '<p class="text-red-600">Terjadi error saat mencari berita.</p>';
-            });
-    });
+                const url = btn.dataset.url;
+                
+                btn.classList.add('scale-90');
+                setTimeout(() => btn.classList.remove('scale-90'), 100);
+
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}', 
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        const countSpan = btn.querySelector('.like-count');
+                        if (countSpan) countSpan.textContent = data.total_likes;
+
+                        const icon = btn.querySelector('svg');
+                        
+                        if (data.is_liked) {
+                            btn.classList.remove('btn-outline');
+                            btn.classList.add('btn-success', 'text-white');
+                            if (icon) icon.setAttribute('fill', 'currentColor');
+                        } else {
+                            btn.classList.add('btn-outline');
+                            btn.classList.remove('text-white');
+                            btn.classList.add('btn-success'); 
+                            if (icon) icon.setAttribute('fill', 'none');
+                        }
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        });
+    }
 });
 </script>
 {% endblock content %}

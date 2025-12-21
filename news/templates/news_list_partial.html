@@ -1,47 +1,68 @@
 {% if not news_list %}
-    <div class="text-center p-10 shadow" style="background-color: #E5D7C4; color: #354024;">
-        <p class="text-xl">
-            {% if request.GET.q %} {# Tampilkan pesan berbeda jika sedang mencari #}
-                Tidak ada berita yang cocok dengan pencarian "{{ request.GET.q }}".
-            {% else %}
-                Belum ada data berita pada MounTrack news.
-            {% endif %}
-        </p>
-    </div>
+<div class="text-center p-10 shadow" style="background-color: #E5D7C4; color: #354024;">
+    <p class="text-xl">
+        {% if request.GET.q %}
+            Tidak ada berita yang cocok dengan pencarian "{{ request.GET.q }}".
+        {% else %}
+            Belum ada data berita pada MounTrack news.
+        {% endif %}
+    </p>
+</div>
 {% else %}
-    <div class="space-y-4">
-        {% for news in news_list %}
-            <div class="flex shadow-lg overflow-hidden" style="background-color: #CFBB99;">
-                 {% if news.pinned_thumbnail %}
-                    <div class="w-1/3 flex-shrink-0">
-                        <img src="{{ news.pinned_thumbnail }}" alt="{{ news.title }}" class="w-full h-full object-cover">
-                    </div>
-                {% else %}
-                     <div class="w-1/3 flex-shrink-0 bg-gray-300"></div>
-                {% endif %}
-                <div class="w-2/3 p-4 flex flex-col justify-between">
-                    <div> 
-                        
-                        <h2 class="text-3xl font-bold mb-2 hover:text-[#HEX3D19] transition-colors" style="color: #354024;">
-                            <a href="{% url 'news:show_news' news.id %}">{{ news.title }}</a>
-                        </h2>
-                        <p class="text-l mb-3" style="color: rgb(136, 144, 99);">
-                            <i>{{ news.published_date|date:"d F Y, H:i" }} WIB</i> 
-                            | Dilihat sebanyak: {{ news.news_views }} kali
-                        </p>
-                    </div>
-                    <div class="card-actions justify-end items-center mt-4">
-                        {% if user.is_staff %}
-                            <a href="{% url 'news:edit_news' news.id %}" class="btn btn-sm btn-outline" style="border-color: #354024; color: #354024;">Edit Berita</a>
-                            <form action="{% url 'news:delete_news' news.id %}" method="POST" class="inline">
-                                {% csrf_token %}
-                                <button style="background-color: red !important;" type="submit" class="btn btn-sm btn-error text-white" onclick="return confirm('Anda yakin ingin menghapus berita ini?');">Hapus</button>
-                            </form>
-                        {% endif %}
-                        <a href="{% url 'news:show_news' news.id %}" class="btn btn-sm text-white" style="background-color: #354024; border-color: #354024;">Baca Berita</a>
-                    </div>
-                </div>
+<div class="space-y-4">
+    {% for news in news_list %}
+    <div class="flex shadow-lg overflow-hidden" style="background-color: #CFBB99;">
+        {% if news.pinned_thumbnail %}
+        <div class="w-1/3 flex-shrink-0">
+            <img src="{{ news.pinned_thumbnail }}" alt="{{ news.title }}" class="w-full h-full object-cover">
+        </div>
+        {% else %}
+        <div class="w-1/3 flex-shrink-0 bg-gray-300"></div>
+        {% endif %}
+        
+        <div class="w-2/3 p-4 flex flex-col justify-between">
+            <div> 
+                <h2 class="text-3xl font-bold mb-2 hover:text-[#HEX3D19] transition-colors" style="color: #354024;">
+                    <a href="{% url 'news:show_news' news.id %}">{{ news.title }}</a>
+                </h2>
+                <p class="text-l mb-3" style="color: rgb(136, 144, 99);">
+                    <i>{{ news.published_date|date:"d F Y" }}</i> 
+                    | Dilihat sebanyak: {{ news.news_views }} kali
+                    
+                </p>
+                <p style="color: black;"><b>{{ news.user }}</b></p>
             </div>
-        {% endfor %}
+            
+            <div class="card-actions justify-end items-center mt-4 space-x-2">
+                {% if user.is_authenticated %}
+                <button class="btn btn-xs gap-1 like-button transition-all duration-200 {% if news.id in liked_news_ids %} btn-success text-white {% else %} btn-outline btn-success {% endif %}" data-id="{{ news.id }}" data-url="{% url 'news:like_news' news.id %}">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="{% if news.id in liked_news_ids %}currentColor{% else %}none{% endif %}" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                    </svg>
+                    <span class="like-count">{{ news.total_likes }}</span>
+                </button>
+                {% else %}
+                <a href="{% url 'userprofile:login' %}" class="btn btn-xs btn-outline btn-disabled gap-1" style="border-color: #354024; color: #354024; background-color: transparent; opacity: 1;">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                    </svg>
+                    <span>{{ news.total_likes }}</span>
+                </a>
+                {% endif %}
+                <div class="flex-grow"></div>
+                
+                {% if user.is_staff %}
+                <a href="{% url 'news:edit_news' news.id %}" class="btn btn-sm btn-outline" style="border-color: #354024; color: #354024;">Edit Berita</a>
+                <form action="{% url 'news:delete_news' news.id %}" method="POST" class="inline">
+                    {% csrf_token %}
+                    <button style="background-color: red !important;" type="submit" class="btn btn-sm btn-error text-white" onclick="return confirm('Anda yakin ingin menghapus berita ini?');">Hapus</button>
+                </form>
+                {% endif %}
+                
+                <a href="{% url 'news:show_news' news.id %}" class="btn btn-sm text-white" style="background-color: #354024; border-color: #354024;">Baca Berita</a>
+            </div>
+        </div>
     </div>
+    {% endfor %}
+</div>
 {% endif %}

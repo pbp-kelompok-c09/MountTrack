@@ -11,6 +11,7 @@ class News(models.Model):
     news_views = models.PositiveIntegerField(default=0)
     pinned_thumbnail = models.URLField(blank=True, null=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True) #untuk nama penulis
+    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='news_likes', blank=True) #fitur baru, likes
     
 
     def __str__(self):
@@ -23,6 +24,8 @@ class News(models.Model):
     def set_pinned_thumbnail(self, url):
         self.pinned_thumbnail = url
         self.save()
+    def total_likes(self):
+        return self.likes.count()
     
 class ImageNews(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)

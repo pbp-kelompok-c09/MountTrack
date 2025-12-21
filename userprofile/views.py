@@ -50,7 +50,6 @@ def login_user(request):
         form = AuthenticationForm()
     return render(request, "login.html", {"form": form})
 
-
 def logout_user(request):
     logout(request)
     return redirect("news:page_news")  # redirect ke halaman utama berita, diubah oleh ryan.
@@ -173,3 +172,216 @@ def public_profile_view(request, username):
         "target_user": user_target
     }
     return render(request, "public_profile.html", context)
+
+@csrf_exempt
+def loginapp(request):
+    username = request.POST['username']
+    password = request.POST['password']
+    
+    user = authenticate(username=username, password=password)
+    if user is not None:
+        login(request, user)
+        return JsonResponse({
+            "username": user.username,
+            "status": True,
+            "message": "Login successful!",
+            "nama": user.nama,
+            "umur": user.umur,
+            "nomor_telepon": user.nomor_telepon,
+            "category_experience": user.category_experience,
+            "jenis_kelamin": user.jenis_kelamin,
+        }, status=200)
+
+    else:
+        return JsonResponse({
+            "status": False,
+            "message": "Login gagal, mohon cek kembali username dan password anda."
+        }, status=401)
+
+
+@csrf_exempt
+def registerapp(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        username = data['username']
+        password1 = data['password1']
+        password2 = data['password2']
+
+        nama = data.get('nama', username)
+        umur = data.get('umur')
+        nomor_telepon = data.get('nomor_telepon', '')
+        jenis_kelamin = data.get('jenis_kelamin')
+        category_experience = data.get('category_experience', 'beginner')
+        email = data.get('email', '').strip()
+
+        # cek password
+        if password1 != password2:
+            return JsonResponse({
+                "status": False,
+                "message": "Kedua password tidak cocok."
+            }, status=400)
+        
+        # cek username
+        if UserProfile.objects.filter(username=username).exists():
+            return JsonResponse({
+                "status": False,
+                "message": "Username sudah dipakai."
+            }, status=400)
+        
+        # buat user baru
+        user = UserProfile.objects.create_user(
+            username=username,
+            password=password1,
+            nama=nama,
+            umur=umur,
+            nomor_telepon=nomor_telepon,
+            jenis_kelamin=jenis_kelamin,
+            category_experience=category_experience,
+            email=email,
+        )
+        user.save()
+        
+        return JsonResponse({
+            "username": user.username,
+            "status": 'success',
+            "message": "Akun sukses dibuat!"
+        }, status=200)
+    
+    else:
+        return JsonResponse({
+            "status": False,
+            "message": "Invalid request method."
+        }, status=400)
+    
+
+@csrf_exempt
+def logoutapp(request):
+    username = request.user.username if request.user.is_authenticated else None
+    try:
+        logout(request)
+        return JsonResponse({
+            "username": username,
+            "status": True,
+            "message": "Logout sukses!"
+        }, status=200)
+    except:
+        return JsonResponse({
+            "status": False,
+            "message": "Logout gagal."
+        }, status=401)
+    
+@csrf_exempt
+def profileapp(request):
+    # pastikan user sudah login
+    if not request.user.is_authenticated:
+        return JsonResponse({
+            "status": False,
+            "message": "Authentication required."
+        }, status=401)
+
+    user = request.user
+
+    # GET: return data profil
+    if request.method == "GET":
+        # ambil riwayat pendakian sebagai list nama gunung
+        history = list(user.history_gunung.values_list("name", flat=True))
+
+        return JsonResponse({
+            "status": True,
+            "username": user.username,
+            "nama": user.nama or "",
+            "umur": user.umur,
+            "nomor_telepon": user.nomor_telepon or "",
+            "email": user.email or "",
+            "category_experience": user.category_experience,
+            "jenis_kelamin": user.jenis_kelamin,
+            "is_staff": user.is_staff,
+            "history_gunung": history,
+        }, status=200)
+
+    # POST: update data profil
+    elif request.method == "POST":
+        try:
+            data = json.loads(request.body)
+        except json.JSONDecodeError:
+            return JsonResponse({
+                "status": False,
+                "message": "Invalid JSON."
+            }, status=400)
+
+        nama = data.get("nama", "").strip()
+        umur = data.get("umur")
+        nomor_telepon = data.get("nomor_telepon", "").strip()
+        email = data.get("email", "").strip()
+        category_experience = data.get("category_experience")
+        jenis_kelamin = data.get("jenis_kelamin")
+
+        user.umur = umur
+        user.nomor_telepon = nomor_telepon
+        user.email = email
+        if category_experience in dict(UserProfile.EXPERIENCE_CHOICES):
+            user.category_experience = category_experience
+        if jenis_kelamin in dict(UserProfile.GENDER_CHOICES) or jenis_kelamin in (None, ""):
+            user.jenis_kelamin = jenis_kelamin or None
+
+        user.nama = nama
+        user.save()
+
+        return JsonResponse({
+            "status": True,
+            "message": "Profil berhasil diperbarui."
+        }, status=200)
+
+    else:
+        return JsonResponse({
+            "status": False,
+            "message": "Invalid request method."
+        }, status=405)
+    
+@csrf_exempt
+@login_required(login_url='/accounts/login')
+def manage_user_app(request):
+    if not request.user.is_staff:
+        return JsonResponse({"error": "Forbidden"}, status=403)
+
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid method"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    user_id = data.get("user_id")
+    action = data.get("action")
+
+    if not user_id or action not in ("toggle", "delete"):
+        return JsonResponse({"error": "Invalid parameters"}, status=400)
+
+    try:
+        target_user = UserProfile.objects.get(id=user_id)
+    except UserProfile.DoesNotExist:
+        return JsonResponse({"error": "User not found"}, status=404)
+
+    if target_user == request.user:
+        return JsonResponse({
+            "success": False,
+            "message": "Tidak bisa mengubah atau menghapus diri sendiri."
+        }, status=400)
+
+    if action == "toggle":
+        target_user.is_staff = not target_user.is_staff
+        target_user.save()
+        return JsonResponse({
+            "success": True,
+            "message": "Status admin diperbarui.",
+            "is_staff": target_user.is_staff,
+        }, status=200)
+
+    elif action == "delete":
+        target_user.delete()
+        return JsonResponse({
+            "success": True,
+            "message": "User berhasil dihapus."
+        }, status=200)
+
