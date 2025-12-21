@@ -779,7 +779,16 @@ def edit_booking(request, booking_id):
 
 @login_required
 def all_bookings(request):
-    bookings = Booking.objects.filter(user=request.user)  
+    """Halaman riwayat semua booking user."""
+    # PENTING: Filter hanya booking milik user yang login
+    bookings = Booking.objects.filter(user=request.user).order_by('-created_at')
+    
+    # Debug log
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"User {request.user} - Total bookings: {bookings.count()}")
+    logger.info(f"Booking IDs: {list(bookings.values_list('id', flat=True))}")
+    
     return render(request, 'booking/all_bookings.html', {'bookings': bookings})
 
 @login_required
@@ -813,30 +822,143 @@ def payment_view(request, booking_id):
 
 logger = logging.getLogger(__name__)
 
-@csrf_exempt  # Temporarily allow for debugging
+@csrf_exempt
 @login_required
 @require_http_methods(["POST"])
 def booking_api_delete(request, booking_id):
-    """
-    Delete a booking
-    """
-    logger.info(f"Delete booking {booking_id} requested by {request.user}")
+    """Delete a booking."""
+    import logging
+    logger = logging.getLogger(__name__)
+    
+    logger.info(f"Delete request - booking_id: {booking_id}, user: {request.user}")
+    
+    # Debug: list semua booking user
+    user_bookings = Booking.objects.filter(user=request.user).values_list('id', flat=True)
+    logger.info(f"User {request.user} bookings: {list(user_bookings)}")
     
     try:
-        booking = Booking.objects.get(id=booking_id)
+        booking = Booking.objects.get(id=booking_id, user=request.user)
     except Booking.DoesNotExist:
-        return JsonResponse({'success': False, 'message': 'Booking tidak ditemukan'}, status=404)
-    
-    # Check ownership
-    if booking.user != request.user:
-        logger.warning(f"User {request.user} tried to delete booking {booking_id} owned by {booking.user}")
-        return JsonResponse({'success': False, 'message': 'Forbidden'}, status=403)
+        logger.error(f"Booking {booking_id} not found for user {request.user}")
+        return JsonResponse({
+            'success': False, 
+            'message': f'Booking {booking_id} tidak ditemukan atau bukan milik Anda'
+        }, status=404)
     
     try:
         booking_id_deleted = booking.id
         booking.delete()
         logger.info(f"Booking {booking_id_deleted} deleted successfully")
-        return JsonResponse({'success': True, 'message': 'Booking berhasil dihapus', 'deleted_id': booking_id_deleted}, status=200)
+        return JsonResponse({
+            'success': True, 
+            'message': 'Booking berhasil dihapus',
+            'deleted_id': booking_id_deleted
+        }, status=200)
     except Exception as e:
         logger.error(f"Error deleting booking {booking_id}: {str(e)}")
-        return JsonResponse({'success': False, 'message': f'Error: {str(e)}'}, status=500)
+        return JsonResponse({
+            'success': False, 
+            'message': f'Error: {str(e)}'
+        }, status=500)
+    
+# @login_required
+# @require_http_methods(["POST"])
+# def booking_api_confirm_payment(request, booking_id):
+#     """Confirm payment status untuk booking"""
+#     try:
+#         booking = Booking.objects.get(id=booking_id)
+#     except Booking.DoesNotExist:
+#         return JsonResponse({
+#             'success': False, 
+#             'message': 'Booking tidak ditemukan'
+#         }, status=404)
+    
+#     # Check ownership
+#     if booking.user != request.user:
+#         return JsonResponse({
+#             'success': False, 
+#             'message': 'Forbidden - booking bukan milik Anda'
+#         }, status=403)
+    
+#     try:
+#         # Parse request body
+#         if request.content_type and 'application/json' in request.content_type:
+#             payload = json.loads(request.body.decode('utf-8'))
+#         else:
+#             payload = {
+#                 'is_paid': request.POST.get('is_paid'),
+#             }
+        
+#         # Extract is_paid value
+#         is_paid_raw = payload.get('is_paid')
+#         is_paid = is_paid_raw in [True, 'true', 'True', '1', 1]
+        
+#         # Update booking
+#         booking.is_paid = is_paid
+#         booking.save()
+        
+#         return JsonResponse({
+#             'success': True,
+#             'booking_id': booking.id,
+#             'is_paid': booking.is_paid,
+#             'message': 'Payment confirmed'
+#         }, status=200)
+        
+#     except Exception as e:
+#         return JsonResponse({
+#             'success': False,
+#             'message': f'Error: {str(e)}'
+#         }, status=500)
+
+
+@csrf_exempt
+@login_required
+@require_http_methods(["POST"])
+def booking_api_payment(request, booking_id):
+    try:
+        booking = Booking.objects.get(id=booking_id)
+    except Booking.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Booking tidak ditemukan'}, status=404)
+    
+    if booking.user != request.user:
+        return JsonResponse({'success': False, 'message': 'Forbidden'}, status=403)
+
+    try:
+        # Accept both JSON and form data
+        if request.content_type and 'application/json' in request.content_type:
+            data = json.loads(request.body.decode('utf-8')) if request.body else {}
+        else:
+            data = request.POST
+        
+        is_paid = data.get('is_paid', True) in [True, 'true', 'True', '1', 1]
+        
+        if is_paid:
+            booking.is_paid = True
+            booking.save()
+            
+            # TAMBAHAN: Otomatis tambahkan gunung ke riwayat pendakian user
+            if booking.gunung and booking.user:
+                try:
+                    user_profile = UserProfile.objects.get(id=booking.user.id)
+                    # Tambah gunung jika belum ada
+                    if not user_profile.history_gunung.filter(id=booking.gunung.id).exists():
+                        user_profile.history_gunung.add(booking.gunung)
+                except UserProfile.DoesNotExist:
+                    pass
+        
+        return JsonResponse({
+            'success': True,
+            'booking_id': booking.id,
+            'is_paid': booking.is_paid,
+            'message': 'Pembayaran berhasil dikonfirmasi'
+        }, status=200)
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False, 
+            'message': f'Error: {str(e)}'
+        }, status=500)
+
+@login_required
+def booking_landing(request):
+    return render(request, 'booking/booking_landing.html')

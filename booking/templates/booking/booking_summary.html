@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Booking Summary</title>
+    <title>Ringkasan Pesanan</title>
     <script src="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.7.2/js/all.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -11,7 +11,7 @@
     <style>
    :root {
     --cafe-noir: #4C3019;
-    --kombu-green: #354024;  /* Kombu Green */
+    --kombu-green: #354024;
     --moss-green: #889063;
     --tan: #CFBB99;
     --bone: #E5D7C4;
@@ -19,8 +19,8 @@
     --pine: #294122;
     --chiffon: #FFFEE2;
     --tangerine: #EB3D00;
-    --bg-color: var(--bone);  /* Background utama */
-    --card-bg: #FFFEE2;    /* Card dengan warna chiffon */
+    --bg-color: var(--bone);
+    --card-bg: #FFFEE2;
     --header-grad-start: var(--kombu-green);
     --header-grad-end: var(--moss-green);
     --primary-text: #4C3019;
@@ -34,7 +34,7 @@
 
 .card {
     position: relative;
-    background-color: var(--card-bg); /* Card background = chiffon */
+    background-color: var(--card-bg);
     padding: 1.5rem;
     border-radius: 1rem;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
@@ -119,7 +119,6 @@ main {
     background-color: transparent;
 }
 
-
 .card-header {
     display: flex;
     align-items: center;
@@ -172,6 +171,34 @@ main {
     color: #294122;
 }
 
+/* Payment Status Badge */
+.payment-status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+}
+
+.payment-status-badge.paid {
+    background-color: rgba(136, 144, 99, 0.15);
+    border: 1.5px solid var(--moss-green);
+    color: var(--moss-green);
+}
+
+.payment-status-badge.unpaid {
+    background-color: rgba(235, 61, 0, 0.15);
+    border: 1.5px solid var(--tangerine);
+    color: var(--tangerine);
+}
+
+.payment-status-badge i {
+    font-size: 1.25rem;
+}
+
 .grid-container {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -182,30 +209,6 @@ main {
 .left-column, .right-column {
     display: flex;
     flex-direction: column;
-}
-
-.card-header {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1.5rem;
-}
-
-.icon-circle {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: var(--green-icon-bg);
-    color: var(--green-icon-fg);
-    font-size: 1.1rem;
-}
-
-.card-title {
-    font-size: 1.125rem;
-    font-weight: 600;
 }
 
 .grid-details {
@@ -331,6 +334,7 @@ main {
     cursor: pointer;
     gap: 0.5rem;
     transition: opacity 0.2s;
+    text-decoration: none;
 }
 
 .btn:hover {
@@ -388,6 +392,10 @@ main {
     text-align: center;
 }
 
+.hidden {
+    display: none !important;
+}
+
 @media (max-width: 1024px) {
     body {
         padding: 1rem 0.5rem;
@@ -440,12 +448,12 @@ main {
             <div class="header-left">
                 <i class="fa-solid fa-file-invoice header-icon"></i>
                 <div class="header-title">
-                    <h1>Ringkasan Booking</h1>
+                    <h1>Ringkasan Pesanan</h1>
                     <p>Lihatlah rangkuman petualangan kamu</p>
                 </div>
             </div>
             <div class="header-right">
-                <div class="booking-id-label">Booking ID</div>
+                <div class="booking-id-label">Pesanan ID</div>
                 <div class="booking-id-value">{{ booking.id }}</div>
             </div>
         </header>
@@ -455,10 +463,22 @@ main {
                     <i class="fa-solid fa-check"></i>
                 </div>
                 <div>
-                    <h2>Booking Berhasil!</h2>
+                    <h2>Pesanan Berhasil!</h2>
                     <p>Petualangan pendakian gunung Anda telah berhasil dipesan!</p>
                 </div>
             </section>
+
+            <!-- Payment Status Badge -->
+            <div class="payment-status-badge {% if booking.is_paid %}paid{% else %}unpaid{% endif %}">
+                <i class="fa-solid {% if booking.is_paid %}fa-circle-check{% else %}fa-clock{% endif %}"></i>
+                <span>
+                    {% if booking.is_paid %}
+                        ✓ Pembayaran Sudah Terkonfirmasi
+                    {% else %}
+                        ⏱ Menunggu Konfirmasi Pembayaran
+                    {% endif %}
+                </span>
+            </div>
 
             <div class="grid-container">
                 <div class="left-column">
@@ -473,7 +493,7 @@ main {
                                 <div class="value">{{ booking_summary.gunung }}</div>
                             </div>
                             <div class="detail-item">
-                                <div class="label">Tanggal Booking</div>
+                                <div class="label">Tanggal Pemesanan</div>
                                 <div class="value">{{ booking.created_at|date:"d/m/Y" }}</div>
                             </div>
                             <div class="detail-item">
@@ -524,11 +544,23 @@ main {
                                         </div>
                                         <div class="detail-item">
                                             <div class="label">Jenis Kelamin:</div>
-                                            <div class="value">{{ member.get_gender_display }}</div>
+                                            <div class="value">
+                                                {% if member.gender %}
+                                                    {{ member.get_gender_display }}
+                                                {% else %}
+                                                    <span style="color: #EB3D00;">Tidak terisi</span>
+                                                {% endif %}
+                                            </div>
                                         </div>
                                         <div class="detail-item">
                                             <div class="label">Level:</div>
-                                            <div class="value">{{ member.get_level_display }}</div>
+                                            <div class="value">
+                                                {% if member.level %}
+                                                    {{ member.get_level_display }}
+                                                {% else %}
+                                                    <span style="color: #EB3D00;">Tidak terisi</span>
+                                                {% endif %}
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -569,13 +601,17 @@ main {
                             <h2 class="card-title">Aksi</h2>
                         </div>
                         <div class="actions-list">
-                            <button class="btn btn-primary">
-                                <a href="{% url 'booking:edit_booking' booking.id %}" style="color:white;">
-                                    <i class="fa-solid fa-pen-to-square"></i> Edit Booking
-                                </a>
-                            </button>
+                            <!-- Tombol Edit - Hanya tampil jika belum terbayar -->
+                            {% if not booking.is_paid %}
+                                <button class="btn btn-primary">
+                                    <a href="{% url 'booking:edit_booking' booking.id %}" style="color:white; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fa-solid fa-pen-to-square"></i> Edit Booking
+                                    </a>
+                                </button>
+                            {% endif %}
+
                             <button class="btn btn-tertiary" style="margin-top: 20px;">
-                                <a href="/" style="color:white;">
+                                <a href="/" style="color:white; text-decoration: none; display: flex; align-items: center; gap: 8px;">
                                     <i class="fa-solid fa-house"></i> Kembali ke Beranda
                                 </a>
                             </button>
@@ -584,29 +620,56 @@ main {
                 </div>
             </div>
 
+            <!-- Action Buttons berdasarkan Payment Status -->
             <div style="margin-top: clamp(24px, 4vw, 32px); display: flex; flex-direction: column; gap: clamp(12px, 2vw, 16px);">
-              <a href="{% url 'booking:payment' booking.id %}" style="
-                background: #889063;
-                color: #E5D7C4;
-                padding: clamp(12px, 2vw, 16px) clamp(16px, 4vw, 24px);
-                border-radius: clamp(6px, 2vw, 10px);
-                font-size: clamp(0.9rem, 2vw, 1.05rem);
-                font-weight: 700;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                text-align: center;
-                text-decoration: none;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 10px;
-                width: 100%;
-                min-height: 50px;
-                box-sizing: border-box;
-                box-shadow: 0 4px 12px rgba(136, 144, 99, 0.25);
-              " onmouseover="this.style.background='#354024'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(53, 64, 36, 0.35)';" onmouseout="this.style.background='#889063'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(136, 144, 99, 0.25)';">
-                Lanjut Pembayaran
-              </a>
+              {% if not booking.is_paid %}
+                <!-- Tombol Pembayaran - Hanya tampil jika belum terbayar -->
+                <a href="{% url 'booking:payment' booking.id %}" style="
+                  background: #889063;
+                  color: #E5D7C4;
+                  padding: clamp(12px, 2vw, 16px) clamp(16px, 4vw, 24px);
+                  border-radius: clamp(6px, 2vw, 10px);
+                  font-size: clamp(0.9rem, 2vw, 1.05rem);
+                  font-weight: 700;
+                  cursor: pointer;
+                  transition: all 0.3s ease;
+                  text-align: center;
+                  text-decoration: none;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 10px;
+                  width: 100%;
+                  min-height: 50px;
+                  box-sizing: border-box;
+                  box-shadow: 0 4px 12px rgba(136, 144, 99, 0.25);
+                " onmouseover="this.style.background='#354024'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(53, 64, 36, 0.35)';" onmouseout="this.style.background='#889063'; this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(136, 144, 99, 0.25)';">
+                  💳 Lanjut Pembayaran
+                </a>
+              {% else %}
+                <!-- Konfirmasi Pembayaran Sukses -->
+                <div style="
+                  background: rgba(136, 144, 99, 0.15);
+                  border: 2px solid #889063;
+                  color: #889063;
+                  padding: clamp(12px, 2vw, 16px) clamp(16px, 4vw, 24px);
+                  border-radius: clamp(6px, 2vw, 10px);
+                  font-size: clamp(0.9rem, 2vw, 1.05rem);
+                  font-weight: 700;
+                  text-align: center;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  gap: 10px;
+                  width: 100%;
+                  min-height: 50px;
+                  box-sizing: border-box;
+                ">
+                  <i class="fa-solid fa-circle-check"></i>
+                  Pembayaran Sudah Terkonfirmasi
+                </div>
+              {% endif %}
+
               <a href="{% url 'booking:all_bookings' %}" style="
                 background: transparent;
                 color: #4C3019;
@@ -628,7 +691,7 @@ main {
                 box-sizing: border-box;
                 box-shadow: 0 2px 8px rgba(76, 48, 25, 0.1);
               " onmouseover="this.style.background='#4C3019'; this.style.color='#E5D7C4'; this.style.transform='translateY(-3px)'; this.style.boxShadow='0 8px 20px rgba(76, 48, 25, 0.25)';" onmouseout="this.style.background='transparent'; this.style.color='#4C3019'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(76, 48, 25, 0.1)';">
-                Kembali ke Daftar Booking
+                Kembali ke Daftar Pesanan
               </a>
             </div>
         </main>

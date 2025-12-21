@@ -274,8 +274,8 @@ html, body {
 
 <div class="container">
   <div class="page-header">
-    <h2>Riwayat Booking</h2>
-    <div>Daftar booking gunung Anda</div>
+    <h2>Riwayat Pesanan</h2>
+    <div>Daftar pesanan gunung Anda</div>
   </div>
 
   {% if messages %}
@@ -323,17 +323,17 @@ html, body {
         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
         <polyline points="9 22 9 12 15 12 15 22"></polyline>
       </svg>
-      <h3 class="empty-state-title">Belum ada riwayat booking</h3>
-      <p class="empty-state-text">Mulai petualangan Anda dengan membuat booking gunung baru</p>
+      <h3 class="empty-state-title">Belum ada riwayat peserta</h3>
+      <p class="empty-state-text">Mulai petualangan Anda dengan membuat pesanan gunung baru</p>
       <a href="{% url 'booking:booking_view' %}" class="btn btn-view" style="display: inline-flex;">
-        Buat Booking Baru
+        Buat Pesanan Baru
       </a>
     </div>
   {% endif %}
 
   <div class="back-button">
     <a href="/" class="btn btn-secondary" style="flex: 1;">
-      Kembali ke Home
+      Kembali ke Beranda Pemesanan
     </a>
   </div>
 </div>
