@@ -14,18 +14,28 @@ class Booking(models.Model):
     pax = models.PositiveIntegerField(default=1)
     levels = models.JSONField(default=list, blank=True)
     porter_required = models.BooleanField(default=False)
-    created_at = models.DateTimeField(default=timezone.now)
     climbing_date = models.DateField(null=True, blank=True)
-    climbing_end_date = models.DateField(null=True, blank=True)  # Tambahkan field ini
+    climbing_end_date = models.DateField(null=True, blank=True)
+    is_paid = models.BooleanField(default=False)
+    created_at = models.DateTimeField(default=timezone.now)
     duration = models.IntegerField(default=1, null=True, blank=True)
-     
 
     class Meta:
         ordering = ['-created_at']
 
+    def mark_as_paid(self):
+        """Tandai booking sebagai sudah dibayar dan tambahkan ke history pendakian."""
+        self.is_paid = True
+        self.save()
+        
+        # Tambahkan gunung ke history user (hanya jika belum ada)
+        if self.gunung and self.user:
+            # Pastikan user punya field history_gunung
+            if hasattr(self.user, 'history_gunung'):
+                self.user.history_gunung.add(self.gunung)
+
     def __str__(self):
-        gunung_n = getattr(self.gunung, 'nama', None) or (str(self.gunung) if self.gunung else 'Unknown')
-        return f'Booking #{self.id} - {self.user.username} -> {gunung_n}'
+        return f"Booking {self.id} - {self.user.username}"
 
     def summary(self):
         """Return dict summary suitable to store in userprofile.history_entries."""
@@ -33,13 +43,14 @@ class Booking(models.Model):
         return {
             'booking_id': self.id,
             'gunung_id': getattr(self.gunung, 'id', None),
-            'gunung_nama': getattr(self.gunung, 'nama', str(self.gunung) if self.gunung else None),
+            'gunung_nama': getattr(self.gunung, 'name', str(self.gunung) if self.gunung else None),
             'pax': self.pax,
             'anggota': anggota,
             'levels': self.levels,
             'porter_required': self.porter_required,
             'created_at': self.created_at.isoformat(),
             'climbing_date': self.climbing_date.isoformat() if self.climbing_date else None,
+            'is_paid': self.is_paid,
         }
 
 class BookingMember(models.Model):
@@ -72,7 +83,6 @@ class BookingMember(models.Model):
         }
     
 class Payment(models.Model):
-   
     booking = models.ForeignKey(Booking, related_name='payments', on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     created_at = models.DateTimeField(default=timezone.now)

@@ -66,7 +66,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- Logic Like Berita (Event Delegation) ---
     if (newsListContainer) {
-        // GANTI 'container' MENJADI 'newsListContainer' DI SINI
         newsListContainer.addEventListener('click', function(e) {
             
             const btn = e.target.closest('.like-button');
@@ -97,12 +96,12 @@ document.addEventListener('DOMContentLoaded', function() {
                         
                         if (data.is_liked) {
                             btn.classList.remove('btn-outline');
-                            btn.classList.add('btn-error', 'text-white');
+                            btn.classList.add('btn-success', 'text-white');
                             if (icon) icon.setAttribute('fill', 'currentColor');
                         } else {
                             btn.classList.add('btn-outline');
-                            btn.classList.remove('btn-error', 'text-white');
-                            btn.classList.add('btn-error'); 
+                            btn.classList.remove('text-white');
+                            btn.classList.add('btn-success'); 
                             if (icon) icon.setAttribute('fill', 'none');
                         }
                     }

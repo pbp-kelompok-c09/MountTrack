@@ -62,32 +62,25 @@ Profil Saya | MountTrack
         </div>
       </form>
 
-      <!-- riwayat pendakian (hanya tampilan, tidak bisa diedit) -->
+  
       <div class="pt-5">
-        <label class="block text-sm font-bold text-[#354024] mb-2">
-          Riwayat Pendakian
-        </label>
+        <h3 class="text-sm font-bold text-[#354024] mb-4">Riwayat Pendakian</h3>
         {% if request.user.history_gunung.all %}
-          {% if request.user.history_gunung.count > 0 %}
-            <ul class="list-disc list-inside bg-[#F8F4EF] border border-[#889063] rounded-md px-4 py-3 text-[#354024]">
-              {% for mountain in request.user.history_gunung.all %}
-                <li>{{ mountain.name }}</li>
-              {% endfor %}
-            </ul>
-          {% else %}
-            <p class="bg-[#F8F4EF] border border-[#889063] rounded-md px-4 py-3 text-[#4C3D19] italic">
-              Belum ada riwayat pendakian.
-            </p>
-          {% endif %}
+          <ul class="mountain-list bg-[#F8F4EF] border border-[#889063] rounded-md px-4 py-3 text-[#354024]">
+            {% for mountain in request.user.history_gunung.all %}
+              <li class="mountain-item flex justify-between py-2">
+                <span class="mountain-name font-medium">{{ mountain.name }}</span>
+                <span class="mountain-height text-sm text-[#4C3D19]">{{ mountain.height_mdpl }}m</span>
+              </li>
+            {% endfor %}
+          </ul>
         {% else %}
-          <p class="bg-[#F8F4EF] border border-[#889063] rounded-md px-4 py-3 text-[#4C3D19] italic">
+          <p class="empty-state bg-[#F8F4EF] border border-[#889063] rounded-md px-4 py-3 text-[#4C3D19] italic">
             Belum ada riwayat pendakian.
           </p>
         {% endif %}
       </div>
     </div>
-
-  </div>
 </div>
 
 <script>

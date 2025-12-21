@@ -31,7 +31,7 @@ class UserProfile(AbstractUser):
         blank=True,
         related_name="pendaki"
     )
-
+    
     def add_history(self, mountain):
         """Menambahkan gunung ke riwayat pendakian user."""
         self.history_gunung.add(mountain)

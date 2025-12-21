@@ -8,34 +8,48 @@
     margin-top: 2em;    
     margin-bottom: 2em; 
   }
+  
+  /* Transisi halus saat ganti tema */
+  .transition-theme {
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 300ms;
+  }
 </style>
 
-<div class="min-h-screen px-4 md:px-8 pb-4 md:pb-8 pt-40" style="background-color: #E5D7C4;" data-theme="light">
+<div id="main-content" class="min-h-screen px-4 md:px-8 pb-4 md:pb-8 pt-40 transition-theme bg-[#E5D7C4] dark:bg-gray-900">
 
-  <div class="card max-w-4xl mx-auto shadow-xl" style="background-color: #CFBB99;">
+  <button id="theme-toggle" class="fixed bottom-6 right-6 btn btn-circle btn-lg shadow-xl z-50 bg-[#354024] text-[#E5D7C4] hover:bg-[#2a331d] border-none">
+    <svg id="icon-sun" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+    </svg>
+    <svg id="icon-moon" xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+    </svg>
+  </button>
+
+  <div class="card max-w-4xl mx-auto shadow-xl transition-theme bg-[#CFBB99] dark:bg-gray-800">
     <div class="card-body">
-      
       
       {% csrf_token %}
 
-      <h1 class="card-title text-4xl font-bold mb-4" style="color: #354024;">
+      <h1 class="card-title text-4xl font-bold mb-4 transition-theme text-[#354024] dark:text-[#E5D7C4]">
         {{ news.title }}
       </h1>
-
       
-      <div class="alert mb-6 shadow-lg" style="background-color: #E5D7C4; border: none;">
+      <div class="alert mb-6 shadow-lg border-none transition-theme bg-[#E5D7C4] dark:bg-gray-700">
         <div> 
-          <p class="text-sm" style="color: #354024;">
-            Diterbitkan pada: <strong>{{ news.published_date|date:"d F Y, H:i" }}</strong>
+          <p class="text-sm transition-theme text-[#354024] dark:text-gray-200">
+            Diterbitkan pada: <strong>{{ news.published_date|date:"d F Y" }}</strong>
           </p>
-          <p class="text-sm" style="color: #354024;">
+          <p class="text-sm transition-theme text-[#354024] dark:text-gray-200">
             {% if news.user %}
-              Penulis: <strong>{{ news.user.username }}</strong>
+              Oleh: <strong>{{ news.user.username }}</strong>
             {% else %}
-              Penulis: <strong>Anonymous</strong>
+              Oleh: <strong>Anonymous</strong>
             {% endif %}
           </p>
-          <p class="text-sm" style="color: #354024;">
+          <p class="text-sm transition-theme text-[#354024] dark:text-gray-200">
             Dilihat sebanyak: <strong>{{ news.news_views }} kali</strong>
           </p>
         </div>
@@ -43,28 +57,26 @@
 
       <div class="flex items-center gap-4 mb-6">
         {% if user.is_authenticated %}
-            <!-- Tombol 'button' ini akan dikontrol oleh JavaScript -->
             <button id="like-btn-detail" 
-                    class="btn btn-sm gap-2 transition-all duration-200 {% if is_liked %} btn-error text-white {% else %} btn-outline btn-error {% endif %}"
+                    class="btn btn-sm gap-2 transition-all duration-200 {% if is_liked %} btn-success text-white {% else %} btn-outline btn-success {% endif %}"
                     data-url="{% url 'news:like_news' news.id %}">
                 
-                <!-- Icon Hati -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" 
                      fill="{% if is_liked %}currentColor{% else %}none{% endif %}" 
                      viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                 </svg>
                 
-                <!-- Jumlah Like -->
                 <span id="like-count-detail">{{ total_likes }}</span>
             </button>
         {% else %}
-            <!-- Tampilan untuk User Belum Login (Non-clickable) -->
-            <div class="btn btn-sm btn-disabled gap-2 bg-transparent border-none text-gray-500">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+            <div class="btn btn-sm btn-disabled gap-2 bg-transparent border-none text-gray-500 dark:text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                </svg>
                 {{ total_likes }} Likes
             </div>
-            <a href="{% url 'userprofile:login' %}" class="text-xs link link-hover text-[#354024]">Login to like</a>
+            <a href="{% url 'userprofile:login' %}" class="text-xs link link-hover text-[#354024] dark:text-[#E5D7C4]">Login to like</a>
         {% endif %}
       </div>
       
@@ -75,14 +87,12 @@
         </figure>
       {% endif %}
 
-      <!-- Konten Berita -->
-      <div class="prose prose-lg max-w-none-prose-custom-spacing" style="color: #354024; --tw-prose-body: #354024;">
+      <div class="prose prose-lg max-w-none prose-custom-spacing transition-theme text-[#354024] dark:text-[#E5D7C4] dark:prose-invert">
         {{ news.content|linebreaks }} 
       </div>
 
-      <div class="divider text-lg" style="color: #354024;"></div>
+      <div class="divider text-lg transition-theme before:bg-[#354024] after:bg-[#354024] dark:before:bg-gray-500 dark:after:bg-gray-500"></div>
 
-      <!-- Gambar Tambahan (Galeri) -->
       {% if images %}
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
           {% for img in images %}
@@ -94,23 +104,20 @@
             
             <input type="checkbox" id="img-modal-{{ img.id }}" class="modal-toggle" />
             <div class="modal">
-              <div class="modal-box w-11/12 max-w-5xl relative p-0">
-                <label for="img-modal-{{ img.id }}" class="btn btn-sm btn-circle absolute right-2 top-2 z-10">✕</label>
+              <div class="modal-box w-11/12 max-w-5xl relative p-0 bg-[#E5D7C4] dark:bg-gray-800">
+                <label for="img-modal-{{ img.id }}" class="btn btn-sm btn-circle absolute right-2 top-2 z-10 btn-ghost dark:text-white">✕</label>
                 <img src="{{ img.image_url }}" alt="Gambar tambahan" class="w-full h-auto rounded-lg">
               </div>
               
-             
               <label class="modal-backdrop" for="img-modal-{{ img.id }}">Tutup</label>
             </div>
           </div>
           {% endfor %}
         </div>
       {% endif %}
-      <!-- Akhir Gambar Tambahan -->
       
       {% if not images %}
-        <!-- Pesan ini muncul jika 'images' (dari view) kosong -->
-        <p style="color: #354024;">Tidak ada gambar tambahan untuk berita ini.</p>
+        <p class="transition-theme text-[#354024] dark:text-gray-400">Tidak ada gambar tambahan untuk berita ini.</p>
       {% endif %}
 
 
@@ -118,7 +125,7 @@
 
       
       <div class="card-actions justify-start">
-        <a href="{% url 'news:page_news' %}" class="btn text-white" style="background-color: #354024; border-color: #354024;">
+        <a href="{% url 'news:page_news' %}" class="btn text-white transition-theme bg-[#354024] border-[#354024] hover:bg-[#2a331d] hover:border-[#2a331d] dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 mr-2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
           </svg>
@@ -130,21 +137,72 @@
   </div>
 </div>
 
-<!-- script ajax like-->
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const likeBtn = document.getElementById('like-btn-detail');
     
-    // Ambil token CSRF dari input tersembunyi yang kita tambahkan di atas
+    // --- 1. LOGIKA DARK MODE ---
+    const themeToggleBtn = document.getElementById('theme-toggle');
+    const iconSun = document.getElementById('icon-sun');
+    const iconMoon = document.getElementById('icon-moon');
+    const htmlElement = document.documentElement;
+
+    // Fungsi update tampilan Icon (LOGIKA DIBALIK DISINI)
+    function updateIcon(isDark) {
+        if (isDark) {
+            // KONDISI: Sedang Dark Mode
+            // TAMPILKAN: Matahari (Sun) -> Agar user mengerti klik ini jadi terang
+            iconSun.classList.remove('hidden');
+            iconMoon.classList.add('hidden');
+        } else {
+            // KONDISI: Sedang Light Mode
+            // TAMPILKAN: Bulan (Moon) -> Agar user mengerti klik ini jadi gelap
+            iconMoon.classList.remove('hidden');
+            iconSun.classList.add('hidden');
+        }
+    }
+
+    // Cek Preferensi Awal (Urutan: LocalStorage -> System Preference)
+    const localTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (localTheme === 'dark' || (!localTheme && systemPrefersDark)) {
+        // Apply Dark Mode
+        htmlElement.classList.add('dark');
+        updateIcon(true); 
+    } else {
+        // Apply Light Mode
+        htmlElement.classList.remove('dark');
+        updateIcon(false);
+    }
+
+    // Event Listener Klik Tombol
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', function() {
+            if (htmlElement.classList.contains('dark')) {
+                // Sedang Dark -> Pindah ke Light
+                htmlElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                updateIcon(false); 
+            } else {
+                // Sedang Light -> Pindah ke Dark
+                htmlElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                updateIcon(true); 
+            }
+        });
+    }
+
+    // --- 2. LOGIKA LIKE (AJAX) ---
+    const likeBtn = document.getElementById('like-btn-detail');
     const csrfTokenInput = document.querySelector('input[name="csrfmiddlewaretoken"]');
     const csrfToken = csrfTokenInput ? csrfTokenInput.value : '';
 
     if (likeBtn) {
         likeBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            
             const url = this.dataset.url;
             
+            // Efek klik
             this.classList.add('scale-90');
             setTimeout(() => this.classList.remove('scale-90'), 100);
 
@@ -166,19 +224,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     const countSpan = document.getElementById('like-count-detail');
                     if (countSpan) countSpan.textContent = data.total_likes;
 
-                    // Update Tampilan Tombol & Icon
+                    // Update Style Tombol
                     const icon = this.querySelector('svg');
                     
                     if (data.is_liked) {
-                        // Liked: 
                         this.classList.remove('btn-outline');
-                        this.classList.add('btn-error', 'text-white');
+                        this.classList.add('btn-success', 'text-white');
+                        this.classList.remove('btn-error'); 
                         if (icon) icon.setAttribute('fill', 'currentColor');
                     } else {
-                        // Unliked: 
                         this.classList.add('btn-outline');
-                        this.classList.remove('btn-error', 'text-white');
-                        this.classList.add('btn-error'); 
+                        this.classList.remove('text-white');
+                        this.classList.add('btn-success');
+                        this.classList.remove('btn-error');
                         if (icon) icon.setAttribute('fill', 'none');
                     }
                 }
@@ -188,6 +246,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 </script>
+
 
 
 {% endblock content %}

@@ -218,6 +218,53 @@ def mountain_create_ajax(request):
 @login_required(login_url='/accounts/login')
 @csrf_exempt
 @require_POST
+def mountain_edit_ajax(request, mountain_id):
+    """Edit mountain via AJAX (staff only)"""
+    if not request.user.is_staff:
+        return JsonResponse({
+            'status': 'error',
+            'message': 'Anda tidak memiliki izin untuk mengedit gunung.'
+        }, status=403)
+    
+    try:
+        mountain = get_object_or_404(Mountain, id=mountain_id)
+        data = json.loads(request.body)
+        form = MountainForm(data, instance=mountain)
+        
+        if form.is_valid():
+            mountain = form.save()
+            return JsonResponse({
+                'status': 'success',
+                'message': f'Gunung {mountain.name} berhasil diperbarui!',
+                'mountain': {
+                    'id': mountain.id,
+                    'name': mountain.name,
+                    'url': mountain.url,
+                    'height_mdpl': mountain.height_mdpl,
+                    'province': mountain.province,
+                    'image_url': mountain.image_url or '',
+                    'description': mountain.description,
+                    'slug': mountain.slug,
+                    'availability': mountain.availability,
+                    'min_book': mountain.min_book,
+                    'experience_required': mountain.experience_required,
+                }
+            })
+        else:
+            return JsonResponse({
+                'status': 'error',
+                'message': 'Data tidak valid',
+                'errors': form.errors
+            }, status=400)
+    except Exception as e:
+        return JsonResponse({
+            'status': 'error',
+            'message': str(e)
+        }, status=500)
+
+@login_required(login_url='/accounts/login')
+@csrf_exempt
+@require_POST
 def mountain_delete_ajax(request, mountain_id):
     """Delete mountain via AJAX (staff only)"""
     if not request.user.is_staff:

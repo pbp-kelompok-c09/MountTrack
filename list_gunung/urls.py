@@ -14,6 +14,7 @@ urlpatterns = [
     
     # AJAX endpoints
     path('api/create/', views.mountain_create_ajax, name='mountain_create_ajax'),
+    path('api/edit/<int:mountain_id>/', views.mountain_edit_ajax, name='mountain_edit_ajax'),
     path('api/delete/<int:mountain_id>/', views.mountain_delete_ajax, name='mountain_delete_ajax'),
     
     # Detail view (must be last to avoid conflicts)

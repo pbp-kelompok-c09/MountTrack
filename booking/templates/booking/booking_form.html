@@ -245,8 +245,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         {{ form.gunung }}
       </div>
       <div class="field">
-        <label>Durasi Pendakian</label>
-        <select id="id_duration" name="duration" style="width: 100%;">
+        <label>Durasi Pendakian <span style="color: #EB3D00;">*</span></label>
+        <select id="id_duration" name="duration" required style="width: 100%;">
           <option value="">-- Pilih Durasi --</option>
           <option value="1">1 Hari</option>
           <option value="2">2 Hari</option>
@@ -303,7 +303,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
         <div style="flex-shrink: 0;">⚠️</div>
         <div style="flex: 1;">
           <p style="margin: 0 0 8px 0; color: #4C3019; font-weight: 600; font-size: clamp(0.9rem, 2vw, 1rem);">Penyewaan Porter Diperlukan</p>
-          <p style="margin: 0 0 12px 0; color: #294122; font-size: clamp(0.85rem, 1.5vw, 0.95rem);">Semua peserta adalah pemula. Booking ini mewajibkan penyewaan porter untuk keselamatan.</p>
+          <p style="margin: 0 0 12px 0; color: #294122; font-size: clamp(0.85rem, 1.5vw, 0.95rem);">Semua peserta adalah pemula. Pemesanan ini mewajibkan penyewaan porter untuk keselamatan.</p>
           <div style="display: flex; align-items: center; gap: 8px;">
             <input type="checkbox" id="porter-warning-checkbox" style="width: 18px !important; height: 18px !important; cursor: pointer !important; accent-color: #889063 !important; appearance: checkbox;">
             <label for="porter-warning-checkbox" style="color: #294122; font-size: clamp(0.85rem, 1.5vw, 0.95rem); cursor: pointer; margin: 0;">Sewa Porter (Rp 250.000)</label>
@@ -333,7 +333,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
     <div style="display: flex; flex-direction: column; gap: clamp(8px, 2vw, 12px); margin-top: clamp(16px, 3vw, 24px);">
       <div style="color: #4C3019; font-size: clamp(0.85rem, 2vw, 0.9rem);">Pastikan data anggota lengkap sebelum submit.</div>
-      <button type="submit" class="submit-btn">Selesai Booking</button>
+      <button type="submit" class="submit-btn">Selesai Pemesanan</button>
     </div>
   </form>
 
@@ -476,12 +476,12 @@ input[type="date"]::-webkit-calendar-picker-indicator {
       const pLabel = mkLabel('Pilih Profil Terdaftar (opsional)', null);
       profileWrap.appendChild(pLabel);
       const sel = mkSelect('anggota_'+i+'_profile', profilesCache);
-      // when select changes, fill the other inputs
+      
       sel.addEventListener('change', function(e){
         const pid = e.target.value;
         const selected = profilesCache.find(p => p.profile_id === pid);
         if (!selected) return;
-        // fill inputs if exist
+     
         const nameInput = wrap.querySelector('input[name="anggota_'+i+'_name"]');
         const ageInput = wrap.querySelector('input[name="anggota_'+i+'_age"]');
         const genderSel = wrap.querySelector('select[name="anggota_'+i+'_gender"]');
@@ -709,31 +709,133 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   // submit guard: jika semua level = beginner (termasuk user utama), minta porter_hire == 'yes'
   if (formEl) {
     formEl.addEventListener('submit', function(e){
-      // collect all level selects (additional members)
+      // Validasi: Durasi harus dipilih
+      const durationVal = durationSelect ? durationSelect.value : '';
+      if (!durationVal || durationVal === '') {
+        e.preventDefault();
+        showToast('Pilih durasi pendakian terlebih dahulu.', { bg: '#EB3D00' });
+        durationSelect?.scrollIntoView({behavior:'smooth', block:'center'});
+        return false;
+      }
+
+      // Validasi: Gunung harus dipilih
+      const gunungSelect = document.querySelector('select[name="gunung"]');
+      if (gunungSelect && (!gunungSelect.value || gunungSelect.value === '')) {
+        e.preventDefault();
+        showToast('Pilih gunung terlebih dahulu.', { bg: '#EB3D00' });
+        gunungSelect.scrollIntoView({behavior:'smooth', block:'center'});
+        return false;
+      }
+
+      // Validasi: Tanggal mulai harus diisi jika durasi dipilih
+      const climbingDateVal = climbingDateInput ? climbingDateInput.value : '';
+      if (durationVal && (!climbingDateVal || climbingDateVal === '')) {
+        e.preventDefault();
+        showToast('Pilih tanggal mulai pendakian.', { bg: '#EB3D00' });
+        climbingDateInput?.scrollIntoView({behavior:'smooth', block:'center'});
+        return false;
+      }
+
+      // Validasi: Minimal 1 anggota dengan data lengkap
+      const additionalPax = parseInt(paxInput.value) || 0;
+      if (additionalPax > 0) {
+        const anggotaCards = document.querySelectorAll('.anggota');
+        for (let i = 0; i < anggotaCards.length; i++) {
+          const nameInput = anggotaCards[i].querySelector('input[name$="_name"]');
+          const ageInput = anggotaCards[i].querySelector('input[name$="_age"]');
+          const genderSelect = anggotaCards[i].querySelector('select[name$="_gender"]');
+          const levelSelect = anggotaCards[i].querySelector('select[name$="_level"]');
+
+          if (!nameInput?.value?.trim()) {
+            e.preventDefault();
+            showToast(`Anggota ${i + 1}: Nama harus diisi.`, { bg: '#EB3D00' });
+            nameInput?.scrollIntoView({behavior:'smooth', block:'center'});
+            return false;
+          }
+          if (!ageInput?.value?.trim()) {
+            e.preventDefault();
+            showToast(`Anggota ${i + 1}: Usia harus diisi.`, { bg: '#EB3D00' });
+            ageInput?.scrollIntoView({behavior:'smooth', block:'center'});
+            return false;
+          }
+          if (!genderSelect?.value) {
+            e.preventDefault();
+            showToast(`Anggota ${i + 1}: Jenis kelamin harus dipilih.`, { bg: '#EB3D00' });
+            genderSelect?.scrollIntoView({behavior:'smooth', block:'center'});
+            return false;
+          }
+          if (!levelSelect?.value) {
+            e.preventDefault();
+            showToast(`Anggota ${i + 1}: Level harus dipilih.`, { bg: '#EB3D00' });
+            levelSelect?.scrollIntoView({behavior:'smooth', block:'center'});
+            return false;
+          }
+        }
+      }
+
+      // Collect all level selects (additional members)
       const additionalLevels = Array.from(document.querySelectorAll('select[name$="_level"]')).map(s => s.value).filter(v => v);
-      // include user level from server-side (we rendered it readonly); try to read from template variable
       const userLevel = '{{ user_profile.category_experience|default:"beginner" }}';
       const allLevels = [userLevel].concat(additionalLevels);
       const allBeginner = allLevels.length > 0 && allLevels.every(l => l === 'beginner');
       const porterSelect = document.getElementById('id_porter_hire') || document.querySelector('select[name="porter_hire"], input[name="porter_hire"]');
       const porterVal = porterSelect ? porterSelect.value : '';
+      
       if (allBeginner && porterVal !== 'yes') {
         e.preventDefault();
-        showToast('Semua anggota berlevel Beginner — Anda diwajibkan memilih Sewa Porter (Ya).', {});
+        showToast('Semua anggota berlevel Beginner — Anda diwajibkan memilih Sewa Porter (Ya).', { bg: '#EB3D00' });
         if (porterSelect) porterSelect.scrollIntoView({behavior:'smooth', block:'center'});
         return false;
       }
-      // ensure paxInput number is integer -> name "pax" is already managed by form field but ensure it's numeric
-      const p = parseInt(paxInput.value);
-      if (isNaN(p) || p < 0) {
-        e.preventDefault();
-        showToast('Nilai jumlah anggota tidak valid.', {});
-        return false;
-      }
-      // no other client blocking; let server validate members completeness
     });
   }
-
 })();
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const bookingForm = document.querySelector("form");
+  const submitBtn = bookingForm?.querySelector("button[type='submit']");
+
+  if (bookingForm) {
+    bookingForm.addEventListener("submit", function (event) {
+      const requiredFields = bookingForm.querySelectorAll("[required]");
+      let isValid = true;
+      let emptyFields = [];
+
+      requiredFields.forEach((field) => {
+        const value = field.value.trim();
+        if (!value) {
+          isValid = false;
+          const fieldLabel = field.previousElementSibling?.textContent || field.getAttribute("name") || "Field";
+          emptyFields.push(fieldLabel);
+          field.style.borderColor = "#E74C3C";
+          field.style.backgroundColor = "#FADBD8";
+        } else {
+          field.style.borderColor = "#889063";
+          field.style.backgroundColor = "#F8F4EF";
+        }
+      });
+
+      if (!isValid) {
+        event.preventDefault();
+        alert(`⚠️ Mohon lengkapi field berikut:\n\n${emptyFields.join("\n")}`);
+      }
+    });
+
+    // Real-time validation
+    bookingForm.addEventListener("input", function (e) {
+      if (e.target.hasAttribute("required")) {
+        if (e.target.value.trim()) {
+          e.target.style.borderColor = "#889063";
+          e.target.style.backgroundColor = "#F8F4EF";
+        } else {
+          e.target.style.borderColor = "#E74C3C";
+          e.target.style.backgroundColor = "#FADBD8";
+        }
+      }
+    });
+  }
+});
 </script>
 {% endblock %}

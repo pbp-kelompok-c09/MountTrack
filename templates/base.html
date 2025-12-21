@@ -6,6 +6,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}MountTrack{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class', // buat darkmod news
+      }
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/daisyui@4.10.1/dist/full.min.css" rel="stylesheet" type="text/css" />
     {% block meta %} {% endblock meta %}
 
@@ -93,7 +98,7 @@
           },
           { 
               name: "Booking", 
-              path: "/booking/book/", 
+              path: "/booking/landing/", 
               icon: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6h12M5 6v14h14V6H5z"></path><path d="M12 8v10M8 12h8"></path></svg>'
           },
           { 
