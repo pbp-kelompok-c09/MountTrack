@@ -190,6 +190,7 @@ def loginapp(request):
             "nomor_telepon": user.nomor_telepon,
             "category_experience": user.category_experience,
             "jenis_kelamin": user.jenis_kelamin,
+            "is_staff": user.is_staff,
         }, status=200)
 
     else:
